@@ -37,6 +37,7 @@
     <ClCompile Include="Animation.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="GameObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h">
@@ -75,6 +76,7 @@
     <ClInclude Include="AssimpGlmHelpers.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="GameObject.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source">
