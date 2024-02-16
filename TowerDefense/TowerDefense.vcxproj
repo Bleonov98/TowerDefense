@@ -160,6 +160,12 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="TextRenderer.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="fShader.ft" />
+    <None Include="fTxtShader.ft" />
+    <None Include="vShader.vx" />
+    <None Include="vTxtShader.vx" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

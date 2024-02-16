@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "Camera.h"
+#include "GameObject.h"
 
 enum GameState {
 	ACTIVE,

@@ -1,7 +1,12 @@
 #include "Game.h"
 
+Camera camera;
+
+GameObject* map;
+
 void Game::Init()
 {
+	ResourceManager::LoadShader("../")
 }
 
 void Game::ProcessInput(float dt)

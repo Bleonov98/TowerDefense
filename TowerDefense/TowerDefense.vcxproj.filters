@@ -86,4 +86,10 @@
       <UniqueIdentifier>{8c254db0-4737-46f6-8bd4-5f48e325435c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="vShader.vx" />
+    <None Include="fShader.ft" />
+    <None Include="vTxtShader.vx" />
+    <None Include="fTxtShader.ft" />
+  </ItemGroup>
 </Project>
