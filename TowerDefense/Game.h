@@ -1,9 +1,15 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
 #include <iostream>
 
 #include "Camera.h"
+#include "TextRenderer.h"
+#include "ResourceManager.h"
+
 #include "GameObject.h"
 
 enum GameState {
@@ -27,19 +33,20 @@ public:
 
 	void ProcessInput(float dt);
 	void Update(float dt);
-	void CheckCollisions(float dt);
-	void ProcessAnimations(float dt);
+	// void CheckCollisions(float dt);
+	// void ProcessAnimations(float dt);
 
 	void Render(float dt);
-	// void DrawObject(GameObject* obj);
+	void DrawObject(GameObject* obj);
 	void DrawStats();
+	void DrawMenu();
 
 	void DeleteObjects();
 
-	// template <typename T>
-	// void DeleteObjectFromVector(std::vector<T*>& vector, bool deleteMemory);
+	template <typename T>
+	void DeleteObjectFromVector(std::vector<T*>& vector, bool deleteMemory);
 
-	~Game() {};
+	~Game();
 	
 	// - - - - 
 	bool Keys[1024], KeysProcessed[1024], close = false;
@@ -52,22 +59,19 @@ private:
 	int width, height;
 
 	float cellWidth, cellHeight;
-	//std::vector<std::vector<int>> mData;
-	//std::vector<std::vector<glm::vec2>> grid;
+	std::vector<std::vector<int>> mData;
+	std::vector<std::vector<glm::vec2>> grid;
 
-	//glm::vec2 cursorPos;
+	glm::vec2 cursorPos;
 
-	//glm::mat4 projection;
-	//glm::mat4 view;
+	glm::mat4 projection;
+	glm::mat4 view;
 
 	// objects
 
-	// std::vector<GameObject*> objList;
+	std::vector<GameObject*> objList;
 
 
 };
 
 #endif // !GAME_H
-
-
-

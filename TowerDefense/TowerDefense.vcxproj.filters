@@ -37,7 +37,9 @@
     <ClCompile Include="Animation.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h">
@@ -76,7 +78,9 @@
     <ClInclude Include="AssimpGlmHelpers.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameObject.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source">
@@ -87,9 +91,17 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="vShader.vx" />
-    <None Include="fShader.ft" />
-    <None Include="vTxtShader.vx" />
-    <None Include="fTxtShader.ft" />
+    <None Include="fShader.ft">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="fTxtShader.ft">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="vShader.vx">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="vTxtShader.vx">
+      <Filter>Source</Filter>
+    </None>
   </ItemGroup>
 </Project>
