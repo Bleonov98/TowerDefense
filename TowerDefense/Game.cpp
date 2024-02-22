@@ -9,12 +9,24 @@ ISoundSource* music;
 
 Camera camera;
 
-GameObject* map;
+GameObject* gameMap;
 
 void Game::Init()
 {
 	srand(time(NULL));
 	LoadResources();
+
+	// sounds
+	//music = sound->addSoundSourceFromFile("../sounds/music.mp3");
+	//music->setDefaultVolume(0.5f);
+
+	//sound->play2D(music, true);
+
+	// tools
+	projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
+	text = new TextRenderer(this->width, this->height);
+	text->Load("../fonts/Garamond.ttf", 24);
+	cursorPos = glm::vec2(this->width / 2.0f - 50.0f, this->height / 2.0f);
 
 	InitGrid();
 	InitGameObjects();
@@ -39,10 +51,16 @@ void Game::ProcessInput(float dt)
 
 void Game::Update(float dt)
 {
+	if (gameState == ACTIVE) {
+
+	}
 }
 
 void Game::Render(float dt)
 {
+	// DrawObject(gameMap);
+
+	if (gameState == MENU) DrawMenu();
 }
 
 void Game::DrawObject(GameObject* obj)

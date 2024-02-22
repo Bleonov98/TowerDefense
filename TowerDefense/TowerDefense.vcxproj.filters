@@ -91,16 +91,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="fShader.ft">
+    <None Include="..\shaders\vShader.vx">
       <Filter>Source</Filter>
     </None>
-    <None Include="fTxtShader.ft">
-      <Filter>Source</Filter>
-    </None>
-    <None Include="vShader.vx">
-      <Filter>Source</Filter>
-    </None>
-    <None Include="vTxtShader.vx">
+    <None Include="..\shaders\fShader.ft">
       <Filter>Source</Filter>
     </None>
   </ItemGroup>
