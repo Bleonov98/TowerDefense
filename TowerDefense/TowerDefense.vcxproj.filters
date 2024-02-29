@@ -97,5 +97,11 @@
     <None Include="..\shaders\fShader.ft">
       <Filter>Source</Filter>
     </None>
+    <None Include="..\shaders\vTxtShader.vx">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\shaders\fTxtShader.ft">
+      <Filter>Source</Filter>
+    </None>
   </ItemGroup>
 </Project>

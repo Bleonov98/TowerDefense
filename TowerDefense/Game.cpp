@@ -16,6 +16,9 @@ void Game::Init()
 	srand(time(NULL));
 	LoadResources();
 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	// sounds
 	//music = sound->addSoundSourceFromFile("../sounds/music.mp3");
 	//music->setDefaultVolume(0.5f);
@@ -24,8 +27,11 @@ void Game::Init()
 
 	// tools
 	projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
+	view = camera.GetViewMatrix();
+
 	text = new TextRenderer(this->width, this->height);
 	text->Load("../fonts/Garamond.ttf", 24);
+
 	cursorPos = glm::vec2(this->width / 2.0f - 50.0f, this->height / 2.0f);
 
 	InitGrid();
@@ -47,6 +53,29 @@ void Game::LoadResources()
 
 void Game::ProcessInput(float dt)
 {
+	if (gameState == ACTIVE) {
+
+
+		if (this->Keys[GLFW_KEY_ESCAPE] && !KeysProcessed[GLFW_KEY_ESCAPE]) {
+			gameState = MENU;
+			KeysProcessed[GLFW_KEY_ESCAPE] = true;
+		}
+	}
+	else if (gameState == MENU) {
+		if (this->Keys[GLFW_KEY_UP] && !this->KeysProcessed[GLFW_KEY_UP] && cursorPos.y > this->height / 2.0f) {
+			cursorPos.y -= 40.0f;
+			this->KeysProcessed[GLFW_KEY_UP] = true;
+		}
+		else if (this->Keys[GLFW_KEY_DOWN] && !this->KeysProcessed[GLFW_KEY_DOWN] && cursorPos.y < this->height / 2.0f + 40.0f) {
+			cursorPos.y += 40.0f;
+			this->KeysProcessed[GLFW_KEY_DOWN] = true;
+		}
+		else if (this->Keys[GLFW_KEY_ENTER]) {
+			if (cursorPos.y == this->height / 2.0f) gameState = ACTIVE;
+			else if (cursorPos.y == this->height / 2.0f + 40.0f) close = true;
+		}
+	}
+	else if (gameState == END && this->Keys[GLFW_KEY_ENTER]) close = true;
 }
 
 void Game::Update(float dt)
