@@ -1,6 +1,9 @@
 #include "ResourceManager.h"
 
 std::map<std::string, Model> ResourceManager::models;
+std::map<std::string, Animation> ResourceManager::animations;
+std::map<std::string, Animator> ResourceManager::animators;
+
 std::map<std::string, Shader> ResourceManager::shaders;
 
 Shader ResourceManager::LoadShader(const char* vShader, const char* fShader, std::string name)
@@ -14,12 +17,12 @@ Shader ResourceManager::GetShader(std::string name)
     return shaders[name];
 }
 
-Model ResourceManager::LoadModel(const char* fileName, bool alpha, std::string name)
+Model ResourceManager::LoadModel(const char* fileName, std::string name)
 {
     std::string filePath = "../models/";
     filePath += fileName;
 
-    models[name] = LoadModelFromFile(filePath, alpha);
+    models[name] = LoadModelFromFile(filePath, name);
     return models[name];
 }
 
@@ -28,10 +31,23 @@ Model ResourceManager::GetModel(std::string name)
     return models[name];
 }
 
-Model ResourceManager::LoadModelFromFile(std::string& const fileName, bool alpha)
+Model ResourceManager::LoadModelFromFile(std::string& const fileName, std::string name)
 {
     Model model(fileName);
 
+    try
+    {
+        Animation anim(fileName, &model);
+        animations[name] = anim;
+
+        Animator animator(&anim);
+        animators[name] = animator;
+
+        model.Animated();
+    }
+    catch (const bool ex) {
+
+    }
 
     return model;
 }

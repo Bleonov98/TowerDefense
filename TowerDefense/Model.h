@@ -45,6 +45,9 @@ public:
     auto& GetBoneInfoMap() { return m_BoneInfoMap; }
     int& GetBoneCount() { return m_BoneCounter; }
 
+    void Animated() { animated = true; }
+    bool IsAnimated() { return animated; }
+
 private:
     // loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
     void loadModel(string const& path);

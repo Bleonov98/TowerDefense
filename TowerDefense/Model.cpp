@@ -56,6 +56,12 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
     vector<unsigned int> indices;
     vector<Texture> textures;
 
+    aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+
+    aiColor3D color(0.f, 0.f, 0.f);
+    material->Get(AI_MATKEY_COLOR_DIFFUSE, color);
+    glm::vec3 meshColor = glm::vec3(color.r, color.g, color.b);
+
     for (unsigned int i = 0; i < mesh->mNumVertices; i++)
     {
         Vertex vertex;
@@ -73,6 +79,8 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
         else
             vertex.TexCoords = glm::vec2(0.0f, 0.0f);
 
+        vertex.Colours = meshColor;
+
         vertices.push_back(vertex);
     }
     for (unsigned int i = 0; i < mesh->mNumFaces; i++)
@@ -81,7 +89,6 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
         for (unsigned int j = 0; j < face.mNumIndices; j++)
             indices.push_back(face.mIndices[j]);
     }
-    aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
     vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
     textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());

@@ -15,6 +15,8 @@ class Animator
 public:
 	Animator(Animation* animation);
 
+	Animator() {};
+
 	void UpdateAnimation(float dt);
 
 	void PlayAnimation(Animation* pAnimation);

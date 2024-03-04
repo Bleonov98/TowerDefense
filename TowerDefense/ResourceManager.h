@@ -3,6 +3,8 @@
 
 #include "Shader.h"
 #include "Model.h"
+#include "Animation.h"
+#include "Animator.h"
 
 #include <string>
 #include <map>
@@ -17,7 +19,7 @@ public:
 	static Shader GetShader(std::string name);
 
 	// textures
-	static Model LoadModel(const char* fileName, bool alpha, std::string name);
+	static Model LoadModel(const char* fileName, std::string name);
 
 	static Model GetModel(std::string name);
 
@@ -26,9 +28,12 @@ private:
 	ResourceManager() {};
 
 	static std::map<std::string, Model> models;
+	static std::map<std::string, Animation> animations;
+	static std::map<std::string, Animator> animators;
+
 	static std::map<std::string, Shader> shaders;
 
-	static Model LoadModelFromFile(std::string& const fileName, bool alpha);
+	static Model LoadModelFromFile(std::string& const fileName, std::string name);
 	static Shader LoadShaderFromFile(const char* vShader, const char* fShader);
 
 };

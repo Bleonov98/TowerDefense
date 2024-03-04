@@ -20,10 +20,10 @@ void Game::Init()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// sounds
-	//music = sound->addSoundSourceFromFile("../sounds/music.mp3");
-	//music->setDefaultVolume(0.5f);
+	// music = sound->addSoundSourceFromFile("../sounds/music.mp3");
+	// music->setDefaultVolume(0.5f);
 
-	//sound->play2D(music, true);
+	// sound->play2D(music, true);
 
 	// tools
 	projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
@@ -44,11 +44,18 @@ void Game::InitGrid()
 
 void Game::InitGameObjects()
 {
+	gameMap = new GameObject(glm::vec3(1.0f), glm::vec3(0.02f, 0.02f, 0.02f));
+	gameMap->SetModel(ResourceManager::GetModel("map"));
 }
 
 void Game::LoadResources()
 {
 	ResourceManager::LoadShader("../shaders/vShader.vx", "../shaders/fShader.ft", "modelShader");
+
+	// objects
+
+	// - - - // Main
+	ResourceManager::LoadModel("map.obj", "map");
 }
 
 void Game::ProcessInput(float dt)
@@ -87,7 +94,7 @@ void Game::Update(float dt)
 
 void Game::Render(float dt)
 {
-	// DrawObject(gameMap);
+	DrawObject(gameMap);
 
 	if (gameState == MENU) DrawMenu();
 }
@@ -97,11 +104,6 @@ void Game::DrawObject(GameObject* obj)
 	ResourceManager::GetShader("modelShader").Use();
 	ResourceManager::GetShader("modelShader").SetMatrix4("projection", projection);
 	ResourceManager::GetShader("modelShader").SetMatrix4("view", view);
-
-	ResourceManager::GetShader("modelShader").SetVector3f("objectColor", obj->GetColor());
-	// modelShader.SetVector3f("lightColor", light.GetColor());
-	// modelShader.SetVector3f("lightPos", light.GetPosition());
-	// modelShader.SetVector3f("viewPos", camera.GetCameraPosition());
 
 	glm::mat4 model = glm::mat4(1.0f);
 
