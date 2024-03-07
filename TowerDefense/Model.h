@@ -37,13 +37,15 @@ public:
 
     Model() {};
     // constructor, expects a filepath to a 3D model.
-    Model(string const& path, bool gamma = false);
+    Model(string const& path, string name, bool gamma = false);
 
     // draws the model, and thus all its meshes
     void Draw(Shader& shader);
 
     auto& GetBoneInfoMap() { return m_BoneInfoMap; }
     int& GetBoneCount() { return m_BoneCounter; }
+    
+    std::string GetName() { return this->name; }
 
     void Animated() { animated = true; }
     bool IsAnimated() { return animated; }
@@ -69,6 +71,7 @@ private:
 
     // model properties 
     bool animated = false;
+    std::string name;
 
     std::map<string, BoneInfo> m_BoneInfoMap;
     int m_BoneCounter = 0;

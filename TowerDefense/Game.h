@@ -37,7 +37,7 @@ public:
 	// void ProcessAnimations(float dt);
 
 	void Render(float dt);
-	void DrawObject(GameObject* obj);
+	void DrawObject(GameObject* obj, float dt);
 	void DrawStats();
 	void DrawMenu();
 

@@ -31,9 +31,19 @@ Model ResourceManager::GetModel(std::string name)
     return models[name];
 }
 
+Animator ResourceManager::GetAnimator(std::string name)
+{
+    return animators[name];
+}
+
+Animation ResourceManager::GetAnimation(std::string name)
+{
+    return animations[name];
+}
+
 Model ResourceManager::LoadModelFromFile(std::string& const fileName, std::string name)
 {
-    Model model(fileName);
+    Model model(fileName, name);
 
     try
     {
@@ -45,9 +55,7 @@ Model ResourceManager::LoadModelFromFile(std::string& const fileName, std::strin
 
         model.Animated();
     }
-    catch (const bool ex) {
-
-    }
+    catch (const bool ex) {}
 
     return model;
 }

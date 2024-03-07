@@ -44,7 +44,7 @@ void Game::InitGrid()
 
 void Game::InitGameObjects()
 {
-	gameMap = new GameObject(glm::vec3(1.0f), glm::vec3(0.02f, 0.02f, 0.02f));
+	gameMap = new GameObject(glm::vec3(1.0f), glm::vec3(0.01f, 0.01f, 0.01f));
 	gameMap->SetModel(ResourceManager::GetModel("map"));
 }
 
@@ -94,16 +94,28 @@ void Game::Update(float dt)
 
 void Game::Render(float dt)
 {
-	DrawObject(gameMap);
+	DrawObject(gameMap, dt);
 
 	if (gameState == MENU) DrawMenu();
 }
 
-void Game::DrawObject(GameObject* obj)
+void Game::DrawObject(GameObject* obj, float dt)
 {
+	if (obj->IsAnimated()) ResourceManager::GetAnimator(obj->GetID()).UpdateAnimation(dt);
+
 	ResourceManager::GetShader("modelShader").Use();
 	ResourceManager::GetShader("modelShader").SetMatrix4("projection", projection);
 	ResourceManager::GetShader("modelShader").SetMatrix4("view", view);
+
+	if (obj->IsAnimated()) {
+		ResourceManager::GetShader("modelShader").SetBool("animated", true);
+
+		auto transforms = ResourceManager::GetAnimator(obj->GetID()).GetFinalBoneMatrices();
+		for (int i = 0; i < transforms.size(); ++i)
+			ResourceManager::GetShader("modelShader").SetMatrix4("finalBonesMatrices[" + std::to_string(i) + "]", transforms[i]);
+	}
+	else ResourceManager::GetShader("modelShader").SetBool("animated", false);
+
 
 	glm::mat4 model = glm::mat4(1.0f);
 

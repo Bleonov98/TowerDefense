@@ -18,10 +18,12 @@ public:
 
 	static Shader GetShader(std::string name);
 
-	// textures
+	// models
 	static Model LoadModel(const char* fileName, std::string name);
 
 	static Model GetModel(std::string name);
+	static Animator GetAnimator(std::string name);
+	static Animation GetAnimation(std::string name);
 
 private:
 

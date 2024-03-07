@@ -4,9 +4,10 @@
 #include <algorithm>
 #include <filesystem>
 
-Model::Model(string const& path, bool gamma) : gammaCorrection(gamma)
+Model::Model(string const& path, string name, bool gamma) : gammaCorrection(gamma)
 {
     loadModel(path);
+    this->name = name;
 }
 
 void Model::Draw(Shader& shader)
