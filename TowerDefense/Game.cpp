@@ -92,6 +92,10 @@ void Game::Update(float dt)
 	}
 }
 
+void Game::CheckCollisions(float dt)
+{
+}
+
 void Game::Render(float dt)
 {
 	DrawObject(gameMap, dt);
@@ -124,6 +128,10 @@ void Game::DrawObject(GameObject* obj, float dt)
 
 	ResourceManager::GetShader("modelShader").SetMatrix4("model", model);
 	obj->DrawObject();
+}
+
+void Game::DrawStats()
+{
 }
 
 void Game::DrawMenu()

@@ -33,8 +33,7 @@ public:
 
 	void ProcessInput(float dt);
 	void Update(float dt);
-	// void CheckCollisions(float dt);
-	// void ProcessAnimations(float dt);
+	void CheckCollisions(float dt);
 
 	void Render(float dt);
 	void DrawObject(GameObject* obj, float dt);
