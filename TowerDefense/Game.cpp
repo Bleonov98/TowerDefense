@@ -44,7 +44,7 @@ void Game::InitGrid()
 
 void Game::InitGameObjects()
 {
-	gameMap = new GameObject(glm::vec3(1.0f), glm::vec3(0.01f, 0.01f, 0.01f));
+	gameMap = new GameObject(glm::vec3(1.0f), glm::vec3(0.1f));
 	gameMap->SetModel(ResourceManager::GetModel("map"));
 }
 

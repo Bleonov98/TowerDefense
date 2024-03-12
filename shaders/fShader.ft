@@ -10,5 +10,5 @@ void main()
 {   
     vec4 texColor = texture(texture_diffuse1, TexCoords);
     vec3 finalColor = texColor.rgb * (0.1 + Colours);
-    FragColor = vec4(finalColor, texColor.a);
+    FragColor = vec4(Colours, 1.0f);
 }
