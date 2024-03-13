@@ -40,6 +40,9 @@
     <ClCompile Include="GameObject.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Tower.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h">
@@ -79,6 +82,9 @@
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="GameObject.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Tower.h">
       <Filter>Header</Filter>
     </ClInclude>
   </ItemGroup>

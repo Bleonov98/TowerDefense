@@ -11,6 +11,7 @@
 #include "ResourceManager.h"
 
 #include "GameObject.h"
+#include "Tower.h"
 
 enum GameState {
 	ACTIVE,
@@ -59,7 +60,7 @@ private:
 
 	float cellWidth, cellHeight;
 	std::vector<std::vector<int>> mData;
-	std::vector<std::vector<glm::vec2>> grid;
+	std::vector<std::vector<glm::vec3>> grid;
 
 	glm::vec2 cursorPos;
 

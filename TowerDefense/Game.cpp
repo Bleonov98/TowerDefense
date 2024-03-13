@@ -27,12 +27,15 @@ void Game::Init()
 
 	// tools
 	projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
-	view = camera.GetViewMatrix();
+
 
 	text = new TextRenderer(this->width, this->height);
 	text->Load("../fonts/Garamond.ttf", 24);
 
 	cursorPos = glm::vec2(this->width / 2.0f - 50.0f, this->height / 2.0f);
+
+	gameMap = new GameObject(glm::vec3(1.0f), glm::vec3(1.0f));
+	gameMap->SetModel(ResourceManager::GetModel("map"));
 
 	InitGrid();
 	InitGameObjects();
@@ -40,12 +43,23 @@ void Game::Init()
 
 void Game::InitGrid()
 {
+	grid.resize(20, std::vector<glm::vec3>(20, glm::vec3(0.0f)));
+	mData.resize(20, std::vector<int>(20, 0));
+
+	cellWidth = gameMap->GetSize().x / 20.0f;
+	cellHeight = gameMap->GetSize().y / 20.0f;
+
+	for (int i = 0; i < 20; ++i)
+	{
+		for (int j = 0; j < 20; ++j)
+		{
+			grid[i][j] = glm::vec3();
+		}
+	}
 }
 
 void Game::InitGameObjects()
 {
-	gameMap = new GameObject(glm::vec3(1.0f), glm::vec3(0.1f));
-	gameMap->SetModel(ResourceManager::GetModel("map"));
 }
 
 void Game::LoadResources()
@@ -62,6 +76,12 @@ void Game::ProcessInput(float dt)
 {
 	if (gameState == ACTIVE) {
 
+		if (this->Keys[GLFW_KEY_UP]) camera.ProcessKeyboard(UP, dt);
+		if (this->Keys[GLFW_KEY_DOWN]) camera.ProcessKeyboard(DOWN, dt);
+		if (this->Keys[GLFW_KEY_LEFT]) camera.ProcessKeyboard(LEFT, dt);
+		if (this->Keys[GLFW_KEY_RIGHT]) camera.ProcessKeyboard(RIGHT, dt);
+		if (this->Keys[GLFW_KEY_KP_ADD]) camera.ProcessKeyboard(FORWARD, dt);
+		if (this->Keys[GLFW_KEY_KP_SUBTRACT]) camera.ProcessKeyboard(BACKWARD, dt);
 
 		if (this->Keys[GLFW_KEY_ESCAPE] && !KeysProcessed[GLFW_KEY_ESCAPE]) {
 			gameState = MENU;
@@ -87,6 +107,8 @@ void Game::ProcessInput(float dt)
 
 void Game::Update(float dt)
 {
+	view = camera.GetViewMatrix();
+
 	if (gameState == ACTIVE) {
 
 	}
