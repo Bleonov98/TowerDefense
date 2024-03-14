@@ -167,6 +167,8 @@
     <None Include="..\shaders\fTxtShader.ft" />
     <None Include="..\shaders\vShader.vx" />
     <None Include="..\shaders\vTxtShader.vx" />
+    <None Include="testFShader.ft" />
+    <None Include="testVShader.vx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

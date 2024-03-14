@@ -1,0 +1,9 @@
+#version 400 core
+out vec4 FragColor;
+
+in vec3 Colours;
+
+void main()
+{   
+    FragColor = vec4(Colours, 1.0f);
+}

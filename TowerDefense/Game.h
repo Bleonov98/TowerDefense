@@ -38,6 +38,7 @@ public:
 
 	void Render(float dt);
 	void DrawObject(GameObject* obj, float dt);
+	void DrawGrid();
 	void DrawStats();
 	void DrawMenu();
 

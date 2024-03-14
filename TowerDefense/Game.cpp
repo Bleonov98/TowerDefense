@@ -28,7 +28,6 @@ void Game::Init()
 	// tools
 	projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
 
-
 	text = new TextRenderer(this->width, this->height);
 	text->Load("../fonts/Garamond.ttf", 24);
 
@@ -49,11 +48,13 @@ void Game::InitGrid()
 	cellWidth = gameMap->GetSize().x / 20.0f;
 	cellHeight = gameMap->GetSize().y / 20.0f;
 
+	glm::vec3 startGridPos = gameMap->GetPosition();
+
 	for (int i = 0; i < 20; ++i)
 	{
 		for (int j = 0; j < 20; ++j)
 		{
-			grid[i][j] = glm::vec3();
+			grid[i][j] = glm::vec3(startGridPos.x + j * cellWidth, startGridPos.y + i * cellHeight, startGridPos.z);
 		}
 	}
 }
@@ -150,6 +151,11 @@ void Game::DrawObject(GameObject* obj, float dt)
 
 	ResourceManager::GetShader("modelShader").SetMatrix4("model", model);
 	obj->DrawObject();
+}
+
+void Game::DrawGrid()
+{
+
 }
 
 void Game::DrawStats()

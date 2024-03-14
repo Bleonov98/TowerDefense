@@ -95,19 +95,28 @@
     <Filter Include="Header">
       <UniqueIdentifier>{8c254db0-4737-46f6-8bd4-5f48e325435c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{187306d6-e36c-4cee-8455-9f46688a5943}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\shaders\vShader.vx">
-      <Filter>Source</Filter>
-    </None>
-    <None Include="..\shaders\fShader.ft">
-      <Filter>Source</Filter>
-    </None>
     <None Include="..\shaders\vTxtShader.vx">
-      <Filter>Source</Filter>
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\shaders\vShader.vx">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="testVShader.vx">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="testFShader.ft">
+      <Filter>Shaders</Filter>
     </None>
     <None Include="..\shaders\fTxtShader.ft">
-      <Filter>Source</Filter>
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\shaders\fShader.ft">
+      <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>
