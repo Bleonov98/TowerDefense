@@ -66,6 +66,7 @@ void Game::InitGameObjects()
 void Game::LoadResources()
 {
 	ResourceManager::LoadShader("../shaders/vShader.vx", "../shaders/fShader.ft", "modelShader");
+	ResourceManager::LoadShader("../shaders/testVShader.vx", "../shaders/testFShader.ft", "testShader");
 
 	// objects
 
@@ -108,8 +109,6 @@ void Game::ProcessInput(float dt)
 
 void Game::Update(float dt)
 {
-	view = camera.GetViewMatrix();
-
 	if (gameState == ACTIVE) {
 
 	}
@@ -121,7 +120,10 @@ void Game::CheckCollisions(float dt)
 
 void Game::Render(float dt)
 {
+	view = camera.GetViewMatrix();
+
 	DrawObject(gameMap, dt);
+	DrawGrid();
 
 	if (gameState == MENU) DrawMenu();
 }
@@ -155,7 +157,49 @@ void Game::DrawObject(GameObject* obj, float dt)
 
 void Game::DrawGrid()
 {
+	// grid shapes
+	float vertices[] = {
+		-0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+		-0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+	};
 
+	unsigned int VBO, VAO;
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+
+	glBindVertexArray(VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	// vertex Positions
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	// vertex colours
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+
+	ResourceManager::GetShader("testShader").Use();
+	ResourceManager::GetShader("testShader").SetMatrix4("projection", projection);
+	ResourceManager::GetShader("testShader").SetMatrix4("view", view);
+
+	// drawing grid
+	for (int i = 0; i < grid.size(); i++)
+	{
+		for (int j = 0; j < grid[i].size(); j++)
+		{
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model, grid[i][j]);
+
+			ResourceManager::GetShader("testShader").SetMatrix4("model", model);
+
+			glDrawArrays(GL_TRIANGLES, 0, 6);
+		}
+	}
 }
 
 void Game::DrawStats()

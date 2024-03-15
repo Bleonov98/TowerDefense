@@ -106,16 +106,16 @@
     <None Include="..\shaders\vShader.vx">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="testVShader.vx">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="testFShader.ft">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="..\shaders\fTxtShader.ft">
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\shaders\fShader.ft">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\shaders\testFShader.ft">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\shaders\testVShader.vx">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
