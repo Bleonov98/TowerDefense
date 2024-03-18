@@ -187,19 +187,28 @@ void Game::DrawGrid()
 	ResourceManager::GetShader("testShader").SetMatrix4("projection", projection);
 	ResourceManager::GetShader("testShader").SetMatrix4("view", view);
 
+	glm::vec3 place = glm::vec3(1.0f - gameMap->GetSize().x / 2.0f, 1.0f, 1.0f - gameMap->GetSize().z / 2.0f);
+
+	glm::mat4 model = glm::mat4(1.0f);
+	model = glm::translate(model, place);
+
+	ResourceManager::GetShader("testShader").SetMatrix4("model", model);
+
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+
 	// drawing grid
-	for (int i = 0; i < grid.size(); i++)
-	{
-		for (int j = 0; j < grid[i].size(); j++)
-		{
-			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, grid[i][j]);
+	//for (int i = 0; i < grid.size(); i++)
+	//{
+	//	for (int j = 0; j < grid[i].size(); j++)
+	//	{
+	//		glm::mat4 model = glm::mat4(1.0f);
+	//		model = glm::translate(model, grid[i][j]);
 
-			ResourceManager::GetShader("testShader").SetMatrix4("model", model);
+	//		ResourceManager::GetShader("testShader").SetMatrix4("model", model);
 
-			glDrawArrays(GL_TRIANGLES, 0, 6);
-		}
-	}
+	//		glDrawArrays(GL_TRIANGLES, 0, 6);
+	//	}
+	//}
 }
 
 void Game::DrawStats()
