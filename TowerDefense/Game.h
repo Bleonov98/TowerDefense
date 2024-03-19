@@ -51,6 +51,7 @@ public:
 	
 	// - - - - 
 	bool Keys[1024], KeysProcessed[1024], close = false;
+	float yAxis = 0.0f;
 
 private:
 

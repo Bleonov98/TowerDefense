@@ -54,7 +54,7 @@ void Game::InitGrid()
 	{
 		for (int j = 0; j < 20; ++j)
 		{
-			grid[i][j] = glm::vec3(startGridPos.x + j * cellWidth, startGridPos.y + i * cellHeight, startGridPos.z);
+			grid[i][j] = glm::vec3(startGridPos.x + j * cellWidth, startGridPos.y, startGridPos.z + i * cellHeight);
 		}
 	}
 }
@@ -77,13 +77,20 @@ void Game::LoadResources()
 void Game::ProcessInput(float dt)
 {
 	if (gameState == ACTIVE) {
-
 		if (this->Keys[GLFW_KEY_UP]) camera.ProcessKeyboard(UP, dt);
 		if (this->Keys[GLFW_KEY_DOWN]) camera.ProcessKeyboard(DOWN, dt);
 		if (this->Keys[GLFW_KEY_LEFT]) camera.ProcessKeyboard(LEFT, dt);
 		if (this->Keys[GLFW_KEY_RIGHT]) camera.ProcessKeyboard(RIGHT, dt);
 		if (this->Keys[GLFW_KEY_KP_ADD]) camera.ProcessKeyboard(FORWARD, dt);
 		if (this->Keys[GLFW_KEY_KP_SUBTRACT]) camera.ProcessKeyboard(BACKWARD, dt);
+
+		float prevPitch = camera.Pitch;
+
+		if (this->Keys[GLFW_KEY_W] && camera.Pitch < 89.5f) camera.Pitch += 0.1f;
+		else if (this->Keys[GLFW_KEY_S] && camera.Pitch > -89.5f) camera.Pitch -= 0.1f;
+
+		camera.updateCameraVectors();
+		if (prevPitch != camera.Pitch) cout << std::format("pitch: {}", static_cast<int>(camera.Pitch)) << endl;
 
 		if (this->Keys[GLFW_KEY_ESCAPE] && !KeysProcessed[GLFW_KEY_ESCAPE]) {
 			gameState = MENU;
@@ -149,7 +156,7 @@ void Game::DrawObject(GameObject* obj, float dt)
 	glm::mat4 model = glm::mat4(1.0f);
 
 	model = glm::translate(model, obj->GetPosition());
-	model = glm::scale(model, obj->GetSize());
+	model = glm::scale(model, obj->GetScale());
 
 	ResourceManager::GetShader("modelShader").SetMatrix4("model", model);
 	obj->DrawObject();
@@ -157,14 +164,18 @@ void Game::DrawObject(GameObject* obj, float dt)
 
 void Game::DrawGrid()
 {
+	float x, y;
+	x = cellWidth / 2.0f;
+	y = cellHeight / 2.0f;
+
 	// grid shapes
 	float vertices[] = {
-		-0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+		-1.5f, -1.5f, -0.055f,  1.0f, 0.0f, 0.0f,
+		 1.5f, -1.5f, -0.055f,  1.0f, 0.0f, 0.0f,
+		 1.5f,  1.5f, -0.055f,  1.0f, 0.0f, 0.0f,
+		 1.5f,  1.5f, -0.055f,  1.0f, 0.0f, 0.0f,
+		-1.5f,  1.5f, -0.055f,  1.0f, 0.0f, 0.0f,
+		-1.5f, -1.5f, -0.055f,  1.0f, 0.0f, 0.0f,
 	};
 
 	unsigned int VBO, VAO;
@@ -189,26 +200,20 @@ void Game::DrawGrid()
 
 	glm::vec3 place = glm::vec3(1.0f - gameMap->GetSize().x / 2.0f, 1.0f, 1.0f - gameMap->GetSize().z / 2.0f);
 
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, place);
-
-	ResourceManager::GetShader("testShader").SetMatrix4("model", model);
-
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-
 	// drawing grid
-	//for (int i = 0; i < grid.size(); i++)
-	//{
-	//	for (int j = 0; j < grid[i].size(); j++)
-	//	{
-	//		glm::mat4 model = glm::mat4(1.0f);
-	//		model = glm::translate(model, grid[i][j]);
+	for (int i = 0; i < grid.size(); i++)
+	{
+		for (int j = 0; j < grid[i].size(); j++)
+		{
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model, grid[i][j]);
+			model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
-	//		ResourceManager::GetShader("testShader").SetMatrix4("model", model);
+			ResourceManager::GetShader("testShader").SetMatrix4("model", model);
 
-	//		glDrawArrays(GL_TRIANGLES, 0, 6);
-	//	}
-	//}
+			glDrawArrays(GL_TRIANGLES, 0, 6);
+		}
+	}
 }
 
 void Game::DrawStats()

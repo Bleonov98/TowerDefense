@@ -7,21 +7,23 @@ class GameObject
 {
 public:
 
-	GameObject(glm::vec3 position, glm::vec3 size, float angle = 0.0f) {
+	GameObject(glm::vec3 position, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) {
 		this->position = position;
-		this->size = size;
+		this->scale = scale;
 		this->angle = angle;
 	};
 
 	glm::vec3 GetPosition() { return position; }
 	glm::vec3 GetSize() { return size; }
+	glm::vec3 GetScale() { return scale; }
 	glm::vec3 GetColor() { return color; }
 	float GetAngle() { return angle; }
 
 	std::string GetID() { return this->ID; }
 
 	void SetPosition(glm::vec3 pos) { this->position = pos; }
-	void SetSize(glm::vec3 size) { this->size = size; }
+	// void SetSize(glm::vec3 size) { this->size = size; } model should be transformed here
+	void SetScale(glm::vec3 scale) { this->scale = scale; } 
 	void SetColor(glm::vec3 color) { this->color = color; }
 	void SetAngle(float angle) { this->angle = angle; }
 
@@ -46,7 +48,7 @@ protected:
 
 	bool deleted = false;
 	float angle;
-	glm::vec3 position, size, color = glm::vec3(1.0f);
+	glm::vec3 position, scale, size, color = glm::vec3(1.0f);
 
 };
 #endif // !GAMEOBJECT_H

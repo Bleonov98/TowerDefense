@@ -8,12 +8,48 @@ Model::Model(string const& path, string name, bool gamma) : gammaCorrection(gamm
 {
     loadModel(path);
     this->name = name;
+    CalculateSize();
 }
 
 void Model::Draw(Shader& shader)
 {
     for (unsigned int i = 0; i < meshes.size(); i++)
         meshes[i].Draw(shader);
+}
+
+void Model::CalculateSize(glm::vec3 scale)
+{
+    std::vector<Vertex> minVec, maxVec;
+
+    // min point
+    for (int i = 0; i < meshes.size(); i++)
+    {
+        if (meshes[i].vertices.empty()) continue;
+
+        auto minPoint = std::min_element(meshes[i].vertices.begin(), meshes[i].vertices.end(), [](Vertex first, Vertex second) {
+            return std::tie(first.Position.x, first.Position.y, first.Position.z) < std::tie(second.Position.x, second.Position.y, second.Position.z);
+        });
+
+        auto maxPoint = std::max_element(meshes[i].vertices.begin(), meshes[i].vertices.end(), [](Vertex first, Vertex second) {
+            return std::tie(first.Position.x, first.Position.y, first.Position.z) > std::tie(second.Position.x, second.Position.y, second.Position.z);
+        });
+
+        minVec.push_back(*minPoint);
+        maxVec.push_back(*maxPoint);
+    }
+
+    auto minPointIt = std::min_element(minVec.begin(), minVec.end(), [](Vertex first, Vertex second) {
+        return std::tie(first.Position.x, first.Position.y, first.Position.z) < std::tie(second.Position.x, second.Position.y, second.Position.z);
+    });
+    glm::vec3 minPoint = (*minPointIt).Position;
+
+    auto maxPointIt = std::max_element(maxVec.begin(), maxVec.end(), [](Vertex first, Vertex second) {
+        return std::tie(first.Position.x, first.Position.y, first.Position.z) > std::tie(second.Position.x, second.Position.y, second.Position.z);
+    });
+    glm::vec3 maxPoint = (*maxPointIt).Position;
+
+
+    modelSize = abs(maxPoint - minPoint);
 }
 
 void Model::loadModel(string const& path)

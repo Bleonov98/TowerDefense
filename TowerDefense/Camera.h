@@ -41,16 +41,16 @@ public:
     // processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
     void ProcessKeyboard(Camera_Movement direction, float deltaTime);
 
-    // processes input received from a mouse input system. Expects the offset value in both the x and y direction.
-    void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true);
-
     // attributes
     glm::vec3 GetCameraPosition() { return Position; }
     void SetSpeed(float speed) { MovementSpeed = speed; }
 
+    float Pitch;
+    void updateCameraVectors();
+
 private:
     // calculates the front vector from the Camera's (updated) Euler Angles
-    void updateCameraVectors();
+
 
     // camera Attributes
     glm::vec3 Position;
@@ -60,7 +60,7 @@ private:
     glm::vec3 WorldUp;
     // euler Angles
     float Yaw;
-    float Pitch;
+
     // camera options
     float MovementSpeed = 1000.0f;
     float MouseSensitivity;

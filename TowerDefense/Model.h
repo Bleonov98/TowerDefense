@@ -45,6 +45,12 @@ public:
     auto& GetBoneInfoMap() { return m_BoneInfoMap; }
     int& GetBoneCount() { return m_BoneCounter; }
     
+    // calculations
+    void CalculateSize(glm::vec3 scale = glm::vec3(1.0f));
+
+    // properties
+    glm::vec3 GetSize() { return modelSize; }
+
     std::string GetName() { return this->name; }
 
     void Animated() { animated = true; }
@@ -70,6 +76,7 @@ private:
     void ExtractBoneWeightForVertices(std::vector<Vertex>& vertices, aiMesh* mesh, const aiScene* scene);
 
     // model properties 
+    glm::vec3 modelSize;
     bool animated = false;
     std::string name;
 
