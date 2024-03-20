@@ -46,15 +46,15 @@ void Game::InitGrid()
 	mData.resize(20, std::vector<int>(20, 0));
 
 	cellWidth = gameMap->GetSize().x / 20.0f;
-	cellHeight = gameMap->GetSize().y / 20.0f;
+	cellHeight = gameMap->GetSize().z / 20.0f;
 
-	glm::vec3 startGridPos = gameMap->GetPosition();
+	glm::vec3 startGridPos = gameMap->GetPosition() - glm::vec3(gameMap->GetSize() / 2.0f);
 
 	for (int i = 0; i < 20; ++i)
 	{
 		for (int j = 0; j < 20; ++j)
 		{
-			grid[i][j] = glm::vec3(startGridPos.x + j * cellWidth, startGridPos.y, startGridPos.z + i * cellHeight);
+			grid[i][j] = glm::vec3(startGridPos.x + j * cellWidth, startGridPos.y + gameMap->GetSize().y + 0.01f, startGridPos.z + i * cellHeight);
 		}
 	}
 }
@@ -164,18 +164,18 @@ void Game::DrawObject(GameObject* obj, float dt)
 
 void Game::DrawGrid()
 {
-	float x, y;
+	float x, y, z;
 	x = cellWidth / 2.0f;
 	y = cellHeight / 2.0f;
 
 	// grid shapes
 	float vertices[] = {
-		-1.5f, -1.5f, -0.055f,  1.0f, 0.0f, 0.0f,
-		 1.5f, -1.5f, -0.055f,  1.0f, 0.0f, 0.0f,
-		 1.5f,  1.5f, -0.055f,  1.0f, 0.0f, 0.0f,
-		 1.5f,  1.5f, -0.055f,  1.0f, 0.0f, 0.0f,
-		-1.5f,  1.5f, -0.055f,  1.0f, 0.0f, 0.0f,
-		-1.5f, -1.5f, -0.055f,  1.0f, 0.0f, 0.0f,
+		-x, -y, 0,  1.0f, 0.0f, 0.0f,
+		 x, -y, 0,  1.0f, 0.0f, 0.0f,
+		 x,  y, 0,  1.0f, 0.0f, 0.0f,
+		 x,  y, 0,  1.0f, 0.0f, 0.0f,
+		-x,  y, 0,  1.0f, 0.0f, 0.0f,
+		-x, -y, 0,  1.0f, 0.0f, 0.0f,
 	};
 
 	unsigned int VBO, VAO;

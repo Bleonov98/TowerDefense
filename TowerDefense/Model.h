@@ -46,7 +46,9 @@ public:
     int& GetBoneCount() { return m_BoneCounter; }
     
     // calculations
-    void CalculateSize(glm::vec3 scale = glm::vec3(1.0f));
+    void CalculateSize();
+
+    // void TransformModel(glm::vec3 pos, glm::vec3 scale, float rotate);
 
     // properties
     glm::vec3 GetSize() { return modelSize; }

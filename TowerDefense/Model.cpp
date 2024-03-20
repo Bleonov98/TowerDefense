@@ -17,25 +17,20 @@ void Model::Draw(Shader& shader)
         meshes[i].Draw(shader);
 }
 
-void Model::CalculateSize(glm::vec3 scale)
+void Model::CalculateSize()
 {
     std::vector<Vertex> minVec, maxVec;
 
-    // min point
     for (int i = 0; i < meshes.size(); i++)
     {
         if (meshes[i].vertices.empty()) continue;
 
-        auto minPoint = std::min_element(meshes[i].vertices.begin(), meshes[i].vertices.end(), [](Vertex first, Vertex second) {
+        auto minmaxPoint = std::minmax_element(meshes[i].vertices.begin(), meshes[i].vertices.end(), [](Vertex first, Vertex second) {
             return std::tie(first.Position.x, first.Position.y, first.Position.z) < std::tie(second.Position.x, second.Position.y, second.Position.z);
         });
 
-        auto maxPoint = std::max_element(meshes[i].vertices.begin(), meshes[i].vertices.end(), [](Vertex first, Vertex second) {
-            return std::tie(first.Position.x, first.Position.y, first.Position.z) > std::tie(second.Position.x, second.Position.y, second.Position.z);
-        });
-
-        minVec.push_back(*minPoint);
-        maxVec.push_back(*maxPoint);
+        minVec.push_back(*minmaxPoint.first);
+        maxVec.push_back(*minmaxPoint.second);
     }
 
     auto minPointIt = std::min_element(minVec.begin(), minVec.end(), [](Vertex first, Vertex second) {
@@ -47,7 +42,6 @@ void Model::CalculateSize(glm::vec3 scale)
         return std::tie(first.Position.x, first.Position.y, first.Position.z) > std::tie(second.Position.x, second.Position.y, second.Position.z);
     });
     glm::vec3 maxPoint = (*maxPointIt).Position;
-
 
     modelSize = abs(maxPoint - minPoint);
 }
