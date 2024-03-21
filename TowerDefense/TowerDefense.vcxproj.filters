@@ -43,6 +43,12 @@
     <ClCompile Include="Tower.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="HUD.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture2D.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h">
@@ -87,6 +93,12 @@
     <ClInclude Include="Tower.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="HUD.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture2D.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source">
@@ -116,6 +128,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\shaders\testVShader.vx">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\shaders\vHudShader.vx">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\shaders\fHudShader.ft">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

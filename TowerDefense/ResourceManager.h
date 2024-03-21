@@ -3,6 +3,7 @@
 
 #include "Shader.h"
 #include "Model.h"
+#include "Texture2D.h"
 #include "Animation.h"
 #include "Animator.h"
 
@@ -25,6 +26,11 @@ public:
 	static Animator GetAnimator(std::string name);
 	static Animation GetAnimation(std::string name);
 
+	// Textures
+	static Texture2D LoadTexture(const char* fileName, bool alpha, std::string name);
+
+	static Texture2D GetTexture(std::string name);
+
 private:
 
 	ResourceManager() {};
@@ -35,6 +41,9 @@ private:
 
 	static std::map<std::string, Shader> shaders;
 
+	static std::map<std::string, Texture2D> textures;
+
+	static Texture2D LoadTextureFromFile(const char* fileName, bool alpha);
 	static Model LoadModelFromFile(std::string& const fileName, std::string name);
 	static Shader LoadShaderFromFile(const char* vShader, const char* fShader);
 

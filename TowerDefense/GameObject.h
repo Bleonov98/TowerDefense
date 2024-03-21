@@ -19,7 +19,7 @@ public:
 	glm::vec3 GetColor() { return color; }
 	float GetAngle() { return angle; }
 
-	std::string GetID() { return this->ID; }
+	std::string GetID() { return model.GetName(); }
 
 	// model should be transformed here
 	void SetPosition(glm::vec3 pos) { this->position = pos; }
@@ -28,7 +28,7 @@ public:
 	void SetColor(glm::vec3 color) { this->color = color; }
 	void SetAngle(float angle) { this->angle = angle; }
 
-	void SetModel(Model model);
+	void SetModel(Model model) { this->model = model; }
 
 	void DrawObject();
 

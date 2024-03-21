@@ -6,6 +6,9 @@ std::map<std::string, Animator> ResourceManager::animators;
 
 std::map<std::string, Shader> ResourceManager::shaders;
 
+std::map<std::string, Texture2D> ResourceManager::textures;
+
+// Shaders
 Shader ResourceManager::LoadShader(const char* vShader, const char* fShader, std::string name)
 {
     shaders[name] = LoadShaderFromFile(vShader, fShader);
@@ -17,6 +20,7 @@ Shader ResourceManager::GetShader(std::string name)
     return shaders[name];
 }
 
+// Model
 Model ResourceManager::LoadModel(const char* fileName, std::string name)
 {
     std::string filePath = "../models/";
@@ -41,6 +45,22 @@ Animation ResourceManager::GetAnimation(std::string name)
     return animations[name];
 }
 
+// Texture2D
+Texture2D ResourceManager::LoadTexture(const char* fileName, bool alpha, std::string name)
+{
+    std::string filePath = "../textures/";
+    filePath += fileName;
+
+    textures[name] = LoadTextureFromFile(filePath.c_str(), alpha);
+    return textures[name];
+}
+
+Texture2D ResourceManager::GetTexture(std::string name)
+{
+    return textures[name];
+}
+
+// Loading
 Model ResourceManager::LoadModelFromFile(std::string& const fileName, std::string name)
 {
     Model model(fileName, name);
@@ -116,4 +136,24 @@ Shader ResourceManager::LoadShaderFromFile(const char* vShader, const char* fSha
     glDeleteShader(sFragment);
 
     return shader;
+}
+
+Texture2D ResourceManager::LoadTextureFromFile(const char* fileName, bool alpha)
+{
+    Texture2D txt;
+
+    if (alpha)
+    {
+        txt.SetAlpha(true);
+        txt.SetFormatAlpha();
+    }
+    // load image
+    int Width, Height, nrChannels;
+    unsigned char* data = stbi_load(fileName, &Width, &Height, &nrChannels, 0);
+
+    txt.Generate(Width, Height, data);
+
+    stbi_image_free(data);
+
+    return txt;
 }

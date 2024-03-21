@@ -7,7 +7,7 @@ class Tower : public GameObject
 {
 public:
 
-	Tower(glm::vec3 position, glm::vec3 size, float angle = 0.0f) : GameObject(position, size, angle) {};
+	Tower(glm::vec3 position, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : GameObject(position, scale, angle) {};
 
 	// basics
 	int GetAttackSpeed() { return this->attackSpeed; }
@@ -17,11 +17,10 @@ public:
 	void SetDamage(int damage) { this->damage = damage; }
 
 	// gameplay
+	//virtual void Attack();
 
-	virtual void Attack();
-
-	void UpgradeTower();
-	void CheckRadius(glm::vec3 targetPos);
+	//void UpgradeTower();
+	//void CheckRadius(glm::vec3 targetPos);
 
 private:
 

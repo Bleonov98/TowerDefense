@@ -9,6 +9,7 @@
 #include "Camera.h"
 #include "TextRenderer.h"
 #include "ResourceManager.h"
+#include "HUD.h"
 
 #include "GameObject.h"
 #include "Tower.h"
@@ -27,21 +28,25 @@ public:
 		this->width = width, this->height = height;
 	};
 
+	// Initialization, Loading
 	void Init();
 	void InitGrid();
 	void InitGameObjects();
 	void LoadResources();
 
+	// Main, GamePlay
 	void ProcessInput(float dt);
 	void Update(float dt);
 	void CheckCollisions(float dt);
 
+	// Render
 	void Render(float dt);
 	void DrawObject(GameObject* obj, float dt);
 	void DrawGrid();
 	void DrawStats();
-	void DrawMenu();
+	void DrawMenuTxt();
 
+	// Utility
 	void DeleteObjects();
 
 	template <typename T>
@@ -55,24 +60,27 @@ public:
 
 private:
 
-	// game data
-
+	// basics
 	GameState gameState = MENU;
 	int width, height;
+	bool devView = false;
 
+	// grid
 	float cellWidth, cellHeight;
+	int rows = 30, cols = 30;
+	bool showGrid = false;
 	std::vector<std::vector<int>> mData;
 	std::vector<std::vector<glm::vec3>> grid;
 
+	// camera, tools
 	glm::vec2 cursorPos;
 
 	glm::mat4 projection;
 	glm::mat4 view;
 
 	// objects
-
 	std::vector<GameObject*> objList;
-
+	std::vector<Tower*> towerList;
 
 };
 

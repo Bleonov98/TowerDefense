@@ -4,6 +4,8 @@
 using namespace irrklang;
 
 TextRenderer* text;
+HUD* HUDisplay;
+
 ISoundEngine* sound = irrklang::createIrrKlangDevice();
 ISoundSource* music;
 
@@ -11,6 +13,7 @@ Camera camera;
 
 GameObject* gameMap;
 
+// Initialization, Loading
 void Game::Init()
 {
 	srand(time(NULL));
@@ -31,9 +34,12 @@ void Game::Init()
 	text = new TextRenderer(this->width, this->height);
 	text->Load("../fonts/Garamond.ttf", 24);
 
+	HUDisplay = new HUD(this->width, this->height);
+	HUDisplay->AddTexture(ResourceManager::GetTexture("HUDTexture"));
+
 	cursorPos = glm::vec2(this->width / 2.0f - 50.0f, this->height / 2.0f);
 
-	gameMap = new GameObject(glm::vec3(1.0f), glm::vec3(1.0f));
+	gameMap = new GameObject(glm::vec3(0.0f), glm::vec3(1.0f));
 	gameMap->SetModel(ResourceManager::GetModel("map"));
 
 	InitGrid();
@@ -42,25 +48,30 @@ void Game::Init()
 
 void Game::InitGrid()
 {
-	grid.resize(20, std::vector<glm::vec3>(20, glm::vec3(0.0f)));
-	mData.resize(20, std::vector<int>(20, 0));
+	grid.resize(rows, std::vector<glm::vec3>(cols, glm::vec3(0.0f)));
+	mData.resize(rows, std::vector<int>(cols, 0));
 
-	cellWidth = gameMap->GetSize().x / 20.0f;
-	cellHeight = gameMap->GetSize().z / 20.0f;
+	cellWidth = gameMap->GetSize().x / 30.0f;
+	cellHeight = gameMap->GetSize().z / 30.0f;
 
 	glm::vec3 startGridPos = gameMap->GetPosition() - glm::vec3(gameMap->GetSize() / 2.0f);
 
-	for (int i = 0; i < 20; ++i)
+	for (int i = 0; i < rows; ++i)
 	{
-		for (int j = 0; j < 20; ++j)
+		for (int j = 0; j < cols; ++j)
 		{
-			grid[i][j] = glm::vec3(startGridPos.x + j * cellWidth, startGridPos.y + gameMap->GetSize().y + 0.01f, startGridPos.z + i * cellHeight);
+			grid[i][j] = glm::vec3(startGridPos.x + j * cellWidth, startGridPos.y + gameMap->GetSize().y + 0.001f, startGridPos.z + i * cellHeight);
 		}
 	}
 }
 
 void Game::InitGameObjects()
 {
+	Tower* tower = new Tower(grid[15][15] + glm::vec3(0.25f, 0.0f, 0.25f));
+	tower->SetModel(ResourceManager::GetModel("tower"));
+
+	objList.push_back(tower);
+	towerList.push_back(tower);
 }
 
 void Game::LoadResources()
@@ -70,27 +81,43 @@ void Game::LoadResources()
 
 	// objects
 
-	// - - - // Main
+	// - - - // Models
 	ResourceManager::LoadModel("map.obj", "map");
+	ResourceManager::LoadModel("tower.obj", "tower");
+
+	// - - - // Textures
+	ResourceManager::LoadTexture("HudFrame.png", true, "HUDTexture");
 }
 
+// Main, GamePlay
 void Game::ProcessInput(float dt)
 {
 	if (gameState == ACTIVE) {
-		if (this->Keys[GLFW_KEY_UP]) camera.ProcessKeyboard(UP, dt);
-		if (this->Keys[GLFW_KEY_DOWN]) camera.ProcessKeyboard(DOWN, dt);
-		if (this->Keys[GLFW_KEY_LEFT]) camera.ProcessKeyboard(LEFT, dt);
-		if (this->Keys[GLFW_KEY_RIGHT]) camera.ProcessKeyboard(RIGHT, dt);
-		if (this->Keys[GLFW_KEY_KP_ADD]) camera.ProcessKeyboard(FORWARD, dt);
-		if (this->Keys[GLFW_KEY_KP_SUBTRACT]) camera.ProcessKeyboard(BACKWARD, dt);
 
-		float prevPitch = camera.Pitch;
+		if (devView) {
+			if (this->Keys[GLFW_KEY_UP]) camera.ProcessKeyboard(UP, dt);
+			if (this->Keys[GLFW_KEY_DOWN]) camera.ProcessKeyboard(DOWN, dt);
+			if (this->Keys[GLFW_KEY_LEFT]) camera.ProcessKeyboard(LEFT, dt);
+			if (this->Keys[GLFW_KEY_RIGHT]) camera.ProcessKeyboard(RIGHT, dt);
+			if (this->Keys[GLFW_KEY_KP_ADD]) camera.ProcessKeyboard(FORWARD, dt);
+			if (this->Keys[GLFW_KEY_KP_SUBTRACT]) camera.ProcessKeyboard(BACKWARD, dt);
 
-		if (this->Keys[GLFW_KEY_W] && camera.Pitch < 89.5f) camera.Pitch += 0.1f;
-		else if (this->Keys[GLFW_KEY_S] && camera.Pitch > -89.5f) camera.Pitch -= 0.1f;
+			float prevPitch = camera.Pitch;
 
-		camera.updateCameraVectors();
-		if (prevPitch != camera.Pitch) cout << std::format("pitch: {}", static_cast<int>(camera.Pitch)) << endl;
+			if (this->Keys[GLFW_KEY_W] && camera.Pitch < 89.5f) camera.Pitch += 0.1f;
+			else if (this->Keys[GLFW_KEY_S] && camera.Pitch > -89.5f) camera.Pitch -= 0.1f;
+
+			camera.updateCameraVectors();
+			if (prevPitch != camera.Pitch) cout << std::format("pitch: {}", static_cast<int>(camera.Pitch)) << endl;
+		}
+
+		if (this->Keys[GLFW_KEY_G]) showGrid = true;
+		else showGrid = false;
+
+		if (this->Keys[GLFW_KEY_V] && !KeysProcessed[GLFW_KEY_V]) {
+			devView = !devView;
+			this->KeysProcessed[GLFW_KEY_V] = true;
+		}
 
 		if (this->Keys[GLFW_KEY_ESCAPE] && !KeysProcessed[GLFW_KEY_ESCAPE]) {
 			gameState = MENU;
@@ -125,14 +152,26 @@ void Game::CheckCollisions(float dt)
 {
 }
 
+// Render
 void Game::Render(float dt)
 {
 	view = camera.GetViewMatrix();
 
+	// Objects
 	DrawObject(gameMap, dt);
-	DrawGrid();
+	
+	for (auto i : towerList)
+	{
+		DrawObject(i, dt);
+	}
 
-	if (gameState == MENU) DrawMenu();
+	// Menu, Helpers
+	if (showGrid) DrawGrid();
+
+	if (gameState == MENU) DrawMenuTxt();
+
+	// Interface
+	HUDisplay->DrawHUD(gameState == MENU);
 }
 
 void Game::DrawObject(GameObject* obj, float dt)
@@ -164,18 +203,18 @@ void Game::DrawObject(GameObject* obj, float dt)
 
 void Game::DrawGrid()
 {
-	float x, y, z;
-	x = cellWidth / 2.0f;
-	y = cellHeight / 2.0f;
+	float x, y;
+	x = cellWidth / 2.0f - 0.01f;
+	y = cellHeight / 2.0f - 0.01f;
 
 	// grid shapes
 	float vertices[] = {
-		-x, -y, 0,  1.0f, 0.0f, 0.0f,
-		 x, -y, 0,  1.0f, 0.0f, 0.0f,
-		 x,  y, 0,  1.0f, 0.0f, 0.0f,
-		 x,  y, 0,  1.0f, 0.0f, 0.0f,
-		-x,  y, 0,  1.0f, 0.0f, 0.0f,
-		-x, -y, 0,  1.0f, 0.0f, 0.0f,
+		-x, -y, 0,  1.0f, 1.0f, 0.0f,
+		 x, -y, 0,  1.0f, 1.0f, 0.0f,
+		 x,  y, 0,  1.0f, 1.0f, 0.0f,
+		 x,  y, 0,  1.0f, 1.0f, 0.0f,
+		-x,  y, 0,  1.0f, 1.0f, 0.0f,
+		-x, -y, 0,  1.0f, 1.0f, 0.0f,
 	};
 
 	unsigned int VBO, VAO;
@@ -206,7 +245,7 @@ void Game::DrawGrid()
 		for (int j = 0; j < grid[i].size(); j++)
 		{
 			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, grid[i][j]);
+			model = glm::translate(model, grid[i][j] + glm::vec3(cellWidth / 2.0f, 0.0f, cellHeight / 2.0f));
 			model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
 			ResourceManager::GetShader("testShader").SetMatrix4("model", model);
@@ -220,7 +259,7 @@ void Game::DrawStats()
 {
 }
 
-void Game::DrawMenu()
+void Game::DrawMenuTxt()
 {
 	text->RenderText("MENU", glm::vec2(this->width / 2.0f - 65.0f, this->height / 2.0f - 116.0f), 1.75f, glm::vec3(0.75f));
 
@@ -230,6 +269,7 @@ void Game::DrawMenu()
 	text->RenderText("->", glm::vec2(cursorPos), 1.0f, glm::vec3(1.0f));
 }
 
+// Utility
 void Game::DeleteObjects()
 {
 
