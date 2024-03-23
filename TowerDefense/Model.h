@@ -48,7 +48,9 @@ public:
     // calculations
     void CalculateSize();
 
-    // void TransformModel(glm::vec3 pos, glm::vec3 scale, float rotate);
+    void TranslateModel(glm::vec3 displacement);
+    void ScaleModel(glm::vec3 scale);
+    void RotateModel(float rotate);
 
     // properties
     glm::vec3 GetSize() { return modelSize; }

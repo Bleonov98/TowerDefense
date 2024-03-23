@@ -46,6 +46,54 @@ void Model::CalculateSize()
     modelSize = abs(maxPoint - minPoint);
 }
 
+void Model::TranslateModel(glm::vec3 displacement)
+{
+    for (auto& i : meshes)
+    {
+        for (auto& j : i.vertices)
+        {
+            j.Position += displacement;
+        }
+    }
+}
+
+void Model::ScaleModel(glm::vec3 scale)
+{
+    for (auto& i : meshes)
+    {
+        for (auto& j : i.vertices)
+        {
+            j.Position *= scale;
+        }
+    }
+}
+
+void Model::RotateModel(float rotate)
+{
+    float radiansAngle = glm::radians(rotate);
+
+    // Calculate sin and cos of the rotation angle
+    float sinAngle = sin(radiansAngle);
+    float cosAngle = cos(radiansAngle);
+
+    for (auto& i : meshes)
+    {
+        for (auto& j : i.vertices)
+        {
+            // Apply rotation around Y-axis
+            float x = j.Position.x;
+            float z = j.Position.z;
+
+            // Rotate vertices around Y-axis
+            float new_x = x * cosAngle + z * sinAngle;
+            float new_z = -x * sinAngle + z * cosAngle;
+
+            j.Position.x = new_x + x;
+            j.Position.z = new_z + z;
+        }
+    }
+}
+
 void Model::loadModel(string const& path)
 {
     // read file via ASSIMP

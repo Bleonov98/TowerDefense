@@ -23,7 +23,6 @@ public:
 
 	// model should be transformed here
 	void SetPosition(glm::vec3 pos) { this->position = pos; }
-	// void SetSize(glm::vec3 size) { this->size = size; } 
 	void SetScale(glm::vec3 scale) { this->scale = scale; } 
 	void SetColor(glm::vec3 color) { this->color = color; }
 	void SetAngle(float angle) { this->angle = angle; }
