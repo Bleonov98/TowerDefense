@@ -68,28 +68,26 @@ void Model::ScaleModel(glm::vec3 scale)
     }
 }
 
-void Model::RotateModel(float rotate)
+void Model::RotateModel(float disAngle)
 {
-    float radiansAngle = glm::radians(rotate);
+    // Convert degrees to radians
+    float radiansAngle = glm::radians(disAngle);
 
-    // Calculate sin and cos of the rotation angle
-    float sinAngle = sin(radiansAngle);
-    float cosAngle = cos(radiansAngle);
+    // Create rotation matrix around Y-axis
+    glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), radiansAngle, glm::vec3(0.0f, 1.0f, 0.0f));
 
     for (auto& i : meshes)
     {
         for (auto& j : i.vertices)
         {
-            // Apply rotation around Y-axis
-            float x = j.Position.x;
-            float z = j.Position.z;
+            // Convert vertex position to vec4 for matrix multiplication
+            glm::vec4 vertexPosition(j.Position, 1.0f);
 
-            // Rotate vertices around Y-axis
-            float new_x = x * cosAngle + z * sinAngle;
-            float new_z = -x * sinAngle + z * cosAngle;
+            // Apply rotation to vertex position
+            vertexPosition = rotationMatrix * vertexPosition;
 
-            j.Position.x = new_x + x;
-            j.Position.z = new_z + z;
+            // Update vertex position
+            j.Position = glm::vec3(vertexPosition);
         }
     }
 }

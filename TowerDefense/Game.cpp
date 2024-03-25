@@ -13,6 +13,9 @@ Camera camera;
 
 GameObject* gameMap;
 
+// variables
+#define alignVec glm::vec3(cellWidth / 2.0f, 0.0f, cellHeight / 2.0f)
+
 // Initialization, Loading
 void Game::Init()
 {
@@ -67,8 +70,9 @@ void Game::InitGrid()
 
 void Game::InitGameObjects()
 {
-	Tower* tower = new Tower(grid[15][15] + glm::vec3(0.25f, 0.0f, 0.25f));
+	Tower* tower = new Tower(grid[15][15] + alignVec);
 	tower->SetModel(ResourceManager::GetModel("tower"));
+	tower->SetScale(glm::vec3(1.0f, 1.0f, 0.8f));
 
 	objList.push_back(tower);
 	towerList.push_back(tower);
