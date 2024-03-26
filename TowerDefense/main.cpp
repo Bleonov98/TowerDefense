@@ -94,8 +94,10 @@ void mouse_callback(GLFWwindow* window, int button, int action, int mods)
 		else if (action == GLFW_RELEASE) TD.mouseKeys[button] = false;
 		
 		double xpos, ypos;
+
 		//getting cursor position
 		glfwGetCursorPos(window, &xpos, &ypos);
+		
 		TD.xMouse = xpos;
 		TD.yMouse = ypos;
 	}

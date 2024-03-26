@@ -111,7 +111,7 @@ void Game::ProcessInput(float dt)
 		}
 
 		if (this->mouseKeys[GLFW_MOUSE_BUTTON_LEFT]) {
-			glm::vec3 towerPos = FindNearestCell(glm::vec3(xMouse, 0.0f, yMouse));
+			glm::vec3 towerPos = FindNearestCell( ClickPosition() );
 
 			SetTower(towerPos);
 		}
@@ -288,18 +288,55 @@ void Game::DrawMenuTxt()
 // Calculations
 glm::vec3 Game::FindNearestCell(glm::vec3 position)
 {
-	std::vector<float> lengthVec;
+	glm::vec3 nearestCell;
+	float minLength = 0.0f;
+	bool firstCheck = true;
 
 	for (auto i : grid)
 	{
 		for (auto j : i)
 		{
+			j += centerVec;
 			glm::vec3 diffVec = abs(position - j);
-			lengthVec.push_back(sqrt(powf(diffVec.x, 2) + powf(diffVec.y, 2) + powf(diffVec.z, 2)));
+			float diffLength = sqrt(powf(diffVec.x, 2) + powf(diffVec.y, 2) + powf(diffVec.z, 2));
+
+			if (firstCheck) {
+				minLength = diffLength;
+				firstCheck = false;
+				nearestCell = j;
+			}
+			else if (diffLength < minLength) {
+				minLength = diffLength;
+				nearestCell = j;
+			}
 		}
 	}
 
+	return nearestCell;
+}
+
+glm::vec3 Game::ClickPosition()
+{
+	glm::vec3 rayDirection = MouseRay();
+
 	return glm::vec3();
+}
+
+glm::vec3 Game::MouseRay()
+{
+	float normalizedX = (2.0f * xMouse) / width - 1.0f;
+	float normalizedY = 1.0f - (2.0f * yMouse) / height;
+
+	glm::vec4 nearPoint(normalizedX, normalizedY, -1.0f, 1.0f);
+	glm::vec4 farPoint(normalizedX, normalizedY, 1.0f, 1.0f);
+
+	glm::mat4 invProjectionView = glm::inverse(projection * view);
+	glm::vec4 nearPointWorld = invProjectionView * nearPoint;
+	glm::vec4 farPointWorld = invProjectionView * farPoint;
+
+	glm::vec3 rayDirection = glm::normalize(glm::vec3(farPointWorld - nearPointWorld));
+
+	return rayDirection;
 }
 
 // Utility
