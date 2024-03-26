@@ -13,6 +13,7 @@ float lastFrame = 0.0f;
 // input
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+void mouse_callback(GLFWwindow* window, int button, int action, int mods);
 
 Game TD(SCR_WIDTH, SCR_HEIGHT);
 
@@ -33,6 +34,7 @@ int main() {
 	glfwMakeContextCurrent(window);
 
 	glfwSetKeyCallback(window, key_callback);
+	glfwSetMouseButtonCallback(window, mouse_callback);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	// glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -81,5 +83,20 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			TD.Keys[key] = false;
 			TD.KeysProcessed[key] = false;
 		}
+	}
+}
+
+void mouse_callback(GLFWwindow* window, int button, int action, int mods)
+{
+	if (button >= 0 && button < 8)
+	{
+		if (action == GLFW_PRESS) TD.mouseKeys[button] = true;
+		else if (action == GLFW_RELEASE) TD.mouseKeys[button] = false;
+		
+		double xpos, ypos;
+		//getting cursor position
+		glfwGetCursorPos(window, &xpos, &ypos);
+		TD.xMouse = xpos;
+		TD.yMouse = ypos;
 	}
 }

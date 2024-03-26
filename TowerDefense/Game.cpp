@@ -14,7 +14,7 @@ Camera camera;
 GameObject* gameMap;
 
 // variables
-#define alignVec glm::vec3(cellWidth / 2.0f, 0.0f, cellHeight / 2.0f)
+#define centerVec glm::vec3(cellWidth / 2.0f, 0.0f, cellHeight / 2.0f)
 
 // Initialization, Loading
 void Game::Init()
@@ -70,12 +70,7 @@ void Game::InitGrid()
 
 void Game::InitGameObjects()
 {
-	Tower* tower = new Tower(grid[15][15] + alignVec);
-	tower->SetModel(ResourceManager::GetModel("tower"));
-	tower->SetScale(glm::vec3(1.0f, 1.0f, 0.8f));
 
-	objList.push_back(tower);
-	towerList.push_back(tower);
 }
 
 void Game::LoadResources()
@@ -115,6 +110,12 @@ void Game::ProcessInput(float dt)
 			if (prevPitch != camera.Pitch) cout << std::format("pitch: {}", static_cast<int>(camera.Pitch)) << endl;
 		}
 
+		if (this->mouseKeys[GLFW_MOUSE_BUTTON_LEFT]) {
+			glm::vec3 towerPos = FindNearestCell(glm::vec3(xMouse, 0.0f, yMouse));
+
+			SetTower(towerPos);
+		}
+
 		if (this->Keys[GLFW_KEY_G]) showGrid = true;
 		else showGrid = false;
 
@@ -148,12 +149,22 @@ void Game::ProcessInput(float dt)
 void Game::Update(float dt)
 {
 	if (gameState == ACTIVE) {
-
+		
 	}
 }
 
 void Game::CheckCollisions(float dt)
 {
+}
+
+void Game::SetTower(glm::vec3 position)
+{
+	Tower* tower = new Tower(position);
+	tower->SetModel(ResourceManager::GetModel("tower"));
+	tower->SetScale(glm::vec3(1.0f, 1.0f, 0.8f));
+
+	objList.push_back(tower);
+	towerList.push_back(tower);
 }
 
 // Render
@@ -271,6 +282,24 @@ void Game::DrawMenuTxt()
 	text->RenderText("Exit", glm::vec2(this->width / 2.0f - 20.0f, this->height / 2.0f + 40.0f), 1.0f, glm::vec3(1.0f));
 
 	text->RenderText("->", glm::vec2(cursorPos), 1.0f, glm::vec3(1.0f));
+}
+
+
+// Calculations
+glm::vec3 Game::FindNearestCell(glm::vec3 position)
+{
+	std::vector<float> lengthVec;
+
+	for (auto i : grid)
+	{
+		for (auto j : i)
+		{
+			glm::vec3 diffVec = abs(position - j);
+			lengthVec.push_back(sqrt(powf(diffVec.x, 2) + powf(diffVec.y, 2) + powf(diffVec.z, 2)));
+		}
+	}
+
+	return glm::vec3();
 }
 
 // Utility

@@ -39,12 +39,17 @@ public:
 	void Update(float dt);
 	void CheckCollisions(float dt);
 
+	void SetTower(glm::vec3 position);
+
 	// Render
 	void Render(float dt);
 	void DrawObject(GameObject* obj, float dt);
 	void DrawGrid();
 	void DrawStats();
 	void DrawMenuTxt();
+
+	// Calculations
+	glm::vec3 FindNearestCell(glm::vec3 position);
 
 	// Utility
 	void DeleteObjects();
@@ -55,8 +60,8 @@ public:
 	~Game();
 	
 	// - - - - 
-	bool Keys[1024], KeysProcessed[1024], close = false;
-	float yAxis = 0.0f;
+	bool Keys[1024], KeysProcessed[1024], mouseKeys[8], close = false;
+	double xMouse, yMouse;
 
 private:
 
