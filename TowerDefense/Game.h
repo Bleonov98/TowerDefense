@@ -9,6 +9,7 @@
 #include "Camera.h"
 #include "TextRenderer.h"
 #include "ResourceManager.h"
+#include "Grid.h"
 #include "HUD.h"
 
 #include "GameObject.h"
@@ -44,14 +45,14 @@ public:
 	// Render
 	void Render(float dt);
 	void DrawObject(GameObject* obj, float dt);
-	void DrawGrid();
+	void DrawGrid(Grid* cell);
 	void DrawStats();
 	void DrawMenuTxt();
 
 	// Calculations
 	glm::vec3 FindNearestCell(glm::vec3 position);
 	glm::vec3 ClickPosition();
-	glm::vec3 MouseRay();
+	glm::vec3 MouseRay(glm::mat4 modelMatrix);
 
 	// Utility
 	void DeleteObjects();
@@ -73,11 +74,9 @@ private:
 	bool devView = false;
 
 	// grid
-	float cellWidth, cellHeight;
 	int rows = 30, cols = 30;
 	bool showGrid = false;
-	std::vector<std::vector<int>> mData;
-	std::vector<std::vector<glm::vec3>> grid;
+	std::vector<std::vector<Grid*>> grid;
 
 	// camera, tools
 	glm::vec2 cursorPos;

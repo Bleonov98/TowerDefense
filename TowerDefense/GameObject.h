@@ -13,6 +13,7 @@ public:
 		this->angle = angle;
 	};
 
+	glm::mat4 GetMatrix() { return objMatrix; }
 	glm::vec3 GetPosition() { return position; }
 	glm::vec3 GetSize() { return model.GetSize(); }
 	glm::vec3 GetScale() { return scale; }
@@ -22,6 +23,7 @@ public:
 	std::string GetID() { return model.GetName(); }
 
 	// model should be transformed here
+	void RefreshMatrix();
 	void SetPosition(glm::vec3 pos);
 	void SetScale(glm::vec3 scale);
 	void SetColor(glm::vec3 color) { this->color = color; }
@@ -49,6 +51,7 @@ protected:
 	bool deleted = false;
 	float angle;
 	glm::vec3 position, scale, color = glm::vec3(1.0f);
+	glm::mat4 objMatrix;
 
 };
 #endif // !GAMEOBJECT_H

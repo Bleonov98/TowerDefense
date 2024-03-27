@@ -49,6 +49,7 @@
     <ClCompile Include="Texture2D.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Grid.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h">
@@ -99,6 +100,7 @@
     <ClInclude Include="Texture2D.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Grid.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source">

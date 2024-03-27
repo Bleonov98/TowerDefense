@@ -51,19 +51,19 @@ void Game::Init()
 
 void Game::InitGrid()
 {
-	grid.resize(rows, std::vector<glm::vec3>(cols, glm::vec3(0.0f)));
-	mData.resize(rows, std::vector<int>(cols, 0));
+	grid.resize(rows, vector<Grid*>(cols, nullptr));
 
-	cellWidth = gameMap->GetSize().x / 30.0f;
-	cellHeight = gameMap->GetSize().z / 30.0f;
+	float cellWidth = gameMap->GetSize().x / 30.0f;
+	float cellHeight = gameMap->GetSize().z / 30.0f;
 
 	glm::vec3 startGridPos = gameMap->GetPosition() - glm::vec3(gameMap->GetSize() / 2.0f);
 
-	for (int i = 0; i < rows; ++i)
+	for (size_t i = 0; i < rows; i++)
 	{
-		for (int j = 0; j < cols; ++j)
+		for (size_t j = 0; j < cols; j++)
 		{
-			grid[i][j] = glm::vec3(startGridPos.x + j * cellWidth, startGridPos.y + gameMap->GetSize().y + 0.001f, startGridPos.z + i * cellHeight);
+			Grid* cell = new Grid(glm::vec3(startGridPos.x + j * cellWidth, startGridPos.y + gameMap->GetSize().y + 0.001f, startGridPos.z + i * cellHeight) + centerVec, cellWidth, cellHeight);
+			grid[i][j] = cell;
 		}
 	}
 }
@@ -181,7 +181,17 @@ void Game::Render(float dt)
 	}
 
 	// Menu, Helpers
-	if (showGrid) DrawGrid();
+	if (showGrid) {
+		for (auto i : grid)
+		{
+			for (auto j : i)
+			{
+				DrawGrid(j);
+			}
+
+		}
+	}
+
 
 	if (gameState == MENU) DrawMenuTxt();
 
@@ -206,68 +216,23 @@ void Game::DrawObject(GameObject* obj, float dt)
 	}
 	else ResourceManager::GetShader("modelShader").SetBool("animated", false);
 
+	obj->RefreshMatrix();
 
-	glm::mat4 model = glm::mat4(1.0f);
-
-	model = glm::translate(model, obj->GetPosition());
-	model = glm::scale(model, obj->GetScale());
-
-	ResourceManager::GetShader("modelShader").SetMatrix4("model", model);
+	ResourceManager::GetShader("modelShader").SetMatrix4("model", obj->GetMatrix());
 	obj->DrawObject();
 }
 
-void Game::DrawGrid()
+void Game::DrawGrid(Grid* cell)
 {
-	float x, y;
-	x = cellWidth / 2.0f - 0.01f;
-	y = cellHeight / 2.0f - 0.01f;
-
-	// grid shapes
-	float vertices[] = {
-		-x, -y, 0,  1.0f, 1.0f, 0.0f,
-		 x, -y, 0,  1.0f, 1.0f, 0.0f,
-		 x,  y, 0,  1.0f, 1.0f, 0.0f,
-		 x,  y, 0,  1.0f, 1.0f, 0.0f,
-		-x,  y, 0,  1.0f, 1.0f, 0.0f,
-		-x, -y, 0,  1.0f, 1.0f, 0.0f,
-	};
-
-	unsigned int VBO, VAO;
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-
-	glBindVertexArray(VAO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	// vertex Positions
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-	// vertex colours
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-
 	ResourceManager::GetShader("testShader").Use();
 	ResourceManager::GetShader("testShader").SetMatrix4("projection", projection);
 	ResourceManager::GetShader("testShader").SetMatrix4("view", view);
 
-	glm::vec3 place = glm::vec3(1.0f - gameMap->GetSize().x / 2.0f, 1.0f, 1.0f - gameMap->GetSize().z / 2.0f);
+	cell->RefreshMatrix();
 
-	// drawing grid
-	for (int i = 0; i < grid.size(); i++)
-	{
-		for (int j = 0; j < grid[i].size(); j++)
-		{
-			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, grid[i][j] + glm::vec3(cellWidth / 2.0f, 0.0f, cellHeight / 2.0f));
-			model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	ResourceManager::GetShader("testShader").SetMatrix4("model", cell->GetMatrix());
 
-			ResourceManager::GetShader("testShader").SetMatrix4("model", model);
-
-			glDrawArrays(GL_TRIANGLES, 0, 6);
-		}
-	}
+	cell->DrawCell();
 }
 
 void Game::DrawStats()
@@ -289,40 +254,40 @@ void Game::DrawMenuTxt()
 glm::vec3 Game::FindNearestCell(glm::vec3 position)
 {
 	glm::vec3 nearestCell;
-	float minLength = 0.0f;
-	bool firstCheck = true;
+	//float minLength = 0.0f;
+	//bool firstCheck = true;
 
-	for (auto i : grid)
-	{
-		for (auto j : i)
-		{
-			j += centerVec;
-			glm::vec3 diffVec = abs(position - j);
-			float diffLength = sqrt(powf(diffVec.x, 2) + powf(diffVec.y, 2) + powf(diffVec.z, 2));
+	//for (auto i : grid)
+	//{
+	//	for (auto j : i)
+	//	{
+	//		j += centerVec;
+	//		glm::vec3 diffVec = abs(position - j);
+	//		float diffLength = sqrt(powf(diffVec.x, 2) + powf(diffVec.y, 2) + powf(diffVec.z, 2));
 
-			if (firstCheck) {
-				minLength = diffLength;
-				firstCheck = false;
-				nearestCell = j;
-			}
-			else if (diffLength < minLength) {
-				minLength = diffLength;
-				nearestCell = j;
-			}
-		}
-	}
+	//		if (firstCheck) {
+	//			minLength = diffLength;
+	//			firstCheck = false;
+	//			nearestCell = j;
+	//		}
+	//		else if (diffLength < minLength) {
+	//			minLength = diffLength;
+	//			nearestCell = j;
+	//		}
+	//	}
+	//}
 
 	return nearestCell;
 }
 
 glm::vec3 Game::ClickPosition()
 {
-	glm::vec3 rayDirection = MouseRay();
+	//glm::vec3 rayDirection = MouseRay();
 
 	return glm::vec3();
 }
 
-glm::vec3 Game::MouseRay()
+glm::vec3 Game::MouseRay(glm::mat4 modelMatrix)
 {
 	float normalizedX = (2.0f * xMouse) / width - 1.0f;
 	float normalizedY = 1.0f - (2.0f * yMouse) / height;
@@ -334,6 +299,10 @@ glm::vec3 Game::MouseRay()
 	glm::vec4 nearPointWorld = invProjectionView * nearPoint;
 	glm::vec4 farPointWorld = invProjectionView * farPoint;
 
+	glm::mat4 invModel = glm::inverse(modelMatrix);
+	glm::vec3 nearPointObject = glm::vec3(invModel * nearPointWorld);
+	glm::vec3 farPointObject = glm::vec3(invModel * farPointWorld);
+
 	glm::vec3 rayDirection = glm::normalize(glm::vec3(farPointWorld - nearPointWorld));
 
 	return rayDirection;
@@ -342,7 +311,6 @@ glm::vec3 Game::MouseRay()
 // Utility
 void Game::DeleteObjects()
 {
-
 	DeleteObjectFromVector(objList, true);
 }
 
@@ -369,5 +337,7 @@ Game::~Game()
 		delete i;
 	}
 	objList.clear();
+
+	// delete grid
 }
 

@@ -1,5 +1,15 @@
 #include "GameObject.h"
 
+void GameObject::RefreshMatrix()
+{
+	glm::mat4 modelMatrix = glm::mat4(1.0f);
+
+	modelMatrix = glm::translate(modelMatrix, position);
+	modelMatrix = glm::scale(modelMatrix, scale);
+
+	objMatrix = modelMatrix;
+}
+
 void GameObject::SetPosition(glm::vec3 pos)
 {
 	model.TranslateModel(pos - this->position);
