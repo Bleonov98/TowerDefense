@@ -254,58 +254,84 @@ void Game::DrawMenuTxt()
 glm::vec3 Game::FindNearestCell(glm::vec3 position)
 {
 	glm::vec3 nearestCell;
-	//float minLength = 0.0f;
-	//bool firstCheck = true;
+	float minLength = 0.0f;
+	bool firstCheck = true;
 
-	//for (auto i : grid)
-	//{
-	//	for (auto j : i)
-	//	{
-	//		j += centerVec;
-	//		glm::vec3 diffVec = abs(position - j);
-	//		float diffLength = sqrt(powf(diffVec.x, 2) + powf(diffVec.y, 2) + powf(diffVec.z, 2));
+	for (auto i : grid)
+	{
+		for (auto j : i)
+		{
+			glm::vec3 diffVec = abs(position - j->GetPosition());
+			float diffLength = sqrt(powf(diffVec.x, 2) + powf(diffVec.y, 2) + powf(diffVec.z, 2));
 
-	//		if (firstCheck) {
-	//			minLength = diffLength;
-	//			firstCheck = false;
-	//			nearestCell = j;
-	//		}
-	//		else if (diffLength < minLength) {
-	//			minLength = diffLength;
-	//			nearestCell = j;
-	//		}
-	//	}
-	//}
+			if (firstCheck) {
+				minLength = diffLength;
+				firstCheck = false;
+				nearestCell = j->GetPosition();
+			}
+			else if (diffLength < minLength) {
+				minLength = diffLength;
+				nearestCell = j->GetPosition();
+			}
+		}
+	}
 
 	return nearestCell;
 }
 
 glm::vec3 Game::ClickPosition()
 {
-	//glm::vec3 rayDirection = MouseRay();
+	glm::vec3 clickPos(1.0f);
+	bool found = false;
 
-	return glm::vec3();
+	for (auto i : grid)
+	{
+		for (auto cell : i)
+		{
+			std::pair<glm::vec3, glm::vec3> rayValues = MouseRay(cell->GetMatrix());
+
+			glm::vec3 rayOrigin = rayValues.first;
+			glm::vec3 rayDirection = rayValues.second;
+
+			if (cell->RayCollision(rayOrigin, rayDirection)) { 
+				clickPos = cell->GetPosition();
+				found = true;
+				break;
+			}
+			// if (gridData != 0) - chose object
+		}
+		if (found) break;
+	}
+
+	return clickPos;
 }
 
-glm::vec3 Game::MouseRay(glm::mat4 modelMatrix)
+std::pair<glm::vec3, glm::vec3> Game::MouseRay(glm::mat4 modelMatrix)
 {
+	// normalized mouse position for opengl
 	float normalizedX = (2.0f * xMouse) / width - 1.0f;
 	float normalizedY = 1.0f - (2.0f * yMouse) / height;
 
+	// start and end point of screen space
 	glm::vec4 nearPoint(normalizedX, normalizedY, -1.0f, 1.0f);
 	glm::vec4 farPoint(normalizedX, normalizedY, 1.0f, 1.0f);
 
-	glm::mat4 invProjectionView = glm::inverse(projection * view);
+	glm::mat4 invProjectionView = glm::inverse(projection * view); // world from screen space transformation matrix
+
+	// apply the matrix to the points
 	glm::vec4 nearPointWorld = invProjectionView * nearPoint;
 	glm::vec4 farPointWorld = invProjectionView * farPoint;
 
+	// object from world space transformation
 	glm::mat4 invModel = glm::inverse(modelMatrix);
 	glm::vec3 nearPointObject = glm::vec3(invModel * nearPointWorld);
 	glm::vec3 farPointObject = glm::vec3(invModel * farPointWorld);
 
-	glm::vec3 rayDirection = glm::normalize(glm::vec3(farPointWorld - nearPointWorld));
+	// get click position (camera) and click direction ray
+	glm::vec3 rayOrigin = camera.GetCameraPosition();
+	glm::vec3 rayDirection = glm::normalize(farPointObject - nearPointObject);
 
-	return rayDirection;
+	return make_pair(rayOrigin, rayDirection);
 }
 
 // Utility

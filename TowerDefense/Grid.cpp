@@ -7,18 +7,20 @@ Grid::Grid(glm::vec3 cellPosition, float cellWidth, float cellHeight, int cellDa
 	this->cellHeight = cellHeight;
 	this->cellData = cellData;
 
-	float x, y;
+	this->cellSize = glm::vec3(cellWidth, 0.0f, cellHeight);
+
+	float x, z;
 	x = cellWidth / 2.0f - 0.01f;
-	y = cellHeight / 2.0f - 0.01f;
+	z = cellHeight / 2.0f - 0.01f;
 
 	// grid shapes
 	float vertices[] = {
-		-x, -y, 0,  1.0f, 1.0f, 0.0f,
-		 x, -y, 0,  1.0f, 1.0f, 0.0f,
-		 x,  y, 0,  1.0f, 1.0f, 0.0f,
-		 x,  y, 0,  1.0f, 1.0f, 0.0f,
-		-x,  y, 0,  1.0f, 1.0f, 0.0f,
-		-x, -y, 0,  1.0f, 1.0f, 0.0f,
+		-x, 0, -z,  1.0f, 1.0f, 0.0f,
+		 x, 0, -z,  1.0f, 1.0f, 0.0f,
+		 x, 0,  z,  1.0f, 1.0f, 0.0f,
+		 x, 0,  z,  1.0f, 1.0f, 0.0f,
+		-x, 0,  z,  1.0f, 1.0f, 0.0f,
+		-x, 0, -z,  1.0f, 1.0f, 0.0f,
 	};
 
 	glGenVertexArrays(1, &VAO);
@@ -42,9 +44,27 @@ void Grid::RefreshMatrix()
 	glm::mat4 modelMatrix = glm::mat4(1.0f);
 
 	modelMatrix = glm::translate(modelMatrix, cellPos);
-	modelMatrix = glm::rotate(modelMatrix, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-
+	
 	cellMatrix = modelMatrix;
+}
+
+bool Grid::RayCollision(const glm::vec3& rayOrigin, const glm::vec3& rayDirection)
+{
+	glm::vec3 invRayDirection = 1.0f / rayDirection;
+
+	glm::vec3 minPoint = cellPos - cellSize / 2.0f;
+	glm::vec3 maxPoint = cellPos + cellSize / 2.0f;
+
+	glm::vec3 tMin = (minPoint - rayOrigin) * invRayDirection;
+	glm::vec3 tMax = (maxPoint - rayOrigin) * invRayDirection;
+
+	glm::vec3 tEnter = glm::min(tMin, tMax);
+	glm::vec3 tExit = glm::max(tMin, tMax);
+
+	float tNear = glm::compMax(tEnter);
+	float tFar = glm::compMin(tExit);
+
+	return tNear <= tFar && tFar >= 0.0f;
 }
 
 void Grid::DrawCell()

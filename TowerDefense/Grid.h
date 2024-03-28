@@ -6,6 +6,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "glm/gtx/component_wise.hpp"
 
 class Grid
 {
@@ -23,6 +24,8 @@ public:
 
 	void RefreshMatrix();
 
+	bool RayCollision(const glm::vec3& rayOrigin, const glm::vec3& rayDirection);
+
 	void DrawCell();
 
 private:
@@ -33,7 +36,7 @@ private:
 	glm::mat4 cellMatrix;
 	float cellWidth, cellHeight;
 	int cellData;
-	glm::vec3 cellPos;
+	glm::vec3 cellPos, cellSize;
 
 };
 

@@ -52,7 +52,7 @@ public:
 	// Calculations
 	glm::vec3 FindNearestCell(glm::vec3 position);
 	glm::vec3 ClickPosition();
-	glm::vec3 MouseRay(glm::mat4 modelMatrix);
+	std::pair<glm::vec3, glm::vec3> MouseRay(glm::mat4 modelMatrix);
 
 	// Utility
 	void DeleteObjects();
