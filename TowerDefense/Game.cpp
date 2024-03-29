@@ -308,7 +308,7 @@ glm::vec3 Game::ClickPosition()
 
 std::pair<glm::vec3, glm::vec3> Game::MouseRay(glm::mat4 modelMatrix)
 {
-	// normalized mouse position for opengl
+		// normalized mouse position for opengl
 	float normalizedX = (2.0f * xMouse) / width - 1.0f;
 	float normalizedY = 1.0f - (2.0f * yMouse) / height;
 
