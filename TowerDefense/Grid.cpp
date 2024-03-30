@@ -64,7 +64,7 @@ bool Grid::RayCollision(const glm::vec3& rayOrigin, const glm::vec3& rayDirectio
 	float tNear = glm::compMax(tEnter);
 	float tFar = glm::compMin(tExit);
 
-	return tNear <= tFar && tFar >= 0.0f;
+	return tNear <= tFar && tFar >= 0.0f && tNear >= 0.0f;
 }
 
 void Grid::DrawCell()

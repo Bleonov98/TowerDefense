@@ -111,9 +111,14 @@ void Game::ProcessInput(float dt)
 		}
 
 		if (this->mouseKeys[GLFW_MOUSE_BUTTON_LEFT]) {
-			glm::vec3 towerPos = FindNearestCell( ClickPosition() );
+			glm::vec3 clickPos = ClickPosition();
+			glm::vec3 towerPos;
 
-			SetTower(towerPos);
+			if (!glm::all(glm::epsilonEqual(clickPos, glm::vec3(1.0f), 0.1f)))
+			{
+				towerPos = FindNearestCell(clickPos);
+				SetTower(towerPos);
+			} 
 		}
 
 		if (this->Keys[GLFW_KEY_G]) showGrid = true;
@@ -308,28 +313,24 @@ glm::vec3 Game::ClickPosition()
 
 std::pair<glm::vec3, glm::vec3> Game::MouseRay(glm::mat4 modelMatrix)
 {
-		// normalized mouse position for opengl
+	glm::vec3 rayDirection;
+
+	// normalized mouse position for opengl
 	float normalizedX = (2.0f * xMouse) / width - 1.0f;
 	float normalizedY = 1.0f - (2.0f * yMouse) / height;
-
-	// start and end point of screen space
-	glm::vec4 nearPoint(normalizedX, normalizedY, -1.0f, 1.0f);
-	glm::vec4 farPoint(normalizedX, normalizedY, 1.0f, 1.0f);
+	
+	glm::vec4 screenPos = glm::vec4(normalizedX, normalizedY, 1.0f, 1.0f);
 
 	glm::mat4 invProjectionView = glm::inverse(projection * view); // world from screen space transformation matrix
 
-	// apply the matrix to the points
-	glm::vec4 nearPointWorld = invProjectionView * nearPoint;
-	glm::vec4 farPointWorld = invProjectionView * farPoint;
-
-	// object from world space transformation
-	glm::mat4 invModel = glm::inverse(modelMatrix);
-	glm::vec3 nearPointObject = glm::vec3(invModel * nearPointWorld);
-	glm::vec3 farPointObject = glm::vec3(invModel * farPointWorld);
-
-	// get click position (camera) and click direction ray
+	// world ray values
 	glm::vec3 rayOrigin = camera.GetCameraPosition();
-	glm::vec3 rayDirection = glm::normalize(farPointObject - nearPointObject);
+
+	// Calculate direction vector
+	glm::vec4 rayClip = glm::inverse(projection) * screenPos;
+	rayClip = glm::vec4(rayClip.x, rayClip.y, -1.0, 0.0); // Ray points towards the -Z direction (into the screen)
+	glm::vec4 rayEye = glm::inverse(view) * rayClip;
+	rayDirection = glm::normalize(glm::vec3(rayEye));
 
 	return make_pair(rayOrigin, rayDirection);
 }
