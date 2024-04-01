@@ -62,7 +62,7 @@ void Game::InitGrid()
 	{
 		for (size_t j = 0; j < cols; j++)
 		{
-			Grid* cell = new Grid(glm::vec3(startGridPos.x + j * cellWidth, startGridPos.y + gameMap->GetSize().y + 0.001f, startGridPos.z + i * cellHeight) + centerVec, cellWidth, cellHeight);
+			Grid* cell = new Grid(glm::vec3(startGridPos.x + j * cellWidth, startGridPos.y + gameMap->GetSize().y + 0.001f, startGridPos.z + i * cellHeight) + centerVec, cellWidth, cellHeight, rand() % 2);
 			grid[i][j] = cell;
 		}
 	}
@@ -254,7 +254,6 @@ void Game::DrawMenuTxt()
 	text->RenderText("->", glm::vec2(cursorPos), 1.0f, glm::vec3(1.0f));
 }
 
-
 // Calculations
 glm::vec3 Game::FindNearestCell(glm::vec3 position)
 {
@@ -303,7 +302,7 @@ glm::vec3 Game::ClickPosition()
 				found = true;
 				break;
 			}
-			// if (gridData != 0) - chose object
+			// if (gridData != 0) - choose object
 		}
 		if (found) break;
 	}
@@ -367,4 +366,3 @@ Game::~Game()
 
 	// delete grid
 }
-

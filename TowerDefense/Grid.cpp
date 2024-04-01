@@ -13,14 +13,18 @@ Grid::Grid(glm::vec3 cellPosition, float cellWidth, float cellHeight, int cellDa
 	x = cellWidth / 2.0f - 0.01f;
 	z = cellHeight / 2.0f - 0.01f;
 
+	glm::vec3 colour;
+	if (cellData == 0) colour = glm::vec3(1.0f, 1.0f, 0.0f);
+	else colour = glm::vec3(1.0f, 0.0f, 0.0f);
+
 	// grid shapes
 	float vertices[] = {
-		-x, 0, -z,  1.0f, 1.0f, 0.0f,
-		 x, 0, -z,  1.0f, 1.0f, 0.0f,
-		 x, 0,  z,  1.0f, 1.0f, 0.0f,
-		 x, 0,  z,  1.0f, 1.0f, 0.0f,
-		-x, 0,  z,  1.0f, 1.0f, 0.0f,
-		-x, 0, -z,  1.0f, 1.0f, 0.0f,
+		-x, 0, -z,  colour.x, colour.y, colour.z,
+		 x, 0, -z,  colour.x, colour.y, colour.z,
+		 x, 0,  z,  colour.x, colour.y, colour.z,
+		 x, 0,  z,  colour.x, colour.y, colour.z,
+		-x, 0,  z,  colour.x, colour.y, colour.z,
+		-x, 0, -z,  colour.x, colour.y, colour.z,
 	};
 
 	glGenVertexArrays(1, &VAO);
