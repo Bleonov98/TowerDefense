@@ -90,6 +90,7 @@ private:
 	std::vector<GameObject*> objList;
 	std::vector<Tower*> towerList;
 
+	std::vector<HUD*> buttonList;
 };
 
 #endif // !GAME_H

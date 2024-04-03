@@ -13,6 +13,7 @@ public:
 	HUD(unsigned int width, unsigned int height);
 
 	void DrawHUD(bool menu);
+	void DrawHUD(glm::vec3 pos, glm::vec2 size, bool menu);
 	void AddTexture(Texture2D texture) { this->texture = texture; }
 
 	~HUD() { glDeleteVertexArrays(1, &this->VAO); }

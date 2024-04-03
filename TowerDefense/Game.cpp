@@ -4,6 +4,7 @@
 using namespace irrklang;
 
 TextRenderer* text;
+
 HUD* HUDisplay;
 
 ISoundEngine* sound = irrklang::createIrrKlangDevice();
@@ -70,7 +71,12 @@ void Game::InitGrid()
 
 void Game::InitGameObjects()
 {
+	// buttons
+	HUD* button;
+	button = new HUD(this->width, this->height);
+	button->AddTexture(ResourceManager::GetTexture("fireTower"));
 
+	buttonList.push_back(button);
 }
 
 void Game::LoadResources()
