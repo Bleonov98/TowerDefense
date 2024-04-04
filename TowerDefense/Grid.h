@@ -24,6 +24,8 @@ public:
 
 	void RefreshMatrix();
 
+	void SelectCell(bool ) { selected = true; }
+
 	bool RayCollision(const glm::vec3& rayOrigin, const glm::vec3& rayDirection);
 
 	void DrawCell();
@@ -38,6 +40,7 @@ private:
 	int cellData;
 	glm::vec3 cellPos, cellSize;
 
+	bool selected = false;
 };
 
 #endif // !GRID_H

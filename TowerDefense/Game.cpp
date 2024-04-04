@@ -303,7 +303,7 @@ glm::vec3 Game::ClickPosition()
 			glm::vec3 rayOrigin = rayValues.first;
 			glm::vec3 rayDirection = rayValues.second;
 
-			if (cell->RayCollision(rayOrigin, rayDirection)) { 
+			if (cell->RayCollision(rayOrigin, rayDirection) && cell->GetCellData() == 0) { 
 				clickPos = cell->GetPosition();
 				found = true;
 				break;
