@@ -13,19 +13,17 @@ Grid::Grid(glm::vec3 cellPosition, float cellWidth, float cellHeight, int cellDa
 	x = cellWidth / 2.0f - 0.01f;
 	z = cellHeight / 2.0f - 0.01f;
 
-	glm::vec3 colour;
-	if (cellData == 0 && selected) colour = glm::vec3(0.7f, 1.0f, 1.0f);
-	else if (cellData == 0 && !selected) colour = glm::vec3(1.0f, 1.0f, 0.0f);
-	else colour = glm::vec3(1.0f, 0.0f, 0.0f);
+	if (cellData == 0) cellColour = glm::vec3(1.0f, 1.0f, 0.0f);
+	else cellColour = glm::vec3(1.0f, 0.0f, 0.0f);
 
 	// grid shapes
 	float vertices[] = {
-		-x, 0, -z,  colour.x, colour.y, colour.z,
-		 x, 0, -z,  colour.x, colour.y, colour.z,
-		 x, 0,  z,  colour.x, colour.y, colour.z,
-		 x, 0,  z,  colour.x, colour.y, colour.z,
-		-x, 0,  z,  colour.x, colour.y, colour.z,
-		-x, 0, -z,  colour.x, colour.y, colour.z,
+		-x, 0, -z,
+		 x, 0, -z,
+		 x, 0,  z,
+		 x, 0,  z,
+		-x, 0,  z,
+		-x, 0, -z
 	};
 
 	glGenVertexArrays(1, &VAO);
@@ -38,10 +36,7 @@ Grid::Grid(glm::vec3 cellPosition, float cellWidth, float cellHeight, int cellDa
 
 	// vertex Positions
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-	// vertex colours
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 }
 
 void Grid::RefreshMatrix()

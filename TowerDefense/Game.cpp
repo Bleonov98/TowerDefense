@@ -123,7 +123,7 @@ void Game::ProcessInput(float dt)
 			if (!glm::all(glm::epsilonEqual(clickPos, glm::vec3(1.0f), 0.1f)))
 			{
 				towerPos = FindNearestCell(clickPos);
-				SetTower(towerPos);
+				//SetTower(towerPos);
 			} 
 		}
 
@@ -242,6 +242,7 @@ void Game::DrawGrid(Grid* cell)
 	cell->RefreshMatrix();
 
 	ResourceManager::GetShader("testShader").SetMatrix4("model", cell->GetMatrix());
+	ResourceManager::GetShader("testShader").SetVector3f("cellColour", cell->GetColour());
 
 	cell->DrawCell();
 }
@@ -294,9 +295,9 @@ glm::vec3 Game::ClickPosition()
 	glm::vec3 clickPos(1.0f);
 	bool found = false;
 
-	for (auto i : grid)
+	for (auto& i : grid)
 	{
-		for (auto cell : i)
+		for (auto& cell : i)
 		{
 			std::pair<glm::vec3, glm::vec3> rayValues = MouseRay(cell->GetMatrix());
 
@@ -305,6 +306,10 @@ glm::vec3 Game::ClickPosition()
 
 			if (cell->RayCollision(rayOrigin, rayDirection) && cell->GetCellData() == 0) { 
 				clickPos = cell->GetPosition();
+
+				cell->SelectCell(true);
+				cell->SetColour(glm::vec3(0.7f, 1.0f, 1.0f));
+
 				found = true;
 				break;
 			}

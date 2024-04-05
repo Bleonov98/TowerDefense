@@ -1,9 +1,9 @@
 #version 400 core
 out vec4 FragColor;
 
-in vec3 Colours;
+uniform vec3 cellColour;
 
 void main()
 {   
-    FragColor = vec4(Colours, 1.0f);
+    FragColor = vec4(cellColour, 1.0f);
 }

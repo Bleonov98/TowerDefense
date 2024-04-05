@@ -16,15 +16,17 @@ public:
 
 	glm::mat4 GetMatrix() { return cellMatrix; }
 	glm::vec3 GetPosition() { return cellPos; }
+	glm::vec3 GetColour() { return cellColour; }
 	int GetCellData() { return cellData; }
 
 	void SetCellPosition(glm::vec3 position) { cellPos = position; }
 	void SetCellSize(float cellWidth, float cellHeight) { this->cellWidth = cellWidth, this->cellHeight = cellHeight; }
 	void SetCellData(int cellData) { this->cellData = cellData; }
+	void SetColour(glm::vec3 colour) { this->cellColour = colour; }
 
 	void RefreshMatrix();
 
-	void SelectCell(bool ) { selected = true; }
+	void SelectCell(bool select) { selected = select; }
 
 	bool RayCollision(const glm::vec3& rayOrigin, const glm::vec3& rayDirection);
 
@@ -39,6 +41,7 @@ private:
 	float cellWidth, cellHeight;
 	int cellData;
 	glm::vec3 cellPos, cellSize;
+	glm::vec3 cellColour;
 
 	bool selected = false;
 };
