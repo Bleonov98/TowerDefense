@@ -42,6 +42,7 @@ public:
 	void Update(float dt);
 	void CheckCollisions(float dt);
 
+	void SetActiveCell(Grid* cell);
 	void SetTower(glm::vec3 position);
 
 	// Render

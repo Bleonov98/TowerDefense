@@ -168,6 +168,23 @@ void Game::CheckCollisions(float dt)
 {
 }
 
+void Game::SetActiveCell(Grid* cell)
+{
+	for (auto i : grid)
+	{
+		for (auto j : i)
+		{
+			if (j->GetCellData() == 0) {
+				j->SelectCell(false);
+				j->SetColour(glm::vec3(1.0f, 1.0f, 0.0f));
+			}
+		}
+	}
+
+	cell->SelectCell(true);
+	cell->SetColour(glm::vec3(0.7f, 1.0f, 1.0f));
+}
+
 void Game::SetTower(glm::vec3 position)
 {
 	Tower* tower = new Tower(position);
@@ -307,8 +324,7 @@ glm::vec3 Game::ClickPosition()
 			if (cell->RayCollision(rayOrigin, rayDirection) && cell->GetCellData() == 0) { 
 				clickPos = cell->GetPosition();
 
-				cell->SelectCell(true);
-				cell->SetColour(glm::vec3(0.7f, 1.0f, 1.0f));
+				SetActiveCell(cell);
 
 				found = true;
 				break;
