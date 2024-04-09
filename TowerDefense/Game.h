@@ -23,6 +23,12 @@ enum GameState {
 	END
 };
 
+enum TowerType {
+	ARROW,
+	FIRE,
+	ICE
+};
+
 class Game
 {
 public:
@@ -43,7 +49,7 @@ public:
 	void CheckCollisions(float dt);
 
 	void SetActiveCell(Grid* cell);
-	void SetTower(glm::vec3 position);
+	void SetTower(glm::vec3 position, TowerType type);
 
 	// Render
 	void Render(float dt);

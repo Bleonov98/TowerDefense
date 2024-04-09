@@ -116,16 +116,7 @@ void Game::ProcessInput(float dt)
 			if (prevPitch != camera.Pitch) cout << std::format("pitch: {}", static_cast<int>(camera.Pitch)) << endl;
 		}
 
-		if (this->mouseKeys[GLFW_MOUSE_BUTTON_LEFT]) {
-			glm::vec3 clickPos = ClickPosition();
-			glm::vec3 towerPos;
-
-			if (!glm::all(glm::epsilonEqual(clickPos, glm::vec3(1.0f), 0.1f)))
-			{
-				towerPos = FindNearestCell(clickPos);
-				//SetTower(towerPos);
-			} 
-		}
+		if (this->mouseKeys[GLFW_MOUSE_BUTTON_LEFT]) ClickPosition();
 
 		if (this->Keys[GLFW_KEY_G]) showGrid = true;
 		else showGrid = false;
@@ -185,12 +176,15 @@ void Game::SetActiveCell(Grid* cell)
 	cell->SetColour(glm::vec3(0.7f, 1.0f, 1.0f));
 }
 
-void Game::SetTower(glm::vec3 position)
+void Game::SetTower(glm::vec3 position, TowerType type)
 {
-	Tower* tower = new Tower(position);
-	tower->SetModel(ResourceManager::GetModel("tower"));
-	tower->SetScale(glm::vec3(1.0f, 1.0f, 0.8f));
+	Tower* tower = nullptr;
 
+	if (type == ARROW) tower = new Tower(position, ResourceManager::GetModel("tower"));
+	else if (type == FIRE) tower = new FireTower(position, ResourceManager::GetModel("tower"));
+	else if (type == ICE) tower = new IceTower(position, ResourceManager::GetModel("tower"));
+
+	tower->SetScale(glm::vec3(1.0f, 1.0f, 0.8f));
 	objList.push_back(tower);
 	towerList.push_back(tower);
 }
@@ -309,7 +303,7 @@ glm::vec3 Game::FindNearestCell(glm::vec3 position)
 
 glm::vec3 Game::ClickPosition()
 {
-	glm::vec3 clickPos(1.0f);
+	glm::vec3 clickPos(1488.0f);
 	bool found = false;
 
 	for (auto& i : grid)
@@ -329,7 +323,6 @@ glm::vec3 Game::ClickPosition()
 				found = true;
 				break;
 			}
-			// if (gridData != 0) - choose object
 		}
 		if (found) break;
 	}

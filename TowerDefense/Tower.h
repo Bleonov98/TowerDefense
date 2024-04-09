@@ -7,7 +7,9 @@ class Tower : public GameObject
 {
 public:
 
-	Tower(glm::vec3 position, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : GameObject(position, scale, angle) {};
+	Tower(glm::vec3 position, Model model, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : GameObject(position, scale, angle) {
+		this->model = model;
+	};
 
 	// basics
 	int GetAttackSpeed() { return this->attackSpeed; }
@@ -32,6 +34,8 @@ class FireTower : public Tower
 {
 public:
 
+	FireTower(glm::vec3 position, Model model, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : Tower(position, model, scale, angle) {};
+
 private:
 
 	int splashDamage = 3;
@@ -41,6 +45,8 @@ private:
 class IceTower : public Tower
 {
 public:
+
+	IceTower(glm::vec3 position, Model model, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : Tower(position, model, scale, angle) {};
 
 private:
 
