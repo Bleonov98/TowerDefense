@@ -54,14 +54,14 @@ void HUD::DrawHUD(bool menu)
     glBindVertexArray(0);
 }
 
-void HUD::DrawHUD(glm::vec3 pos, glm::vec2 size, bool menu)
+void HUD::DrawHUD(glm::vec2 pos, glm::vec2 size, bool menu)
 {
     ResourceManager::GetShader("hudShader").Use();
     ResourceManager::GetShader("hudShader").SetMatrix4("projection", projection);
 
     glm::mat4 model = glm::mat4(1.0f);
 
-    model = glm::translate(model, pos);
+    model = glm::translate(model, glm::vec3(pos, 1.0f));
     model = glm::scale(model, glm::vec3(size.x, size.y, 1.0f));
 
     ResourceManager::GetShader("hudShader").SetMatrix4("model", model);
@@ -75,4 +75,34 @@ void HUD::DrawHUD(glm::vec3 pos, glm::vec2 size, bool menu)
     glBindVertexArray(this->VAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
+}
+
+void Button::DrawButton(bool menu)
+{
+    ResourceManager::GetShader("hudShader").Use();
+    ResourceManager::GetShader("hudShader").SetMatrix4("projection", projection);
+
+    glm::mat4 model = glm::mat4(1.0f);
+
+    model = glm::translate(model, glm::vec3(position, 1.0f));
+    model = glm::scale(model, glm::vec3(size.x, size.y, 1.0f));
+
+    ResourceManager::GetShader("hudShader").SetMatrix4("model", model);
+    ResourceManager::GetShader("hudShader").SetVector3f("spriteColor", glm::vec3(1.0f));
+
+    ResourceManager::GetShader("hudShader").SetBool("menu", menu);
+
+    glActiveTexture(GL_TEXTURE0);
+    texture.Bind();
+
+    glBindVertexArray(this->VAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(0);
+}
+
+bool Button::ButtonCollision(glm::vec2 clickPos)
+{
+    glm::vec2 minPoint, maxPoint;
+
+    return false;
 }

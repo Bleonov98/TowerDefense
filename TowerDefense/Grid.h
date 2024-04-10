@@ -27,6 +27,7 @@ public:
 	void RefreshMatrix();
 
 	void SelectCell(bool select) { selected = select; }
+	bool IsSelected() { return selected; }
 
 	bool RayCollision(const glm::vec3& rayOrigin, const glm::vec3& rayDirection);
 

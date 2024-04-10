@@ -41,6 +41,7 @@ public:
 	void Init();
 	void InitGrid();
 	void InitGameObjects();
+	void InitButtons();
 	void LoadResources();
 
 	// Main, GamePlay
@@ -48,6 +49,8 @@ public:
 	void Update(float dt);
 	void CheckCollisions(float dt);
 
+		// placement
+	void UnactiveCells();
 	void SetActiveCell(Grid* cell);
 	void SetTower(glm::vec3 position, TowerType type);
 
@@ -55,6 +58,7 @@ public:
 	void Render(float dt);
 	void DrawObject(GameObject* obj, float dt);
 	void DrawGrid(Grid* cell);
+	void DrawTowerMenu();
 	void DrawStats();
 	void DrawMenuTxt();
 
@@ -97,7 +101,7 @@ private:
 	std::vector<GameObject*> objList;
 	std::vector<Tower*> towerList;
 
-	std::vector<HUD*> buttonList;
+	std::vector<Button*> buttonList;
 };
 
 #endif // !GAME_H

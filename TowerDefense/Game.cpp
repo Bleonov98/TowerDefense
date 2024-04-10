@@ -71,12 +71,23 @@ void Game::InitGrid()
 
 void Game::InitGameObjects()
 {
-	// buttons
-	HUD* button;
-	button = new HUD(this->width, this->height);
-	button->AddTexture(ResourceManager::GetTexture("fireTower"));
+	InitButtons();
+}
 
-	buttonList.push_back(button);
+void Game::InitButtons()
+{
+	Button* button;
+
+	for (int i = 0; i < 3; i++)
+	{
+		button = new Button(glm::vec2(450.0f + 100.0f * i, this->height - 120.0f), glm::vec2(60.0f), this->width, this->height);
+
+		if (i == 0) button->AddTexture(ResourceManager::GetTexture("bowIcon"));
+		else if (i == 1) button->AddTexture(ResourceManager::GetTexture("fireIcon"));
+		else if (i == 2) button->AddTexture(ResourceManager::GetTexture("iceIcon"));
+
+		buttonList.push_back(button);
+	}
 }
 
 void Game::LoadResources()
@@ -92,9 +103,14 @@ void Game::LoadResources()
 
 	// - - - // Textures
 	ResourceManager::LoadTexture("HudFrame.png", true, "HUDTexture");
+
+	ResourceManager::LoadTexture("icons/fire.png", true, "fireIcon");
+	ResourceManager::LoadTexture("icons/ice.png", true, "iceIcon");
+	ResourceManager::LoadTexture("icons/bow.png", true, "bowIcon");
 }
 
 // Main, GamePlay
+	// - basics
 void Game::ProcessInput(float dt)
 {
 	if (gameState == ACTIVE) {
@@ -158,19 +174,10 @@ void Game::Update(float dt)
 void Game::CheckCollisions(float dt)
 {
 }
-
+	// - placement
 void Game::SetActiveCell(Grid* cell)
 {
-	for (auto i : grid)
-	{
-		for (auto j : i)
-		{
-			if (j->GetCellData() == 0) {
-				j->SelectCell(false);
-				j->SetColour(glm::vec3(1.0f, 1.0f, 0.0f));
-			}
-		}
-	}
+	UnactiveCells();
 
 	cell->SelectCell(true);
 	cell->SetColour(glm::vec3(0.7f, 1.0f, 1.0f));
@@ -187,6 +194,20 @@ void Game::SetTower(glm::vec3 position, TowerType type)
 	tower->SetScale(glm::vec3(1.0f, 1.0f, 0.8f));
 	objList.push_back(tower);
 	towerList.push_back(tower);
+}
+
+void Game::UnactiveCells()
+{
+	for (auto i : grid)
+	{
+		for (auto j : i)
+		{
+			if (j->GetCellData() == 0) {
+				j->SelectCell(false);
+				j->SetColour(glm::vec3(1.0f, 1.0f, 0.0f));
+			}
+		}
+	}
 }
 
 // Render
@@ -214,11 +235,11 @@ void Game::Render(float dt)
 		}
 	}
 
-
 	if (gameState == MENU) DrawMenuTxt();
 
 	// Interface
 	HUDisplay->DrawHUD(gameState == MENU);
+	DrawTowerMenu();
 }
 
 void Game::DrawObject(GameObject* obj, float dt)
@@ -260,6 +281,29 @@ void Game::DrawGrid(Grid* cell)
 
 void Game::DrawStats()
 {
+}
+
+void Game::DrawTowerMenu()
+{
+	bool found = false;
+	for (auto i : grid)
+	{
+		for (auto cell : i)
+		{
+			if (cell->IsSelected()) {
+				found = true; 
+				break;
+			}
+		}
+		if (found) break;
+	}
+
+	if (found) {
+		for (size_t i = 0; i < buttonList.size(); i++)
+		{
+			buttonList[i]->DrawButton(gameState == MENU);
+		}
+	}
 }
 
 void Game::DrawMenuTxt()
@@ -326,6 +370,8 @@ glm::vec3 Game::ClickPosition()
 		}
 		if (found) break;
 	}
+
+	if (!found) UnactiveCells();
 
 	return clickPos;
 }
