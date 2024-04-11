@@ -104,5 +104,11 @@ bool Button::ButtonCollision(glm::vec2 clickPos)
 {
     glm::vec2 minPoint, maxPoint;
 
+    minPoint = position;
+    maxPoint = position + size;
+
+    if (clickPos.x >= minPoint.x && clickPos.x <= maxPoint.x &&
+        clickPos.y >= minPoint.y && clickPos.y <= maxPoint.y) return true;
+
     return false;
 }

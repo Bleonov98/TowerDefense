@@ -80,7 +80,7 @@ void Game::InitButtons()
 
 	for (int i = 0; i < 3; i++)
 	{
-		button = new Button(glm::vec2(450.0f + 100.0f * i, this->height - 120.0f), glm::vec2(60.0f), this->width, this->height);
+		button = new Button(glm::vec2(450.0f + 100.0f * i, this->height - 120.0f), glm::vec2(60.0f), i, this->width, this->height);
 
 		if (i == 0) button->AddTexture(ResourceManager::GetTexture("bowIcon"));
 		else if (i == 1) button->AddTexture(ResourceManager::GetTexture("fireIcon"));
@@ -132,7 +132,17 @@ void Game::ProcessInput(float dt)
 			if (prevPitch != camera.Pitch) cout << std::format("pitch: {}", static_cast<int>(camera.Pitch)) << endl;
 		}
 
-		if (this->mouseKeys[GLFW_MOUSE_BUTTON_LEFT]) ClickPosition();
+		if (this->mouseKeys[GLFW_MOUSE_BUTTON_LEFT]) {
+
+			glm::vec2 clickPos = ClickPosition();
+
+			for (auto i : buttonList)
+			{
+				if (i->ButtonCollision(clickPos)) {
+
+				}
+			}
+		}
 
 		if (this->Keys[GLFW_KEY_G]) showGrid = true;
 		else showGrid = false;
@@ -167,12 +177,12 @@ void Game::ProcessInput(float dt)
 void Game::Update(float dt)
 {
 	if (gameState == ACTIVE) {
-		
 	}
 }
 
 void Game::CheckCollisions(float dt)
 {
+	
 }
 	// - placement
 void Game::SetActiveCell(Grid* cell)
