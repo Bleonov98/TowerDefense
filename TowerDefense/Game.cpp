@@ -80,7 +80,7 @@ void Game::InitButtons()
 
 	for (int i = 0; i < 3; i++)
 	{
-		button = new Button(glm::vec2(450.0f + 100.0f * i, this->height - 120.0f), glm::vec2(60.0f), i, this->width, this->height);
+		button = new Button(glm::vec2(450.0f + 100.0f * i, this->height - 120.0f), glm::vec2(60.0f), this->width, this->height);
 
 		if (i == 0) button->AddTexture(ResourceManager::GetTexture("bowIcon"));
 		else if (i == 1) button->AddTexture(ResourceManager::GetTexture("fireIcon"));
@@ -136,11 +136,9 @@ void Game::ProcessInput(float dt)
 
 			glm::vec2 clickPos = ClickPosition();
 
-			for (auto i : buttonList)
+			for (size_t i = 0; i < buttonList.size(); i++)
 			{
-				if (i->ButtonCollision(clickPos)) {
-
-				}
+				if (buttonList[i]->ButtonCollision(clickPos));
 			}
 		}
 

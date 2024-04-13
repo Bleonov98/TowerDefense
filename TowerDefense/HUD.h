@@ -30,20 +30,13 @@ protected:
 
 };
 
-enum ButtonType {
-	BOW,
-	FIRE,
-	ICE
-};
-
 class Button : public HUD
 {
 public:
 
-	Button(glm::vec2 position, glm::vec2 size, ButtonType type, unsigned int width, unsigned int height) : HUD(width, height) {
+	Button(glm::vec2 position, glm::vec2 size, unsigned int width, unsigned int height) : HUD(width, height) {
 		this->size = size;
 		this->position = position;
-		this->type = type;
 	};
 
 	glm::vec2 GetButtonPosition() { return this->position; }
@@ -59,7 +52,6 @@ public:
 private:
 
 	glm::vec2 position, size;
-	ButtonType type = BOW;
 
 };
 
