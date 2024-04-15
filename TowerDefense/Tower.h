@@ -3,6 +3,12 @@
 
 #include "GameObject.h"
 
+enum TowerType {
+	ARROW,
+	FIRE,
+	ICE
+};
+
 class Tower : public GameObject
 {
 public:

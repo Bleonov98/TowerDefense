@@ -80,7 +80,7 @@ void Game::InitButtons()
 
 	for (int i = 0; i < 3; i++)
 	{
-		button = new Button(glm::vec2(450.0f + 100.0f * i, this->height - 120.0f), glm::vec2(60.0f), this->width, this->height);
+		button = new Button(glm::vec2(450.0f + 100.0f * i, this->height - 120.0f), glm::vec2(60.0f), static_cast<ButtonID>(i), this->width, this->height);
 
 		if (i == 0) button->AddTexture(ResourceManager::GetTexture("bowIcon"));
 		else if (i == 1) button->AddTexture(ResourceManager::GetTexture("fireIcon"));
@@ -134,11 +134,15 @@ void Game::ProcessInput(float dt)
 
 		if (this->mouseKeys[GLFW_MOUSE_BUTTON_LEFT]) {
 
-			glm::vec2 clickPos = ClickPosition();
-
+			if ((xMouse > 350.0f && xMouse < 1250.0f && yMouse < 700.0f) || (yMouse < 620.0f)) glm::vec2 clickPos = ClickPosition();
+			
 			for (size_t i = 0; i < buttonList.size(); i++)
 			{
-				if (buttonList[i]->ButtonCollision(clickPos));
+				if (buttonList[i]->ButtonCollision(glm::vec2(xMouse, yMouse)) && GetActiveCell() != nullptr) {
+					if (buttonList[i]->GetID() == ARROWTOWER_BUTTON) SetTower(GetActiveCell()->GetPosition(), ARROW);
+					if (buttonList[i]->GetID() == FIRETOWER_BUTTON) SetTower(GetActiveCell()->GetPosition(), FIRE);
+					if (buttonList[i]->GetID() == ICETOWER_BUTTON) SetTower(GetActiveCell()->GetPosition(), ICE);
+				}
 			}
 		}
 
@@ -202,6 +206,21 @@ void Game::SetTower(glm::vec3 position, TowerType type)
 	tower->SetScale(glm::vec3(1.0f, 1.0f, 0.8f));
 	objList.push_back(tower);
 	towerList.push_back(tower);
+
+	UnactiveCells();
+}
+
+Grid* Game::GetActiveCell()
+{
+	for (auto i : grid)
+	{
+		for (auto cell : i)
+		{
+			if (cell->IsSelected()) return cell;
+		}
+	}
+
+	return nullptr;
 }
 
 void Game::UnactiveCells()
