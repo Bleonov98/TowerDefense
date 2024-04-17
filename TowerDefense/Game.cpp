@@ -76,18 +76,18 @@ void Game::InitGameObjects()
 
 void Game::InitButtons()
 {
-	//Button* button;
+	Button* button;
 
-	//for (int i = 0; i < 3; i++)
-	//{
-	//	button = new Button(glm::vec2(450.0f + 100.0f * i, this->height - 120.0f), glm::vec2(60.0f), static_cast<ButtonID>(i), this->width, this->height);
+	for (int i = 0; i < 3; i++)
+	{
+		button = new Button(glm::vec2(450.0f + 100.0f * i, this->height - 120.0f), glm::vec2(60.0f), static_cast<ButtonID>(i), this->width, this->height);
 
-	//	if (i == 0) button->AddTexture(ResourceManager::GetTexture("bowIcon"));
-	//	else if (i == 1) button->AddTexture(ResourceManager::GetTexture("fireIcon"));
-	//	else if (i == 2) button->AddTexture(ResourceManager::GetTexture("iceIcon"));
+		if (i == 0) button->AddTexture(ResourceManager::GetTexture("bowIcon"));
+		else if (i == 1) button->AddTexture(ResourceManager::GetTexture("fireIcon"));
+		else if (i == 2) button->AddTexture(ResourceManager::GetTexture("iceIcon"));
 
-	//	buttonList.push_back(button);
-	//}
+		buttonList.push_back(button);
+	}
 }
 
 void Game::LoadResources()
