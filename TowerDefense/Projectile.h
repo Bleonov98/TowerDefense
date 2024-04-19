@@ -21,4 +21,19 @@ private:
 
 };
 
+class Arrow : public Projectile 
+{
+
+};
+
+class Fireball : public Projectile
+{
+
+};
+
+class Iceball : public Projectile
+{
+
+};
+
 #endif // !PROJECTILE_H
