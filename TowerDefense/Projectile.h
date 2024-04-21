@@ -3,6 +3,12 @@
 
 #include "GameObject.h"
 
+enum ProjectileType {
+	ARROW_P,
+	FIREBALL_P,
+	ICEBALL_P
+};
+
 class Projectile : public GameObject
 {
 public:
@@ -11,28 +17,17 @@ public:
 
 	};
 
+	ProjectileType GetType() { return projType; }
+	void SetProjectileType(ProjectileType type) { this->projType = type; }
+
 	void MoveProjectile(float dt);
 
 	bool ProjectileCollision(GameObject* obj);
 
 private:
 
+	ProjectileType projType;
 	float projSpeed = 100.0f;
-
-};
-
-class Arrow : public Projectile 
-{
-
-};
-
-class Fireball : public Projectile
-{
-
-};
-
-class Iceball : public Projectile
-{
 
 };
 
