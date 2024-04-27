@@ -52,7 +52,9 @@
     <ClCompile Include="Grid.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Projectile.cpp" />
+    <ClCompile Include="Projectile.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h">
@@ -106,7 +108,9 @@
     <ClInclude Include="Grid.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Projectile.h" />
+    <ClInclude Include="Projectile.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source">

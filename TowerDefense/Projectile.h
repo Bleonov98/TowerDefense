@@ -17,9 +17,14 @@ public:
 
 	};
 
+
+	float GetSpeed() { return projSpeed; }
+	void SetSpeed(float speed) { this->projSpeed = speed; }
+
 	ProjectileType GetType() { return projType; }
 	void SetProjectileType(ProjectileType type) { this->projType = type; }
 
+	void CalculatePath(glm::vec3 targetPos);
 	void MoveProjectile(float dt);
 
 	bool ProjectileCollision(GameObject* obj);

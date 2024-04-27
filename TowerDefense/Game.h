@@ -16,6 +16,7 @@
 
 #include "GameObject.h"
 #include "Tower.h"
+#include "Projectile.h"
 
 enum GameState {
 	ACTIVE,
