@@ -4,7 +4,7 @@
 #include "GameObject.h"
 
 enum TowerType {
-	ARROW,
+	ARROW = 1,
 	FIRE,
 	ICE
 };

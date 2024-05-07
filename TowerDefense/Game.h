@@ -48,13 +48,16 @@ public:
 	Grid* GetActiveCell();
 	void UnactiveCells();
 	void SetActiveCell(Grid* cell);
-	void SetTower(glm::vec3 position, TowerType type);
+	void SetTower(Grid* cell, TowerType type);
 
 	// Render
 	void Render(float dt);
 	void DrawObject(GameObject* obj, float dt);
 	void DrawGrid(Grid* cell);
+
 	void DrawTowerMenu();
+	void DrawTowerStats();
+
 	void DrawStats();
 	void DrawMenuTxt();
 

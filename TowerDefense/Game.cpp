@@ -139,9 +139,9 @@ void Game::ProcessInput(float dt)
 			for (size_t i = 0; i < buttonList.size(); i++)
 			{
 				if (buttonList[i]->ButtonCollision(glm::vec2(xMouse, yMouse)) && GetActiveCell() != nullptr) {
-					if (buttonList[i]->GetID() == ARROWTOWER_BUTTON) SetTower(GetActiveCell()->GetPosition(), ARROW);
-					if (buttonList[i]->GetID() == FIRETOWER_BUTTON) SetTower(GetActiveCell()->GetPosition(), FIRE);
-					if (buttonList[i]->GetID() == ICETOWER_BUTTON) SetTower(GetActiveCell()->GetPosition(), ICE);
+					if (buttonList[i]->GetID() == ARROWTOWER_BUTTON) SetTower(GetActiveCell(), ARROW);
+					if (buttonList[i]->GetID() == FIRETOWER_BUTTON) SetTower(GetActiveCell(), FIRE);
+					if (buttonList[i]->GetID() == ICETOWER_BUTTON) SetTower(GetActiveCell(), ICE);
 				}
 			}
 		}
@@ -195,13 +195,16 @@ void Game::SetActiveCell(Grid* cell)
 	cell->SetColour(glm::vec3(0.7f, 1.0f, 1.0f));
 }
 
-void Game::SetTower(glm::vec3 position, TowerType type)
+void Game::SetTower(Grid* cell, TowerType type)
 {
 	Tower* tower = nullptr;
 
-	if (type == ARROW) tower = new Tower(position, ResourceManager::GetModel("tower"));
-	else if (type == FIRE) tower = new FireTower(position, ResourceManager::GetModel("tower"));
-	else if (type == ICE) tower = new IceTower(position, ResourceManager::GetModel("tower"));
+	if (type == ARROW) tower = new Tower(cell->GetPosition(), ResourceManager::GetModel("tower"));
+	else if (type == FIRE) tower = new FireTower(cell->GetPosition(), ResourceManager::GetModel("tower"));
+	else if (type == ICE) tower = new IceTower(cell->GetPosition(), ResourceManager::GetModel("tower"));
+
+	cell->SetCellData(static_cast<int>(type));
+	cell->SelectCell(false);
 
 	tower->SetScale(glm::vec3(1.0f, 1.0f, 0.8f));
 	objList.push_back(tower);
@@ -331,6 +334,11 @@ void Game::DrawTowerMenu()
 			buttonList[i]->DrawButton(gameState == MENU);
 		}
 	}
+}
+
+void Game::DrawTowerStats()
+{
+
 }
 
 void Game::DrawMenuTxt()

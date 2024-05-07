@@ -41,13 +41,9 @@ private:
 	glm::mat4 cellMatrix;
 	float cellWidth, cellHeight;
 	int cellData;
-	glm::vec3 cellPos, cellSize;
-	glm::vec3 cellColour;
+	glm::vec3 cellPos, cellSize, cellColour;
 
 	bool selected = false;
 };
 
 #endif // !GRID_H
-
-
-
