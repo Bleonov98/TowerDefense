@@ -3,9 +3,8 @@
 #include <irrklang/irrKlang.h>
 using namespace irrklang;
 
-TextRenderer* text;
-
 HUD* HUDisplay;
+TextRenderer* text;
 
 ISoundEngine* sound = irrklang::createIrrKlangDevice();
 ISoundSource* music;
@@ -38,7 +37,7 @@ void Game::Init()
 	text = new TextRenderer(this->width, this->height);
 	text->Load("../fonts/Garamond.ttf", 24);
 
-	HUDisplay = new HUD(this->width, this->height);
+	HUDisplay = new HUD(this->width, this->height, camera.GetViewMatrix());
 	HUDisplay->AddTexture(ResourceManager::GetTexture("HUDTexture"));
 
 	cursorPos = glm::vec2(this->width / 2.0f - 50.0f, this->height / 2.0f);
@@ -80,7 +79,7 @@ void Game::InitButtons()
 
 	for (int i = 0; i < 3; i++)
 	{
-		button = new Button(glm::vec2(450.0f + 100.0f * i, this->height - 120.0f), glm::vec2(60.0f), static_cast<ButtonID>(i), this->width, this->height);
+		button = new Button(glm::vec2(450.0f + 100.0f * i, this->height - 120.0f), glm::vec2(60.0f), static_cast<ButtonID>(i), this->width, this->height, camera.GetViewMatrix());
 
 		if (i == 0) button->AddTexture(ResourceManager::GetTexture("bowIcon"));
 		else if (i == 1) button->AddTexture(ResourceManager::GetTexture("fireIcon"));
@@ -107,6 +106,9 @@ void Game::LoadResources()
 	ResourceManager::LoadTexture("icons/fire.png", true, "fireIcon");
 	ResourceManager::LoadTexture("icons/ice.png", true, "iceIcon");
 	ResourceManager::LoadTexture("icons/bow.png", true, "bowIcon");
+
+	ResourceManager::LoadTexture("stats/speed.png", true, "speedStat");
+	ResourceManager::LoadTexture("stats/attack.png", true, "attackStat");
 }
 
 // Main, GamePlay
@@ -207,6 +209,7 @@ void Game::SetTower(Grid* cell, TowerType type)
 	cell->SelectCell(false);
 
 	tower->SetScale(glm::vec3(1.0f, 1.0f, 0.8f));
+	tower->SelectTower(true);
 	objList.push_back(tower);
 	towerList.push_back(tower);
 
@@ -270,6 +273,7 @@ void Game::Render(float dt)
 	// Interface
 	HUDisplay->DrawHUD(gameState == MENU);
 	DrawTowerMenu();
+	DrawTowerStats();
 }
 
 void Game::DrawObject(GameObject* obj, float dt)
@@ -338,17 +342,37 @@ void Game::DrawTowerMenu()
 
 void Game::DrawTowerStats()
 {
+	auto result = std::find_if(towerList.begin(), towerList.end(), [](Tower* tower) {
+		return tower->IsSelected();
+	});
 
+	if (result == towerList.end()) return;
+
+	HUD statIcon(this->width, this->height, camera.GetViewMatrix());
+
+	// tower
+	statIcon.AddTexture(ResourceManager::GetTexture( (*result)->GetIcon() ));
+	statIcon.DrawHUD(glm::vec2(100.0f, 700.0f), glm::vec2(50.0f, 50.0f), gameState == MENU);
+
+	// attack
+	statIcon.AddTexture(ResourceManager::GetTexture("attackStat"));
+	statIcon.DrawHUD(glm::vec2(50.0f, 780.0f), glm::vec2(30.0f), gameState == MENU);
+	text->RenderText("5", glm::vec2(100.0f, 100.0f));
+
+	// attackspeed
+	statIcon.AddTexture(ResourceManager::GetTexture("speedStat"));
+	statIcon.DrawHUD(glm::vec2(50.0f, 830.0f), glm::vec2(30.0f), gameState == MENU);
+	text->RenderText(std::to_string( (*result)->GetAttackSpeed() ), glm::vec2(100.0f, 830.0f));
 }
 
 void Game::DrawMenuTxt()
 {
 	text->RenderText("MENU", glm::vec2(this->width / 2.0f - 65.0f, this->height / 2.0f - 116.0f), 1.75f, glm::vec3(0.75f));
 
-	text->RenderText("Start", glm::vec2(this->width / 2.0f - 20.0f, this->height / 2.0f), 1.0f, glm::vec3(1.0f));
-	text->RenderText("Exit", glm::vec2(this->width / 2.0f - 20.0f, this->height / 2.0f + 40.0f), 1.0f, glm::vec3(1.0f));
+	text->RenderText("Start", glm::vec2(this->width / 2.0f - 20.0f, this->height / 2.0f));
+	text->RenderText("Exit", glm::vec2(this->width / 2.0f - 20.0f, this->height / 2.0f + 40.0f));
 
-	text->RenderText("->", glm::vec2(cursorPos), 1.0f, glm::vec3(1.0f));
+	text->RenderText("->", glm::vec2(cursorPos));
 }
 
 // Calculations

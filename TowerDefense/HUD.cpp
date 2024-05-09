@@ -1,12 +1,13 @@
 #include "HUD.h"
 
-HUD::HUD(unsigned int width, unsigned int height)
+HUD::HUD(unsigned int width, unsigned int height, glm::mat4 view)
 {
     this->width = width;
     this->height = height;
 
 	ResourceManager::LoadShader("../shaders/vHudShader.vx", "../shaders/fHudShader.ft", "hudShader");
     projection = glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f);
+    this->view = view;
 
     float vertices[] = {
         // pos      // tex
@@ -36,6 +37,7 @@ void HUD::DrawHUD(bool menu)
 {
     ResourceManager::GetShader("hudShader").Use();
     ResourceManager::GetShader("hudShader").SetMatrix4("projection", projection);
+    ResourceManager::GetShader("hudShader").SetMatrix4("view", view);
 
     glm::mat4 model = glm::mat4(1.0f);
 
@@ -58,6 +60,7 @@ void HUD::DrawHUD(glm::vec2 pos, glm::vec2 size, bool menu)
 {
     ResourceManager::GetShader("hudShader").Use();
     ResourceManager::GetShader("hudShader").SetMatrix4("projection", projection);
+    ResourceManager::GetShader("hudShader").SetMatrix4("view", view);
 
     glm::mat4 model = glm::mat4(1.0f);
 
@@ -81,6 +84,7 @@ void Button::DrawButton(bool menu)
 {
     ResourceManager::GetShader("hudShader").Use();
     ResourceManager::GetShader("hudShader").SetMatrix4("projection", projection);
+    ResourceManager::GetShader("hudShader").SetMatrix4("view", view);
 
     glm::mat4 model = glm::mat4(1.0f);
 

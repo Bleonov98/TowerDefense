@@ -15,6 +15,7 @@ public:
 
 	Tower(glm::vec3 position, Model model, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : GameObject(position, scale, angle) {
 		this->model = model;
+		this->iconTexture = "bowIcon";
 	};
 
 	// basics
@@ -24,15 +25,19 @@ public:
 	void SetAttackSpeed(int aSpeed) { this->attackSpeed = aSpeed; }
 	void SetDamage(int damage) { this->damage = damage; }
 
-	// gameplay
-	//virtual void Attack();
+	void SelectTower(bool select) { this->selected = select; }
+	bool IsSelected() { return selected; }
 
-	//void UpgradeTower();
-	//void CheckRadius(glm::vec3 targetPos);
+	// gameplay
+	// virtual void Attack();
+
+	// void UpgradeTower();
+	// void CheckRadius(glm::vec3 targetPos);
 
 private:
 
 	int damage = 5, attackSpeed = 15;
+	bool selected = false;
 
 };
 
@@ -40,7 +45,9 @@ class FireTower : public Tower
 {
 public:
 
-	FireTower(glm::vec3 position, Model model, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : Tower(position, model, scale, angle) {};
+	FireTower(glm::vec3 position, Model model, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : Tower(position, model, scale, angle) {
+		this->iconTexture = "fireIcon";
+	};
 
 private:
 
@@ -52,7 +59,9 @@ class IceTower : public Tower
 {
 public:
 
-	IceTower(glm::vec3 position, Model model, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : Tower(position, model, scale, angle) {};
+	IceTower(glm::vec3 position, Model model, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : Tower(position, model, scale, angle) {
+		this->iconTexture = "iceIcon";
+	};
 
 private:
 

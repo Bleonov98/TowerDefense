@@ -21,6 +21,7 @@ public:
 	float GetAngle() { return angle; }
 
 	std::string GetID() { return model.GetName(); }
+	std::string GetIcon() { return iconTexture; }
 
 	// model should be transformed here
 	void RefreshMatrix();
@@ -30,6 +31,7 @@ public:
 	void SetAngle(float angle);
 
 	void SetModel(Model model) { this->model = model; }
+	void SetIcon(std::string iconTexture) { this->iconTexture = iconTexture; }
 
 	void DrawObject();
 
@@ -46,7 +48,7 @@ protected:
 
 	Model model;
 
-	std::string ID;
+	std::string ID, iconTexture;
 
 	bool deleted = false;
 	float angle;
