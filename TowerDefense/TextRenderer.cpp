@@ -8,18 +8,20 @@ TextRenderer::TextRenderer(unsigned int width, unsigned int height)
 {
     // loading
     ResourceManager::LoadShader("../shaders/vTxtShader.vx", "../shaders/fTxtShader.ft", "textShader");
-
     ResourceManager::GetShader("textShader").SetMatrix4("projection", glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f), true);
     ResourceManager::GetShader("textShader").SetInteger("text", 0);
 
     // configure VAO/VBO for texture quads
     glGenVertexArrays(1, &this->VAO);
     glGenBuffers(1, &this->VBO);
+
     glBindVertexArray(this->VAO);
     glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }
@@ -90,6 +92,7 @@ void TextRenderer::RenderText(std::string text, glm::vec2 position, float scale,
     // activate corresponding render state	
     ResourceManager::GetShader("textShader").Use();
     ResourceManager::GetShader("textShader").SetVector3f("textColor", color);
+
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(this->VAO);
 
@@ -125,6 +128,7 @@ void TextRenderer::RenderText(std::string text, glm::vec2 position, float scale,
         // now advance cursors for next glyph
         position.x += (ch.Advance >> 6) * scale; // bitshift by 6 to get value in pixels (1/64th times 2^6 = 64)
     }
+
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
 }

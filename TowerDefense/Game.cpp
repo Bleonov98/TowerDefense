@@ -37,7 +37,7 @@ void Game::Init()
 	text = new TextRenderer(this->width, this->height);
 	text->Load("../fonts/Garamond.ttf", 24);
 
-	HUDisplay = new HUD(this->width, this->height, camera.GetViewMatrix());
+	HUDisplay = new HUD(this->width, this->height);
 	HUDisplay->AddTexture(ResourceManager::GetTexture("HUDTexture"));
 
 	cursorPos = glm::vec2(this->width / 2.0f - 50.0f, this->height / 2.0f);
@@ -79,7 +79,7 @@ void Game::InitButtons()
 
 	for (int i = 0; i < 3; i++)
 	{
-		button = new Button(glm::vec2(450.0f + 100.0f * i, this->height - 120.0f), glm::vec2(60.0f), static_cast<ButtonID>(i), this->width, this->height, camera.GetViewMatrix());
+		button = new Button(glm::vec2(450.0f + 100.0f * i, this->height - 120.0f), glm::vec2(60.0f), static_cast<ButtonID>(i), this->width, this->height);
 
 		if (i == 0) button->AddTexture(ResourceManager::GetTexture("bowIcon"));
 		else if (i == 1) button->AddTexture(ResourceManager::GetTexture("fireIcon"));
@@ -348,20 +348,22 @@ void Game::DrawTowerStats()
 
 	if (result == towerList.end()) return;
 
-	HUD statIcon(this->width, this->height, camera.GetViewMatrix());
+	HUD* statIcon = new HUD(this->width, this->height);
 
 	// tower
-	statIcon.AddTexture(ResourceManager::GetTexture( (*result)->GetIcon() ));
-	statIcon.DrawHUD(glm::vec2(100.0f, 700.0f), glm::vec2(50.0f, 50.0f), gameState == MENU);
+	statIcon->AddTexture(ResourceManager::GetTexture( (*result)->GetIcon() ));
+	statIcon->DrawHUD(glm::vec2(100.0f, 700.0f), glm::vec2(50.0f, 50.0f), gameState == MENU);
 
 	// attack
-	statIcon.AddTexture(ResourceManager::GetTexture("attackStat"));
-	statIcon.DrawHUD(glm::vec2(50.0f, 780.0f), glm::vec2(30.0f), gameState == MENU);
+	statIcon = new HUD(this->width, this->height);
+	statIcon->AddTexture(ResourceManager::GetTexture("attackStat"));
+	statIcon->DrawHUD(glm::vec2(50.0f, 780.0f), glm::vec2(30.0f), gameState == MENU);
 	text->RenderText("5", glm::vec2(100.0f, 100.0f));
 
 	// attackspeed
-	statIcon.AddTexture(ResourceManager::GetTexture("speedStat"));
-	statIcon.DrawHUD(glm::vec2(50.0f, 830.0f), glm::vec2(30.0f), gameState == MENU);
+	statIcon = new HUD(this->width, this->height);
+	statIcon->AddTexture(ResourceManager::GetTexture("speedStat"));
+	statIcon->DrawHUD(glm::vec2(50.0f, 830.0f), glm::vec2(30.0f), gameState == MENU);
 	text->RenderText(std::to_string( (*result)->GetAttackSpeed() ), glm::vec2(100.0f, 830.0f));
 }
 
@@ -457,6 +459,15 @@ std::pair<glm::vec3, glm::vec3> Game::MouseRay(glm::mat4 modelMatrix)
 	rayDirection = glm::normalize(glm::vec3(rayEye));
 
 	return make_pair(rayOrigin, rayDirection);
+}
+
+void Game::CheckGLError(const std::string& context)
+{
+	GLenum err;
+	while ((err = glGetError()) != GL_NO_ERROR)
+	{
+		std::cerr << "OpenGL error in " << context << ": " << err << std::endl;
+	}
 }
 
 // Utility

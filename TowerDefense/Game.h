@@ -67,6 +67,7 @@ public:
 	std::pair<glm::vec3, glm::vec3> MouseRay(glm::mat4 modelMatrix);
 
 	// Utility
+	void CheckGLError(const std::string& context);
 	void DeleteObjects();
 
 	template <typename T>

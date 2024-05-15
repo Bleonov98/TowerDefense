@@ -71,4 +71,5 @@ void Grid::DrawCell()
 {
 	glBindVertexArray(VAO);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glBindVertexArray(0);
 }

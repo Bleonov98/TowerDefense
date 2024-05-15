@@ -10,7 +10,7 @@ class HUD
 {
 public:
 
-	HUD(unsigned int width, unsigned int height, glm::mat4 view);
+	HUD(unsigned int width, unsigned int height);
 
 	void DrawHUD(bool menu);
 	void DrawHUD(glm::vec2 pos, glm::vec2 size, bool menu);
@@ -26,7 +26,7 @@ protected:
 
 	Texture2D texture;
 
-	glm::mat4 projection, view;
+	glm::mat4 projection;
 
 };
 
@@ -41,7 +41,7 @@ class Button : public HUD
 {
 public:
 
-	Button(glm::vec2 position, glm::vec2 size, ButtonID id, unsigned int width, unsigned int height, glm::mat4 view) : HUD(width, height, view) {
+	Button(glm::vec2 position, glm::vec2 size, ButtonID id, unsigned int width, unsigned int height) : HUD(width, height) {
 		this->size = size;
 		this->position = position;
 		this->buttonID = id;

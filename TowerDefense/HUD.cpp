@@ -1,13 +1,12 @@
 #include "HUD.h"
 
-HUD::HUD(unsigned int width, unsigned int height, glm::mat4 view)
+HUD::HUD(unsigned int width, unsigned int height)
 {
     this->width = width;
     this->height = height;
 
 	ResourceManager::LoadShader("../shaders/vHudShader.vx", "../shaders/fHudShader.ft", "hudShader");
     projection = glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f);
-    this->view = view;
 
     float vertices[] = {
         // pos      // tex
@@ -37,13 +36,6 @@ void HUD::DrawHUD(bool menu)
 {
     ResourceManager::GetShader("hudShader").Use();
     ResourceManager::GetShader("hudShader").SetMatrix4("projection", projection);
-    ResourceManager::GetShader("hudShader").SetMatrix4("view", view);
-
-    glm::mat4 model = glm::mat4(1.0f);
-
-    model = glm::scale(model, glm::vec3(this->width, this->height, 1.0f));
-
-    ResourceManager::GetShader("hudShader").SetMatrix4("model", model);
     ResourceManager::GetShader("hudShader").SetVector3f("spriteColor", glm::vec3(1.0f));
 
     ResourceManager::GetShader("hudShader").SetBool("menu", menu);
@@ -54,20 +46,14 @@ void HUD::DrawHUD(bool menu)
     glBindVertexArray(this->VAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void HUD::DrawHUD(glm::vec2 pos, glm::vec2 size, bool menu)
 {
     ResourceManager::GetShader("hudShader").Use();
     ResourceManager::GetShader("hudShader").SetMatrix4("projection", projection);
-    ResourceManager::GetShader("hudShader").SetMatrix4("view", view);
-
-    glm::mat4 model = glm::mat4(1.0f);
-
-    model = glm::translate(model, glm::vec3(pos, 1.0f));
-    model = glm::scale(model, glm::vec3(size.x, size.y, 1.0f));
-
-    ResourceManager::GetShader("hudShader").SetMatrix4("model", model);
     ResourceManager::GetShader("hudShader").SetVector3f("spriteColor", glm::vec3(1.0f));
 
     ResourceManager::GetShader("hudShader").SetBool("menu", menu);
@@ -78,20 +64,14 @@ void HUD::DrawHUD(glm::vec2 pos, glm::vec2 size, bool menu)
     glBindVertexArray(this->VAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Button::DrawButton(bool menu)
 {
     ResourceManager::GetShader("hudShader").Use();
     ResourceManager::GetShader("hudShader").SetMatrix4("projection", projection);
-    ResourceManager::GetShader("hudShader").SetMatrix4("view", view);
-
-    glm::mat4 model = glm::mat4(1.0f);
-
-    model = glm::translate(model, glm::vec3(position, 1.0f));
-    model = glm::scale(model, glm::vec3(size.x, size.y, 1.0f));
-
-    ResourceManager::GetShader("hudShader").SetMatrix4("model", model);
     ResourceManager::GetShader("hudShader").SetVector3f("spriteColor", glm::vec3(1.0f));
 
     ResourceManager::GetShader("hudShader").SetBool("menu", menu);
@@ -102,6 +82,8 @@ void Button::DrawButton(bool menu)
     glBindVertexArray(this->VAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
+    
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 bool Button::ButtonCollision(glm::vec2 clickPos)

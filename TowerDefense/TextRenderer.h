@@ -26,8 +26,9 @@ public:
 private:
 
     std::map<char, Character> Characters;
-
+    
     unsigned int VAO, VBO;
+    
 };
 
 #endif // TEXT_RENDERER_H
