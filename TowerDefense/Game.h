@@ -49,7 +49,8 @@ public:
 	void UnactiveCells();
 	void SetActiveCell(Grid* cell);
 	void SetTower(Grid* cell, TowerType type);
-
+	void UnselectTowers();
+		
 	// Render
 	void Render(float dt);
 	void DrawObject(GameObject* obj, float dt);
@@ -63,7 +64,7 @@ public:
 
 	// Calculations
 	glm::vec3 FindNearestCell(glm::vec3 position);
-	glm::vec3 ClickPosition();
+	glm::vec3 ProcessClick();
 	std::pair<glm::vec3, glm::vec3> MouseRay(glm::mat4 modelMatrix);
 
 	// Utility

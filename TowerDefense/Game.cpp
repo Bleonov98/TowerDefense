@@ -136,7 +136,7 @@ void Game::ProcessInput(float dt)
 
 		if (this->mouseKeys[GLFW_MOUSE_BUTTON_LEFT]) {
 
-			if ((xMouse > 350.0f && xMouse < 1250.0f && yMouse < 700.0f) || (yMouse < 620.0f)) glm::vec2 clickPos = ClickPosition();
+			if ((xMouse > 350.0f && xMouse < 1250.0f && yMouse < 700.0f) || (yMouse < 620.0f)) glm::vec2 clickPos = ProcessClick();
 			
 			for (size_t i = 0; i < buttonList.size(); i++)
 			{
@@ -209,11 +209,18 @@ void Game::SetTower(Grid* cell, TowerType type)
 	cell->SelectCell(false);
 
 	tower->SetScale(glm::vec3(1.0f, 1.0f, 0.8f));
-	tower->SelectTower(true);
 	objList.push_back(tower);
 	towerList.push_back(tower);
 
 	UnactiveCells();
+}
+
+void Game::UnselectTowers()
+{
+	for (auto i : towerList)
+	{
+		if (i->IsSelected()) i->SelectTower(false);
+	}
 }
 
 Grid* Game::GetActiveCell()
@@ -358,13 +365,13 @@ void Game::DrawTowerStats()
 	statIcon = new HUD(this->width, this->height);
 	statIcon->AddTexture(ResourceManager::GetTexture("attackStat"));
 	statIcon->DrawHUD(glm::vec2(50.0f, 780.0f), glm::vec2(30.0f), gameState == MENU);
-	text->RenderText("5", glm::vec2(100.0f, 100.0f));
+	text->RenderText(std::to_string( (*result)->GetDamage() ), glm::vec2(100.0f, 785.0f));
 
 	// attackspeed
 	statIcon = new HUD(this->width, this->height);
 	statIcon->AddTexture(ResourceManager::GetTexture("speedStat"));
 	statIcon->DrawHUD(glm::vec2(50.0f, 830.0f), glm::vec2(30.0f), gameState == MENU);
-	text->RenderText(std::to_string( (*result)->GetAttackSpeed() ), glm::vec2(100.0f, 830.0f));
+	text->RenderText(std::to_string( (*result)->GetAttackSpeed() ), glm::vec2(100.0f, 835.0f));
 }
 
 void Game::DrawMenuTxt()
@@ -406,11 +413,31 @@ glm::vec3 Game::FindNearestCell(glm::vec3 position)
 	return nearestCell;
 }
 
-glm::vec3 Game::ClickPosition()
+glm::vec3 Game::ProcessClick() 
 {
 	glm::vec3 clickPos(1488.0f);
-	bool found = false;
 
+	bool foundTower = false;
+	// check tower click
+	for (auto& tower : towerList)
+	{
+		std::pair<glm::vec3, glm::vec3> rayValues = MouseRay(tower->GetMatrix());
+
+		glm::vec3 rayOrigin = rayValues.first;
+		glm::vec3 rayDirection = rayValues.second;
+
+		if (tower->RayCollision(rayOrigin, rayDirection)) {
+			clickPos = tower->GetPosition();
+
+			UnselectTowers();
+			tower->SelectTower(true);
+
+			return clickPos;
+		}
+	}
+
+	bool foundCell = false;
+	// check grid click
 	for (auto& i : grid)
 	{
 		for (auto& cell : i)
@@ -425,14 +452,15 @@ glm::vec3 Game::ClickPosition()
 
 				SetActiveCell(cell);
 
-				found = true;
+				foundCell = true;
 				break;
 			}
 		}
-		if (found) break;
+		if (foundCell) break;
 	}
 
-	if (!found) UnactiveCells();
+	if (!foundCell) UnactiveCells();
+	if (!foundTower) UnselectTowers();
 
 	return clickPos;
 }

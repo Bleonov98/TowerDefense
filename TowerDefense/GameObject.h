@@ -33,6 +33,9 @@ public:
 	void SetModel(Model model) { this->model = model; }
 	void SetIcon(std::string iconTexture) { this->iconTexture = iconTexture; }
 
+	bool RayCollision(const glm::vec3& rayOrigin, const glm::vec3& rayDirection);
+	bool RayIntersectsTriangle(const glm::vec3& rayOrigin, const glm::vec3& rayDirection, const glm::vec3& v0, const glm::vec3& v1, const glm::vec3& v2, float& t);
+
 	void DrawObject();
 
 	// - - - - - -

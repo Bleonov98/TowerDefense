@@ -37,8 +37,23 @@ void HUD::DrawHUD(bool menu)
     ResourceManager::GetShader("hudShader").Use();
     ResourceManager::GetShader("hudShader").SetMatrix4("projection", projection);
     ResourceManager::GetShader("hudShader").SetVector3f("spriteColor", glm::vec3(1.0f));
-
     ResourceManager::GetShader("hudShader").SetBool("menu", menu);
+
+    // Calculate transformation matrix manually and apply to each vertex
+    float vertices[] = {
+        0.0f,  static_cast<float>(height), 0.0f, 1.0f,
+        static_cast<float>(width), 0.0f, 1.0f, 0.0f,
+        0.0f,  0.0f, 0.0f, 0.0f,
+
+        0.0f,  static_cast<float>(height), 0.0f, 1.0f,
+        static_cast<float>(width), static_cast<float>(height), 1.0f, 1.0f,
+        static_cast<float>(width), 0.0f, 1.0f, 0.0f
+    };
+
+    glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+
+    glDisable(GL_DEPTH_TEST);
 
     glActiveTexture(GL_TEXTURE0);
     texture.Bind();
@@ -48,6 +63,8 @@ void HUD::DrawHUD(bool menu)
     glBindVertexArray(0);
 
     glBindTexture(GL_TEXTURE_2D, 0);
+
+    glEnable(GL_DEPTH_TEST);
 }
 
 void HUD::DrawHUD(glm::vec2 pos, glm::vec2 size, bool menu)
@@ -58,6 +75,21 @@ void HUD::DrawHUD(glm::vec2 pos, glm::vec2 size, bool menu)
 
     ResourceManager::GetShader("hudShader").SetBool("menu", menu);
 
+    float vertices[] = {
+    pos.x,          pos.y + size.y, 0.0f, 1.0f,
+    pos.x + size.x, pos.y,          1.0f, 0.0f,
+    pos.x,          pos.y,          0.0f, 0.0f,
+
+    pos.x,          pos.y + size.y, 0.0f, 1.0f,
+    pos.x + size.x, pos.y + size.y, 1.0f, 1.0f,
+    pos.x + size.x, pos.y,          1.0f, 0.0f
+    };
+
+    glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+
+    glDisable(GL_DEPTH_TEST);
+
     glActiveTexture(GL_TEXTURE0);
     texture.Bind();
 
@@ -66,24 +98,13 @@ void HUD::DrawHUD(glm::vec2 pos, glm::vec2 size, bool menu)
     glBindVertexArray(0);
 
     glBindTexture(GL_TEXTURE_2D, 0);
+
+    glEnable(GL_DEPTH_TEST);
 }
 
 void Button::DrawButton(bool menu)
 {
-    ResourceManager::GetShader("hudShader").Use();
-    ResourceManager::GetShader("hudShader").SetMatrix4("projection", projection);
-    ResourceManager::GetShader("hudShader").SetVector3f("spriteColor", glm::vec3(1.0f));
-
-    ResourceManager::GetShader("hudShader").SetBool("menu", menu);
-
-    glActiveTexture(GL_TEXTURE0);
-    texture.Bind();
-
-    glBindVertexArray(this->VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    glBindVertexArray(0);
-    
-    glBindTexture(GL_TEXTURE_2D, 0);
+    DrawHUD(position, size, menu);
 }
 
 bool Button::ButtonCollision(glm::vec2 clickPos)
