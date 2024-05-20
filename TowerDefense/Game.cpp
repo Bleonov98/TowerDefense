@@ -134,7 +134,7 @@ void Game::ProcessInput(float dt)
 			if (prevPitch != camera.Pitch) cout << std::format("pitch: {}", static_cast<int>(camera.Pitch)) << endl;
 		}
 
-		if (this->mouseKeys[GLFW_MOUSE_BUTTON_LEFT]) {
+		if (this->mouseKeys[GLFW_MOUSE_BUTTON_LEFT] && !mKeysProcessed[GLFW_MOUSE_BUTTON_LEFT]) {
 
 			if ((xMouse > 350.0f && xMouse < 1250.0f && yMouse < 700.0f) || (yMouse < 620.0f)) glm::vec2 clickPos = ProcessClick();
 			
@@ -146,6 +146,8 @@ void Game::ProcessInput(float dt)
 					if (buttonList[i]->GetID() == ICETOWER_BUTTON) SetTower(GetActiveCell(), ICE);
 				}
 			}
+
+			mKeysProcessed[GLFW_MOUSE_BUTTON_LEFT] = true;
 		}
 
 		if (this->Keys[GLFW_KEY_G]) showGrid = true;
@@ -271,7 +273,6 @@ void Game::Render(float dt)
 			{
 				DrawGrid(j);
 			}
-
 		}
 	}
 
@@ -421,7 +422,7 @@ glm::vec3 Game::ProcessClick()
 	// check tower click
 	for (auto& tower : towerList)
 	{
-		std::pair<glm::vec3, glm::vec3> rayValues = MouseRay(tower->GetMatrix());
+		std::pair<glm::vec3, glm::vec3> rayValues = MouseRay();
 
 		glm::vec3 rayOrigin = rayValues.first;
 		glm::vec3 rayDirection = rayValues.second;
@@ -429,7 +430,9 @@ glm::vec3 Game::ProcessClick()
 		if (tower->RayCollision(rayOrigin, rayDirection)) {
 			clickPos = tower->GetPosition();
 
+			UnactiveCells();
 			UnselectTowers();
+
 			tower->SelectTower(true);
 
 			return clickPos;
@@ -442,7 +445,7 @@ glm::vec3 Game::ProcessClick()
 	{
 		for (auto& cell : i)
 		{
-			std::pair<glm::vec3, glm::vec3> rayValues = MouseRay(cell->GetMatrix());
+			std::pair<glm::vec3, glm::vec3> rayValues = MouseRay();
 
 			glm::vec3 rayOrigin = rayValues.first;
 			glm::vec3 rayDirection = rayValues.second;
@@ -465,28 +468,22 @@ glm::vec3 Game::ProcessClick()
 	return clickPos;
 }
 
-std::pair<glm::vec3, glm::vec3> Game::MouseRay(glm::mat4 modelMatrix)
+std::pair<glm::vec3, glm::vec3> Game::MouseRay()
 {
-	glm::vec3 rayDirection;
-
-	// normalized mouse position for opengl
 	float normalizedX = (2.0f * xMouse) / width - 1.0f;
 	float normalizedY = 1.0f - (2.0f * yMouse) / height;
-	
-	glm::vec4 screenPos = glm::vec4(normalizedX, normalizedY, 1.0f, 1.0f);
 
-	glm::mat4 invProjectionView = glm::inverse(projection * view); // world from screen space transformation matrix
+	glm::vec4 rayClip = glm::vec4(normalizedX, normalizedY, -1.0f, 1.0f);
+	glm::vec4 rayEye = glm::inverse(projection) * rayClip;
+	rayEye.z = -1.0f;
+	rayEye.w = 0.0f;
 
-	// world ray values
+	glm::vec4 rayWorld4 = glm::inverse(view) * rayEye;
+	glm::vec3 rayWorld = glm::normalize(glm::vec3(rayWorld4));
+
 	glm::vec3 rayOrigin = camera.GetCameraPosition();
 
-	// Calculate direction vector
-	glm::vec4 rayClip = glm::inverse(projection) * screenPos;
-	rayClip = glm::vec4(rayClip.x, rayClip.y, -1.0, 0.0); // Ray points towards the -Z direction (into the screen)
-	glm::vec4 rayEye = glm::inverse(view) * rayClip;
-	rayDirection = glm::normalize(glm::vec3(rayEye));
-
-	return make_pair(rayOrigin, rayDirection);
+	return std::make_pair(rayOrigin, rayWorld);
 }
 
 void Game::CheckGLError(const std::string& context)

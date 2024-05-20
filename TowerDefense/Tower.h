@@ -16,6 +16,8 @@ public:
 	Tower(glm::vec3 position, Model model, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : GameObject(position, scale, angle) {
 		this->model = model;
 		this->iconTexture = "bowIcon";
+
+		RefreshModel();
 	};
 
 	// basics

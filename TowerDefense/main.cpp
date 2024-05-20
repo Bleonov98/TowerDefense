@@ -91,7 +91,10 @@ void mouse_callback(GLFWwindow* window, int button, int action, int mods)
 	if (button >= 0 && button < 8)
 	{
 		if (action == GLFW_PRESS) TD.mouseKeys[button] = true;
-		else if (action == GLFW_RELEASE) TD.mouseKeys[button] = false;
+		else if (action == GLFW_RELEASE) { 
+			TD.mouseKeys[button] = false;
+			TD.mKeysProcessed[button] = false;
+		}
 		
 		double xpos, ypos;
 

@@ -30,11 +30,12 @@ public:
 	void SetColor(glm::vec3 color) { this->color = color; }
 	void SetAngle(float angle);
 
-	void SetModel(Model model) { this->model = model; }
+	void SetModel(Model model);
+	void RefreshModel();
 	void SetIcon(std::string iconTexture) { this->iconTexture = iconTexture; }
 
 	bool RayCollision(const glm::vec3& rayOrigin, const glm::vec3& rayDirection);
-	bool RayIntersectsTriangle(const glm::vec3& rayOrigin, const glm::vec3& rayDirection, const glm::vec3& v0, const glm::vec3& v1, const glm::vec3& v2, float& t);
+	bool RayIntersectsTriangle(const glm::vec3& rayOrigin, const glm::vec3& rayVector, const glm::vec3& vertex0, const glm::vec3& vertex1, const glm::vec3& vertex2, float& outIntersectionDistance);
 
 	void DrawObject();
 

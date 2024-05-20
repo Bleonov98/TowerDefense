@@ -65,7 +65,7 @@ public:
 	// Calculations
 	glm::vec3 FindNearestCell(glm::vec3 position);
 	glm::vec3 ProcessClick();
-	std::pair<glm::vec3, glm::vec3> MouseRay(glm::mat4 modelMatrix);
+	std::pair<glm::vec3, glm::vec3> MouseRay();
 
 	// Utility
 	void CheckGLError(const std::string& context);
@@ -77,7 +77,7 @@ public:
 	~Game();
 	
 	// - - - - 
-	bool Keys[1024], KeysProcessed[1024], mouseKeys[8], close = false;
+	bool Keys[1024], KeysProcessed[1024], mouseKeys[8], mKeysProcessed[8], close = false;
 	double xMouse, yMouse;
 
 private:
