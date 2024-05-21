@@ -55,6 +55,7 @@
     <ClCompile Include="Projectile.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Enemy.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h">
@@ -111,6 +112,7 @@
     <ClInclude Include="Projectile.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Enemy.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source">

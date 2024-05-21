@@ -39,7 +39,7 @@ public:
     vector<Vertex>       vertices;
     vector<unsigned int> indices;
     vector<Texture>      textures;
-    unsigned int VAO;
+    unsigned int VAO, VBO;
 
     // constructor
     Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures);
@@ -49,7 +49,7 @@ public:
 
 private:
     // render data 
-    unsigned int VBO, EBO;
+    unsigned int  EBO;
 
     // initializes all the buffer objects/arrays
     void setupMesh();

@@ -23,22 +23,25 @@ public:
 	// basics
 	int GetAttackSpeed() { return this->attackSpeed; }
 	int GetDamage() { return this->damage; }
-
+	int GetTowerLvl() { return this->towerLvl; }
+	int GetTowerCost() { return this->towerCost; }
+	
 	void SetAttackSpeed(int aSpeed) { this->attackSpeed = aSpeed; }
 	void SetDamage(int damage) { this->damage = damage; }
 
 	void SelectTower(bool select) { this->selected = select; }
 	bool IsSelected() { return selected; }
-
+	
 	// gameplay
 	// virtual void Attack();
-
-	// void UpgradeTower();
 	// void CheckRadius(glm::vec3 targetPos);
+	
+	virtual void UpgradeTower();
 
-private:
 
-	int damage = 5, attackSpeed = 15;
+protected:
+
+	int damage = 30, attackSpeed = 25, towerLvl = 1, towerCost = 50;
 	bool selected = false;
 
 };
@@ -49,11 +52,17 @@ public:
 
 	FireTower(glm::vec3 position, Model model, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : Tower(position, model, scale, angle) {
 		this->iconTexture = "fireIcon";
+
+		this->damage = 5;
+		this->attackSpeed = 50;
+		this->towerCost = 100;
 	};
+
+	void UpgradeTower() override;
 
 private:
 
-	int splashDamage = 3;
+	
 
 };
 
@@ -63,11 +72,17 @@ public:
 
 	IceTower(glm::vec3 position, Model model, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : Tower(position, model, scale, angle) {
 		this->iconTexture = "iceIcon";
+
+		this->damage = 15;
+		this->attackSpeed = 10;
+		this->towerCost = 100;
 	};
+
+	void UpgradeTower() override;
 
 private:
 
-	int splashDamage = 1, slow = 50;
+	int slowRate = 0.2;
 
 };
 

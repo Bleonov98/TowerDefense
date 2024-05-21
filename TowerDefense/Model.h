@@ -48,8 +48,8 @@ public:
     // calculations
     void CalculateSize();
 
-    void TranslateModel(glm::vec3 displacement);
-    void ScaleModel(glm::vec3 scale);
+    void TranslateModel(glm::vec3 newPosition);
+    void ScaleModel(glm::vec3 scale, glm::vec3 position);
     void RotateModel(float rotate);
 
     // properties

@@ -44,7 +44,7 @@ public:
 	void Update(float dt);
 	void CheckCollisions(float dt);
 
-		// placement
+	// placement
 	Grid* GetActiveCell();
 	void UnactiveCells();
 	void SetActiveCell(Grid* cell);

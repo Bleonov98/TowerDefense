@@ -5,7 +5,6 @@ HUD::HUD(unsigned int width, unsigned int height)
     this->width = width;
     this->height = height;
 
-	ResourceManager::LoadShader("../shaders/vHudShader.vx", "../shaders/fHudShader.ft", "hudShader");
     projection = glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f);
 
     float vertices[] = {

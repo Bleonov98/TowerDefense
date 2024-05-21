@@ -4,6 +4,8 @@
 using namespace irrklang;
 
 HUD* HUDisplay;
+HUD* statHUD;
+
 TextRenderer* text;
 
 ISoundEngine* sound = irrklang::createIrrKlangDevice();
@@ -37,9 +39,12 @@ void Game::Init()
 	text = new TextRenderer(this->width, this->height);
 	text->Load("../fonts/Garamond.ttf", 24);
 
+	// HUD
 	HUDisplay = new HUD(this->width, this->height);
 	HUDisplay->AddTexture(ResourceManager::GetTexture("HUDTexture"));
+	statHUD = new HUD(this->width, this->height);
 
+	// main
 	cursorPos = glm::vec2(this->width / 2.0f - 50.0f, this->height / 2.0f);
 
 	gameMap = new GameObject(glm::vec3(0.0f), glm::vec3(1.0f));
@@ -58,11 +63,14 @@ void Game::InitGrid()
 
 	glm::vec3 startGridPos = gameMap->GetPosition() - glm::vec3(gameMap->GetSize() / 2.0f);
 
+	int cellData = 0;
 	for (size_t i = 0; i < rows; i++)
 	{
 		for (size_t j = 0; j < cols; j++)
 		{
-			Grid* cell = new Grid(glm::vec3(startGridPos.x + j * cellWidth, startGridPos.y + gameMap->GetSize().y + 0.001f, startGridPos.z + i * cellHeight) + centerVec, cellWidth, cellHeight, rand() % 2);
+			if (i < 5) cellData = 99;
+			else cellData = 0;
+			Grid* cell = new Grid(glm::vec3(startGridPos.x + j * cellWidth, startGridPos.y + gameMap->GetSize().y + 0.001f, startGridPos.z + i * cellHeight) + centerVec, cellWidth, cellHeight, cellData);
 			grid[i][j] = cell;
 		}
 	}
@@ -93,6 +101,7 @@ void Game::LoadResources()
 {
 	ResourceManager::LoadShader("../shaders/vShader.vx", "../shaders/fShader.ft", "modelShader");
 	ResourceManager::LoadShader("../shaders/testVShader.vx", "../shaders/testFShader.ft", "testShader");
+	ResourceManager::LoadShader("../shaders/vHudShader.vx", "../shaders/fHudShader.ft", "hudShader");
 
 	// objects
 
@@ -197,6 +206,8 @@ void Game::SetActiveCell(Grid* cell)
 
 	cell->SelectCell(true);
 	cell->SetColour(glm::vec3(0.7f, 1.0f, 1.0f));
+
+	cout << cell->GetPosition().x << " " << cell->GetPosition().y << " " << cell->GetPosition().z << endl;
 }
 
 void Game::SetTower(Grid* cell, TowerType type)
@@ -356,22 +367,18 @@ void Game::DrawTowerStats()
 
 	if (result == towerList.end()) return;
 
-	HUD* statIcon = new HUD(this->width, this->height);
-
 	// tower
-	statIcon->AddTexture(ResourceManager::GetTexture( (*result)->GetIcon() ));
-	statIcon->DrawHUD(glm::vec2(100.0f, 700.0f), glm::vec2(50.0f, 50.0f), gameState == MENU);
+	statHUD->AddTexture(ResourceManager::GetTexture( (*result)->GetIcon() ));
+	statHUD->DrawHUD(glm::vec2(100.0f, 700.0f), glm::vec2(50.0f, 50.0f), gameState == MENU);
 
 	// attack
-	statIcon = new HUD(this->width, this->height);
-	statIcon->AddTexture(ResourceManager::GetTexture("attackStat"));
-	statIcon->DrawHUD(glm::vec2(50.0f, 780.0f), glm::vec2(30.0f), gameState == MENU);
+	statHUD->AddTexture(ResourceManager::GetTexture("attackStat"));
+	statHUD->DrawHUD(glm::vec2(50.0f, 780.0f), glm::vec2(30.0f), gameState == MENU);
 	text->RenderText(std::to_string( (*result)->GetDamage() ), glm::vec2(100.0f, 785.0f));
 
 	// attackspeed
-	statIcon = new HUD(this->width, this->height);
-	statIcon->AddTexture(ResourceManager::GetTexture("speedStat"));
-	statIcon->DrawHUD(glm::vec2(50.0f, 830.0f), glm::vec2(30.0f), gameState == MENU);
+	statHUD->AddTexture(ResourceManager::GetTexture("speedStat"));
+	statHUD->DrawHUD(glm::vec2(50.0f, 830.0f), glm::vec2(30.0f), gameState == MENU);
 	text->RenderText(std::to_string( (*result)->GetAttackSpeed() ), glm::vec2(100.0f, 835.0f));
 }
 

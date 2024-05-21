@@ -57,13 +57,15 @@ void Model::TranslateModel(glm::vec3 displacement)
     }
 }
 
-void Model::ScaleModel(glm::vec3 scale)
+void Model::ScaleModel(glm::vec3 scale, glm::vec3 position)
 {
+    modelSize *= scale;
+
     for (auto& i : meshes)
     {
         for (auto& j : i.vertices)
         {
-            j.Position *= scale;
+            j.Position = position + (j.Position - position) * scale;
         }
     }
 }
