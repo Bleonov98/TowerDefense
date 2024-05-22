@@ -17,6 +17,7 @@
 #include "GameObject.h"
 #include "Tower.h"
 #include "Projectile.h"
+#include "Enemy.h"
 
 enum GameState {
 	ACTIVE,
@@ -48,8 +49,13 @@ public:
 	Grid* GetActiveCell();
 	void UnactiveCells();
 	void SetActiveCell(Grid* cell);
+
 	void SetTower(Grid* cell, TowerType type);
 	void UnselectTowers();
+
+	void SpawnEnemy();
+	
+	void StartLevel();
 		
 	// Render
 	void Render(float dt);
@@ -101,6 +107,8 @@ private:
 	// objects
 	std::vector<GameObject*> objList;
 	std::vector<Tower*> towerList;
+	std::vector<Enemy*> enemyList;
+	std::vector<Projectile*> projectileList;
 
 	std::vector<Button*> buttonList;
 };

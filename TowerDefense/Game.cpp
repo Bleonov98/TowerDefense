@@ -68,8 +68,14 @@ void Game::InitGrid()
 	{
 		for (size_t j = 0; j < cols; j++)
 		{
-			if (i < 5) cellData = 99;
+			if (i < 5 || i > 25 || (i < 10 && (j < 10 || j > 20) 
+				|| ((i == 13 || i == 17) && (j < 14 || (j > 17 && j < 27))) 
+				|| (((i > 7 && i < 14) || (i > 16 && i < 23)) && (j == 13 || j == 17)) 
+				|| (i > 20 && (j < 10 || j > 20)) 
+				|| ((i == 8 || i == 22) && (j >= 14 && j <= 16)) 
+				|| ((i >= 14 && i <= 16) && j == 26))) cellData = 99;
 			else cellData = 0;
+
 			Grid* cell = new Grid(glm::vec3(startGridPos.x + j * cellWidth, startGridPos.y + gameMap->GetSize().y + 0.001f, startGridPos.z + i * cellHeight) + centerVec, cellWidth, cellHeight, cellData);
 			grid[i][j] = cell;
 		}
@@ -234,6 +240,11 @@ void Game::UnselectTowers()
 	{
 		if (i->IsSelected()) i->SelectTower(false);
 	}
+}
+
+void Game::SpawnEnemy()
+{
+	Enemy* enemy = new Enemy(glm::vec3());
 }
 
 Grid* Game::GetActiveCell()
