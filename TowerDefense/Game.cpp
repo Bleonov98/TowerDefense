@@ -114,6 +114,8 @@ void Game::LoadResources()
 	// - - - // Models
 	ResourceManager::LoadModel("map.obj", "map");
 	ResourceManager::LoadModel("tower.obj", "tower");
+	ResourceManager::LoadModel("enemy.obj", "enemy");
+	// ResourceManager::LoadModel("boss.obj", "boss");
 
 	// - - - // Textures
 	ResourceManager::LoadTexture("HudFrame.png", true, "HUDTexture");
@@ -197,7 +199,20 @@ void Game::ProcessInput(float dt)
 
 void Game::Update(float dt)
 {
+	static bool lvlStarted = false;
 	if (gameState == ACTIVE) {
+
+		if (!lvlStarted) {
+			StartLevel();
+			lvlStarted = true;
+		}
+
+		for (auto enemy : enemyList)
+		{
+			enemy->CheckPoint();
+			enemy->Move(dt);
+		}
+
 	}
 }
 
@@ -244,7 +259,16 @@ void Game::UnselectTowers()
 
 void Game::SpawnEnemy()
 {
-	Enemy* enemy = new Enemy(glm::vec3());
+	Enemy* enemy = new Enemy(grid[11][0]->GetPosition(), ResourceManager::GetModel("enemy"));
+	enemy->SetScale(glm::vec3(0.1f));
+	enemy->InitPath(grid);
+	objList.push_back(enemy);
+	enemyList.push_back(enemy);
+}
+
+void Game::StartLevel()
+{
+	SpawnEnemy();
 }
 
 Grid* Game::GetActiveCell()
@@ -285,6 +309,11 @@ void Game::Render(float dt)
 	for (auto i : towerList)
 	{
 		DrawObject(i, dt);
+	}
+
+	for (auto enemy : enemyList)
+	{
+		DrawObject(enemy, dt);
 	}
 
 	// Menu, Helpers
@@ -516,6 +545,10 @@ void Game::CheckGLError(const std::string& context)
 // Utility
 void Game::DeleteObjects()
 {
+	DeleteObjectFromVector(towerList, false);
+	DeleteObjectFromVector(enemyList, false);
+	DeleteObjectFromVector(projectileList, false);
+
 	DeleteObjectFromVector(objList, true);
 }
 
@@ -543,5 +576,5 @@ Game::~Game()
 	}
 	objList.clear();
 
-	// delete grid
+	// delete grid, buttons, hud, clear all vectors
 }

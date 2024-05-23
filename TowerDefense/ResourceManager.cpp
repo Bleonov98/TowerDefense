@@ -5,7 +5,6 @@ std::map<std::string, Animation> ResourceManager::animations;
 std::map<std::string, Animator> ResourceManager::animators;
 
 std::map<std::string, Shader> ResourceManager::shaders;
-
 std::map<std::string, Texture2D> ResourceManager::textures;
 
 // Shaders

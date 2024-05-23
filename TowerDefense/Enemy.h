@@ -1,7 +1,18 @@
 #ifndef ENEMY_H
 #define ENEMY_H
 
+#include <queue>
+
 #include "GameObject.h"
+#include "Grid.h"
+
+enum MoveDir {
+	MOVE_RIGHT,
+	MOVE_LEFT,
+	MOVE_UP,
+	MOVE_DOWN
+};
+
 class Enemy : public GameObject
 {
 public:
@@ -12,18 +23,24 @@ public:
 		RefreshModel();
 	}
 
+	void InitPath(const std::vector<std::vector<Grid*>> grid);
+
 	int GetHP() { return this->hp; }
 	int GetSpeed() { return this->speed; }
 	int GetGold() { return this->gold; }
 
-	void Move(float dt);
-	void Hit(int damage);
+	void Move(const float dt);
+	void CheckPoint();
+	int Hit(const int damage);
 
 	void UpgradeEnemy();
 
 protected:
 
-	int speed = 100, hp = 100, gold = 10;
+	inline static int speed = 1, hp = 100, gold = 10;
+
+	MoveDir dir = MOVE_RIGHT;
+	std::queue<pair<MoveDir, Grid*>> dirQ;
 
 };
 

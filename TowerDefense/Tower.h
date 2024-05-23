@@ -38,6 +38,7 @@ public:
 	
 	virtual void UpgradeTower();
 
+	virtual ~Tower() {};
 
 protected:
 
