@@ -37,7 +37,8 @@ public:
 
 protected:
 
-	inline static int speed = 1, hp = 100, gold = 10;
+	inline static float speed = 1.0f;
+	inline static int hp = 100, gold = 10;
 
 	MoveDir dir = MOVE_RIGHT;
 	std::queue<pair<MoveDir, Grid*>> dirQ;

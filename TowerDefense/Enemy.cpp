@@ -26,7 +26,7 @@ void Enemy::Move(const float dt)
 
 void Enemy::CheckPoint()
 {
-	if (!dirQ.empty() && dirQ.front().second->RayCollision(position, glm::vec3(0.0f, 1.0f, 0.0f))) {
+	if (!dirQ.empty() && dirQ.front().second->CenterCollision(position)) {
 		dir = dirQ.front().first;
 		dirQ.pop();
 	}
@@ -46,6 +46,6 @@ int Enemy::Hit(const int damage)
 void Enemy::UpgradeEnemy()
 {
 	hp += 150;
-	speed += 2;
+	if (speed < 2.5f) speed += 0.5f;
 	gold += 5;
 }

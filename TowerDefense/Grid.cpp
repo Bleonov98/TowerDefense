@@ -13,7 +13,7 @@ Grid::Grid(glm::vec3 cellPosition, float cellWidth, float cellHeight, int cellDa
 	x = cellWidth / 2.0f - 0.01f;
 	z = cellHeight / 2.0f - 0.01f;
 
-	if (cellData == 0) cellColour = glm::vec3(1.0f, 1.0f, 0.0f);
+	if (cellData == 0) cellColour = glm::vec3(0.0f, 0.5f, 0.0f);
 	else cellColour = glm::vec3(1.0f, 0.0f, 0.0f);
 
 	// grid shapes
@@ -46,6 +46,27 @@ void Grid::RefreshMatrix()
 	modelMatrix = glm::translate(modelMatrix, cellPos);
 	
 	cellMatrix = modelMatrix;
+}
+
+bool Grid::CenterCollision(const glm::vec3& rayOrigin)
+{
+	glm::vec3 invRayDirection = 1.0f / glm::vec3(0.0f, 1.0f, 0.0f);
+
+	glm::vec3 ray = glm::vec3(rayOrigin.x, cellPos.y, rayOrigin.z);
+
+	glm::vec3 minPoint = cellPos - glm::vec3(0.02f, 0.0f, 0.02f);
+	glm::vec3 maxPoint = cellPos + glm::vec3(0.02f, 0.0f, 0.02f);
+
+	glm::vec3 tMin = (minPoint - ray) * invRayDirection;
+	glm::vec3 tMax = (maxPoint - ray) * invRayDirection;
+
+	glm::vec3 tEnter = glm::min(tMin, tMax);
+	glm::vec3 tExit = glm::max(tMin, tMax);
+
+	float tNear = glm::compMax(tEnter);
+	float tFar = glm::compMin(tExit);
+
+	return tNear <= tFar && tFar >= 0.0f && tNear >= 0.0f;
 }
 
 bool Grid::RayCollision(const glm::vec3& rayOrigin, const glm::vec3& rayDirection)

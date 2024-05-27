@@ -29,6 +29,7 @@ public:
 	void SelectCell(bool select) { selected = select; }
 	bool IsSelected() { return selected; }
 
+	bool CenterCollision(const glm::vec3& rayOrigin);
 	bool RayCollision(const glm::vec3& rayOrigin, const glm::vec3& rayDirection);
 
 	void DrawCell();
