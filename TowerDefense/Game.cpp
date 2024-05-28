@@ -58,21 +58,22 @@ void Game::InitGrid()
 {
 	grid.resize(rows, vector<Grid*>(cols, nullptr));
 
-	float cellWidth = gameMap->GetSize().x / 30.0f;
-	float cellHeight = gameMap->GetSize().z / 30.0f;
+	float cellWidth = gameMap->GetSize().x / rows;
+	float cellHeight = gameMap->GetSize().z / cols;
 
 	glm::vec3 startGridPos = gameMap->GetPosition() - glm::vec3(gameMap->GetSize() / 2.0f);
+	startGridPos.y = gameMap->GetPosition().y;
 
 	int cellData = 0;
 	for (size_t i = 0; i < rows; i++)
 	{
 		for (size_t j = 0; j < cols; j++)
 		{
-			if (   (i >= 8 && i <= 22 && j >= 13 && j <= 17) ||
-				   (i >= 13 && i <= 17 && j <= 26) ) cellData = 0;
-			else cellData = 99;
+			//if (   (i >= 8 && i <= 22 && j >= 13 && j <= 17) ||
+			//	   (i >= 13 && i <= 17 && j <= 23) ) cellData = 0;
+			//else cellData = 99;
 
-			Grid* cell = new Grid(glm::vec3(startGridPos.x + j * cellWidth, startGridPos.y + gameMap->GetSize().y + 0.001f, startGridPos.z + i * cellHeight) + centerVec, cellWidth, cellHeight, cellData);
+			Grid* cell = new Grid(glm::vec3(startGridPos.x + j * cellWidth, startGridPos.y + gameMap->GetSize().y, startGridPos.z + i * cellHeight) + centerVec, cellWidth, cellHeight, cellData);
 			grid[i][j] = cell;
 		}
 	}
@@ -255,7 +256,7 @@ void Game::UnselectTowers()
 
 void Game::SpawnEnemy()
 {
-	Enemy* enemy = new Enemy(grid[11][0]->GetPosition(), ResourceManager::GetModel("enemy"));
+	Enemy* enemy = new Enemy(grid[3][0]->GetPosition(), ResourceManager::GetModel("enemy"));
 	enemy->SetScale(glm::vec3(0.25f));
 	enemy->InitPath(grid);
 	objList.push_back(enemy);
@@ -365,7 +366,7 @@ void Game::DrawGrid(Grid* cell)
 	ResourceManager::GetShader("testShader").SetMatrix4("model", cell->GetMatrix());
 	ResourceManager::GetShader("testShader").SetVector3f("cellColour", cell->GetColour());
 
-	cell->DrawCell();
+	if (cell->GetCellData() == 0) cell->DrawCell();
 }
 
 void Game::DrawStats()

@@ -2,18 +2,18 @@
 
 void Enemy::InitPath(const std::vector<std::vector<Grid*>> grid)
 {
-	dirQ.push(std::make_pair(MOVE_RIGHT, grid[11][0]));
-	dirQ.push(std::make_pair(MOVE_UP, grid[11][11]));
-	dirQ.push(std::make_pair(MOVE_RIGHT, grid[6][11]));
-	dirQ.push(std::make_pair(MOVE_DOWN, grid[6][19]));
-	dirQ.push(std::make_pair(MOVE_RIGHT, grid[11][19]));
-	dirQ.push(std::make_pair(MOVE_DOWN, grid[11][28]));
-	dirQ.push(std::make_pair(MOVE_LEFT, grid[19][28]));
-	dirQ.push(std::make_pair(MOVE_DOWN, grid[19][19]));
-	dirQ.push(std::make_pair(MOVE_LEFT, grid[24][19]));
-	dirQ.push(std::make_pair(MOVE_UP, grid[24][11]));
-	dirQ.push(std::make_pair(MOVE_LEFT, grid[19][11]));
-	dirQ.push(std::make_pair(MOVE_LEFT, grid[19][0]));
+	//dirQ.push(std::make_pair(MOVE_RIGHT, grid[11][0]));
+	//dirQ.push(std::make_pair(MOVE_UP, grid[11][11]));
+	//dirQ.push(std::make_pair(MOVE_RIGHT, grid[6][11]));
+	//dirQ.push(std::make_pair(MOVE_DOWN, grid[6][19]));
+	//dirQ.push(std::make_pair(MOVE_RIGHT, grid[11][19]));
+	//dirQ.push(std::make_pair(MOVE_DOWN, grid[11][25]));
+	//dirQ.push(std::make_pair(MOVE_LEFT, grid[19][25]));
+	//dirQ.push(std::make_pair(MOVE_DOWN, grid[19][19]));
+	//dirQ.push(std::make_pair(MOVE_LEFT, grid[24][19]));
+	//dirQ.push(std::make_pair(MOVE_UP, grid[24][11]));
+	//dirQ.push(std::make_pair(MOVE_LEFT, grid[19][11]));
+	//dirQ.push(std::make_pair(MOVE_LEFT, grid[19][0]));
 }
 
 void Enemy::Move(const float dt)

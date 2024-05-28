@@ -19,31 +19,26 @@ void Model::Draw(Shader& shader)
 
 void Model::CalculateSize()
 {
-    std::vector<Vertex> minVec, maxVec;
+    if (meshes.empty()) return;
 
-    for (int i = 0; i < meshes.size(); i++)
-    {
-        if (meshes[i].vertices.empty()) continue;
+    glm::vec3 minPoint(FLT_MAX);
+    glm::vec3 maxPoint(-FLT_MAX);
 
-        auto minmaxPoint = std::minmax_element(meshes[i].vertices.begin(), meshes[i].vertices.end(), [](Vertex first, Vertex second) {
-            return std::tie(first.Position.x, first.Position.y, first.Position.z) < std::tie(second.Position.x, second.Position.y, second.Position.z);
-        });
+    for (const auto& mesh : meshes) {
+        for (const auto& vertex : mesh.vertices) {
+            
+            if (vertex.Position.x < minPoint.x) minPoint.x = vertex.Position.x;
+            if (vertex.Position.y < minPoint.y) minPoint.y = vertex.Position.y;
+            if (vertex.Position.z < minPoint.z) minPoint.z = vertex.Position.z;
 
-        minVec.push_back(*minmaxPoint.first);
-        maxVec.push_back(*minmaxPoint.second);
+            
+            if (vertex.Position.x > maxPoint.x) maxPoint.x = vertex.Position.x;
+            if (vertex.Position.y > maxPoint.y) maxPoint.y = vertex.Position.y;
+            if (vertex.Position.z > maxPoint.z) maxPoint.z = vertex.Position.z;
+        }
     }
 
-    auto minPointIt = std::min_element(minVec.begin(), minVec.end(), [](Vertex first, Vertex second) {
-        return std::tie(first.Position.x, first.Position.y, first.Position.z) < std::tie(second.Position.x, second.Position.y, second.Position.z);
-    });
-    glm::vec3 minPoint = (*minPointIt).Position;
-
-    auto maxPointIt = std::max_element(maxVec.begin(), maxVec.end(), [](Vertex first, Vertex second) {
-        return std::tie(first.Position.x, first.Position.y, first.Position.z) > std::tie(second.Position.x, second.Position.y, second.Position.z);
-    });
-    glm::vec3 maxPoint = (*maxPointIt).Position;
-
-    modelSize = abs(maxPoint - minPoint);
+    modelSize = maxPoint - minPoint;
 }
 
 void Model::TranslateModel(glm::vec3 displacement)

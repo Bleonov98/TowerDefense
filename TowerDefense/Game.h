@@ -94,7 +94,7 @@ private:
 	bool devView = false;
 
 	// grid
-	int rows = 30, cols = 30;
+	int rows = 15, cols = 15;
 	bool showGrid = false;
 	std::vector<std::vector<Grid*>> grid;
 
