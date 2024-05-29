@@ -62,16 +62,15 @@ void Game::InitGrid()
 	float cellHeight = gameMap->GetSize().z / cols;
 
 	glm::vec3 startGridPos = gameMap->GetPosition() - glm::vec3(gameMap->GetSize() / 2.0f);
-	startGridPos.y = gameMap->GetPosition().y;
+	startGridPos.y = gameMap->GetPosition().y - gameMap->GetSize().y + 0.11f;
 
 	int cellData = 0;
 	for (size_t i = 0; i < rows; i++)
 	{
 		for (size_t j = 0; j < cols; j++)
 		{
-			//if (   (i >= 8 && i <= 22 && j >= 13 && j <= 17) ||
-			//	   (i >= 13 && i <= 17 && j <= 23) ) cellData = 0;
-			//else cellData = 99;
+			if (i >= 7 && i <= 18 && j >= 11 && j <= 17) cellData = 0;
+			else cellData = 99;
 
 			Grid* cell = new Grid(glm::vec3(startGridPos.x + j * cellWidth, startGridPos.y + gameMap->GetSize().y, startGridPos.z + i * cellHeight) + centerVec, cellWidth, cellHeight, cellData);
 			grid[i][j] = cell;
@@ -239,7 +238,7 @@ void Game::SetTower(Grid* cell, TowerType type)
 	cell->SetCellData(static_cast<int>(type));
 	cell->SelectCell(false);
 
-	tower->SetScale(glm::vec3(1.0f, 1.0f, 0.8f));
+	tower->SetScale(glm::vec3(0.9f, 1.0f, 0.8f));
 	objList.push_back(tower);
 	towerList.push_back(tower);
 
@@ -256,7 +255,7 @@ void Game::UnselectTowers()
 
 void Game::SpawnEnemy()
 {
-	Enemy* enemy = new Enemy(grid[3][0]->GetPosition(), ResourceManager::GetModel("enemy"));
+	Enemy* enemy = new Enemy(grid[13][0]->GetPosition(), ResourceManager::GetModel("enemy"));
 	enemy->SetScale(glm::vec3(0.25f));
 	enemy->InitPath(grid);
 	objList.push_back(enemy);
@@ -289,7 +288,7 @@ void Game::UnactiveCells()
 		{
 			if (j->GetCellData() == 0) {
 				j->SelectCell(false);
-				j->SetColour(glm::vec3(0.0f, 0.5f, 0.0f));
+				j->SetColour(glm::vec3(0.0f, 0.8f, 0.0f));
 			}
 		}
 	}

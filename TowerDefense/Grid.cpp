@@ -13,7 +13,7 @@ Grid::Grid(glm::vec3 cellPosition, float cellWidth, float cellHeight, int cellDa
 	x = cellWidth / 2.0f - 0.01f;
 	z = cellHeight / 2.0f - 0.01f;
 
-	if (cellData == 0) cellColour = glm::vec3(0.0f, 0.5f, 0.0f);
+	if (cellData == 0) cellColour = glm::vec3(0.0f, 0.8f, 0.0f);
 	else cellColour = glm::vec3(1.0f, 0.0f, 0.0f);
 
 	// grid shapes
