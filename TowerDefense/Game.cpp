@@ -33,9 +33,6 @@ void Game::Init()
 
 	// sound->play2D(music, true);
 
-	// tools
-	projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
-
 	text = new TextRenderer(this->width, this->height);
 	text->Load("../fonts/Garamond.ttf", 24);
 
@@ -44,13 +41,6 @@ void Game::Init()
 	HUDisplay->AddTexture(ResourceManager::GetTexture("HUDTexture"));
 	statHUD = new HUD(this->width, this->height);
 
-	// main
-	cursorPos = glm::vec2(this->width / 2.0f - 50.0f, this->height / 2.0f);
-
-	gameMap = new GameObject(glm::vec3(0.0f), glm::vec3(1.0f));
-	gameMap->SetModel(ResourceManager::GetModel("map"));
-
-	InitGrid();
 	InitGameObjects();
 }
 
@@ -80,6 +70,10 @@ void Game::InitGrid()
 
 void Game::InitGameObjects()
 {
+	gameMap = new GameObject(glm::vec3(0.0f), glm::vec3(1.0f));
+	gameMap->SetModel(ResourceManager::GetModel("map"));
+
+	InitGrid();
 	InitButtons();
 }
 
@@ -89,7 +83,7 @@ void Game::InitButtons()
 
 	for (int i = 0; i < 3; i++)
 	{
-		button = new Button(glm::vec2(450.0f + 100.0f * i, this->height - 120.0f), glm::vec2(60.0f), static_cast<ButtonID>(i), this->width, this->height);
+		button = new Button(glm::vec2(550.0f + 150.0f * i, this->height - 145.0f), glm::vec2(90.0f), static_cast<ButtonID>(i), this->width, this->height);
 
 		if (i == 0) button->AddTexture(ResourceManager::GetTexture("bowIcon"));
 		else if (i == 1) button->AddTexture(ResourceManager::GetTexture("fireIcon"));
@@ -97,6 +91,10 @@ void Game::InitButtons()
 
 		buttonList.push_back(button);
 	}
+
+	button = new Button(glm::vec2(width - 100.0f, height - 145.0f), glm::vec2(90.0f), static_cast<ButtonID>(3), this->width, this->height);
+	button->AddTexture(ResourceManager::GetTexture("towerIcon"));
+	buttonList.push_back(button);
 }
 
 void Game::LoadResources()
@@ -122,6 +120,8 @@ void Game::LoadResources()
 
 	ResourceManager::LoadTexture("stats/speed.png", true, "speedStat");
 	ResourceManager::LoadTexture("stats/attack.png", true, "attackStat");
+
+	ResourceManager::LoadTexture("tower.png", true, "towerIcon");
 }
 
 // Main, GamePlay
@@ -130,7 +130,7 @@ void Game::ProcessInput(float dt)
 {
 	if (gameState == ACTIVE) {
 
-		if (devView) {
+		/* if (devView) {
 			if (this->Keys[GLFW_KEY_UP]) camera.ProcessKeyboard(UP, dt);
 			if (this->Keys[GLFW_KEY_DOWN]) camera.ProcessKeyboard(DOWN, dt);
 			if (this->Keys[GLFW_KEY_LEFT]) camera.ProcessKeyboard(LEFT, dt);
@@ -145,31 +145,31 @@ void Game::ProcessInput(float dt)
 
 			camera.updateCameraVectors();
 			if (prevPitch != camera.Pitch) cout << std::format("pitch: {}", static_cast<int>(camera.Pitch)) << endl;
-		}
+		}*/
 
+
+		// mouse click
 		if (this->mouseKeys[GLFW_MOUSE_BUTTON_LEFT] && !mKeysProcessed[GLFW_MOUSE_BUTTON_LEFT]) {
 
-			if ((xMouse > 350.0f && xMouse < 1250.0f && yMouse < 700.0f) || (yMouse < 620.0f)) glm::vec2 clickPos = ProcessClick();
+			if ((xMouse > 350.0f && xMouse < 1250.0f && yMouse < 700.0f) || (yMouse < 620.0f)) ProcessClick();
 			
 			for (size_t i = 0; i < buttonList.size(); i++)
 			{
-				if (buttonList[i]->ButtonCollision(glm::vec2(xMouse, yMouse)) && GetActiveCell() != nullptr) {
+				if (buttonList[i]->ButtonCollision(glm::vec2(xMouse, yMouse))) {
 					if (buttonList[i]->GetID() == ARROWTOWER_BUTTON) SetTower(GetActiveCell(), ARROW);
-					if (buttonList[i]->GetID() == FIRETOWER_BUTTON) SetTower(GetActiveCell(), FIRE);
-					if (buttonList[i]->GetID() == ICETOWER_BUTTON) SetTower(GetActiveCell(), ICE);
+					else if (buttonList[i]->GetID() == FIRETOWER_BUTTON) SetTower(GetActiveCell(), FIRE);
+					else if (buttonList[i]->GetID() == ICETOWER_BUTTON) SetTower(GetActiveCell(), ICE);
+					else if (buttonList[i]->GetID() == MENU_BUTTON) gridToggle = true;
 				}
 			}
 
 			mKeysProcessed[GLFW_MOUSE_BUTTON_LEFT] = true;
 		}
 
-		if (this->Keys[GLFW_KEY_G]) showGrid = true;
-		else showGrid = false;
-
-		if (this->Keys[GLFW_KEY_V] && !KeysProcessed[GLFW_KEY_V]) {
-			devView = !devView;
-			this->KeysProcessed[GLFW_KEY_V] = true;
-		}
+		//if (this->Keys[GLFW_KEY_V] && !KeysProcessed[GLFW_KEY_V]) {
+		//	devView = !devView;
+		//	this->KeysProcessed[GLFW_KEY_V] = true;
+		//}
 
 		if (this->Keys[GLFW_KEY_ESCAPE] && !KeysProcessed[GLFW_KEY_ESCAPE]) {
 			gameState = MENU;
@@ -208,8 +208,12 @@ void Game::Update(float dt)
 			enemy->CheckPoint();
 			enemy->Move(dt);
 		}
-
 	}
+}
+
+void Game::StartLevel()
+{
+	SpawnEnemy();
 }
 
 void Game::CheckCollisions(float dt)
@@ -217,16 +221,6 @@ void Game::CheckCollisions(float dt)
 	
 }
 	// - placement
-void Game::SetActiveCell(Grid* cell)
-{
-	UnactiveCells();
-
-	cell->SelectCell(true);
-	cell->SetColour(glm::vec3(0.7f, 1.0f, 1.0f));
-
-	cout << cell->GetPosition().x << " " << cell->GetPosition().y << " " << cell->GetPosition().z << endl;
-}
-
 void Game::SetTower(Grid* cell, TowerType type)
 {
 	Tower* tower = nullptr;
@@ -237,12 +231,11 @@ void Game::SetTower(Grid* cell, TowerType type)
 
 	cell->SetCellData(static_cast<int>(type));
 	cell->SelectCell(false);
+	gridToggle = false;
 
 	tower->SetScale(glm::vec3(0.9f, 1.0f, 0.8f));
 	objList.push_back(tower);
 	towerList.push_back(tower);
-
-	UnactiveCells();
 }
 
 void Game::UnselectTowers()
@@ -262,9 +255,12 @@ void Game::SpawnEnemy()
 	enemyList.push_back(enemy);
 }
 
-void Game::StartLevel()
+void Game::SetActiveCell(Grid* cell)
 {
-	SpawnEnemy();
+	cell->SelectCell(true);
+	cell->SetColour(glm::vec3(0.7f, 1.0f, 1.0f));
+
+	cout << cell->GetPosition().x << " " << cell->GetPosition().y << " " << cell->GetPosition().z << endl;
 }
 
 Grid* Game::GetActiveCell()
@@ -312,8 +308,13 @@ void Game::Render(float dt)
 		DrawObject(enemy, dt);
 	}
 
+	// Interface
+	HUDisplay->DrawHUD(gameState == MENU);
+	DrawTowerMenu();
+	DrawTowerStats();
+
 	// Menu, Helpers
-	if (showGrid) {
+	if (gridToggle) {
 		for (auto i : grid)
 		{
 			for (auto j : i)
@@ -322,13 +323,9 @@ void Game::Render(float dt)
 			}
 		}
 	}
+	else buttonList.back()->DrawButton(gameState == MENU);
 
 	if (gameState == MENU) DrawMenuTxt();
-
-	// Interface
-	HUDisplay->DrawHUD(gameState == MENU);
-	DrawTowerMenu();
-	DrawTowerStats();
 }
 
 void Game::DrawObject(GameObject* obj, float dt)
@@ -374,21 +371,8 @@ void Game::DrawStats()
 
 void Game::DrawTowerMenu()
 {
-	bool found = false;
-	for (auto i : grid)
-	{
-		for (auto cell : i)
-		{
-			if (cell->IsSelected()) {
-				found = true; 
-				break;
-			}
-		}
-		if (found) break;
-	}
-
-	if (found) {
-		for (size_t i = 0; i < buttonList.size(); i++)
+	if (GetActiveCell() != nullptr) {
+		for (size_t i = 0; i < buttonList.size() - 1; i++)
 		{
 			buttonList[i]->DrawButton(gameState == MENU);
 		}
@@ -405,7 +389,7 @@ void Game::DrawTowerStats()
 
 	// tower
 	statHUD->AddTexture(ResourceManager::GetTexture( (*result)->GetIcon() ));
-	statHUD->DrawHUD(glm::vec2(100.0f, 700.0f), glm::vec2(50.0f, 50.0f), gameState == MENU);
+	statHUD->DrawHUD(glm::vec2(125.0f, 670.0f), glm::vec2(75.0f), gameState == MENU);
 
 	// attack
 	statHUD->AddTexture(ResourceManager::GetTexture("attackStat"));
@@ -432,24 +416,18 @@ void Game::DrawMenuTxt()
 glm::vec3 Game::FindNearestCell(glm::vec3 position)
 {
 	glm::vec3 nearestCell;
-	float minLength = 0.0f;
-	bool firstCheck = true;
+	float minLength = std::numeric_limits<float>::max();
 
-	for (auto i : grid)
+	for (auto row : grid)
 	{
-		for (auto j : i)
+		for (auto cell : row)
 		{
-			glm::vec3 diffVec = abs(position - j->GetPosition());
+			glm::vec3 diffVec = abs(position - cell->GetPosition());
 			float diffLength = sqrt(powf(diffVec.x, 2) + powf(diffVec.y, 2) + powf(diffVec.z, 2));
 
-			if (firstCheck) {
+			if (diffLength < minLength) {
 				minLength = diffLength;
-				firstCheck = false;
-				nearestCell = j->GetPosition();
-			}
-			else if (diffLength < minLength) {
-				minLength = diffLength;
-				nearestCell = j->GetPosition();
+				nearestCell = cell->GetPosition();
 			}
 		}
 	}
@@ -459,56 +437,38 @@ glm::vec3 Game::FindNearestCell(glm::vec3 position)
 
 glm::vec3 Game::ProcessClick() 
 {
-	glm::vec3 clickPos(1488.0f);
+	UnselectTowers();
+	UnactiveCells();
 
-	bool foundTower = false;
+	std::pair<glm::vec3, glm::vec3> rayValues = MouseRay();
+
+	glm::vec3 rayOrigin = rayValues.first;
+	glm::vec3 rayDirection = rayValues.second;
+
 	// check tower click
 	for (auto& tower : towerList)
 	{
-		std::pair<glm::vec3, glm::vec3> rayValues = MouseRay();
-
-		glm::vec3 rayOrigin = rayValues.first;
-		glm::vec3 rayDirection = rayValues.second;
-
 		if (tower->RayCollision(rayOrigin, rayDirection)) {
-			clickPos = tower->GetPosition();
-
-			UnactiveCells();
-			UnselectTowers();
-
 			tower->SelectTower(true);
-
-			return clickPos;
+			
+			return tower->GetPosition();
 		}
 	}
 
-	bool foundCell = false;
 	// check grid click
 	for (auto& i : grid)
 	{
 		for (auto& cell : i)
 		{
-			std::pair<glm::vec3, glm::vec3> rayValues = MouseRay();
-
-			glm::vec3 rayOrigin = rayValues.first;
-			glm::vec3 rayDirection = rayValues.second;
-
-			if (cell->RayCollision(rayOrigin, rayDirection) && cell->GetCellData() == 0) { 
-				clickPos = cell->GetPosition();
-
+			if (cell->RayCollision(rayOrigin, rayDirection) && cell->GetCellData() == 0 && gridToggle) {
 				SetActiveCell(cell);
 
-				foundCell = true;
-				break;
+				return cell->GetPosition();
 			}
 		}
-		if (foundCell) break;
 	}
 
-	if (!foundCell) UnactiveCells();
-	if (!foundTower) UnselectTowers();
-
-	return clickPos;
+	return glm::vec3(0.0f);
 }
 
 std::pair<glm::vec3, glm::vec3> Game::MouseRay()
@@ -529,6 +489,7 @@ std::pair<glm::vec3, glm::vec3> Game::MouseRay()
 	return std::make_pair(rayOrigin, rayWorld);
 }
 
+// Utility
 void Game::CheckGLError(const std::string& context)
 {
 	GLenum err;
@@ -538,7 +499,6 @@ void Game::CheckGLError(const std::string& context)
 	}
 }
 
-// Utility
 void Game::DeleteObjects()
 {
 	DeleteObjectFromVector(towerList, false);

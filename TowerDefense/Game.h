@@ -31,6 +31,9 @@ public:
 
 	Game(const int width, const int height) {
 		this->width = width, this->height = height;
+
+		cursorPos = glm::vec2(this->width / 2.0f - 50.0f, this->height / 2.0f);
+		projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
 	};
 
 	// Initialization, Loading
@@ -46,8 +49,8 @@ public:
 	void CheckCollisions(float dt);
 
 	// placement
-	Grid* GetActiveCell();
 	void UnactiveCells();
+	Grid* GetActiveCell();
 	void SetActiveCell(Grid* cell);
 
 	void SetTower(Grid* cell, TowerType type);
@@ -76,7 +79,6 @@ public:
 	// Utility
 	void CheckGLError(const std::string& context);
 	void DeleteObjects();
-
 	template <typename T>
 	void DeleteObjectFromVector(std::vector<T*>& vector, bool deleteMemory);
 
@@ -91,11 +93,11 @@ private:
 	// basics
 	GameState gameState = MENU;
 	int width, height;
-	bool devView = false;
+	// bool devView = false;
 
 	// grid
 	int rows = 30, cols = 30;
-	bool showGrid = false;
+	bool gridToggle = false;
 	std::vector<std::vector<Grid*>> grid;
 
 	// camera, tools
