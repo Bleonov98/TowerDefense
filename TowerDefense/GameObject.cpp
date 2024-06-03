@@ -38,7 +38,10 @@ void GameObject::RefreshModel()
 {
     this->model.TranslateModel(position);
     this->model.ScaleModel(scale, position);
-    this->model.RotateModel(angle);
+    this->model.RotateModel(angle); 
+
+    hbox.radius = std::min({ this->model.GetSize().x, this->model.GetSize().y, this->model.GetSize().z });
+    hbox.center = glm::vec3(position.x, position.y + this->model.GetSize().y / 2.0f, position.z);
 }
 
 std::string vec3ToString(const glm::vec3& vec) {

@@ -2,6 +2,7 @@
 #define PROJECTILE_H
 
 #include "GameObject.h"
+#include "Enemy.h"
 
 enum ProjectileType {
 	ARROW_P,
@@ -13,8 +14,8 @@ class Projectile : public GameObject
 {
 public:
 
-	Projectile(glm::vec3 position, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : GameObject(position, scale, angle) {
-
+	Projectile(glm::vec3 position, Enemy* target, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : GameObject(position, scale, angle) {
+		this->target = target;
 	};
 
 
@@ -24,15 +25,16 @@ public:
 	ProjectileType GetType() { return projType; }
 	void SetProjectileType(ProjectileType type) { this->projType = type; }
 
-	void CalculatePath(glm::vec3 targetPos);
 	void MoveProjectile(float dt);
 
-	bool ProjectileCollision(GameObject* obj);
+	bool ProjectileCollision();
 
 private:
 
 	ProjectileType projType;
-	float projSpeed = 100.0f;
+	float projSpeed = 1.5f;
+
+	Enemy* target = nullptr;
 
 };
 

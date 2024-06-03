@@ -3,6 +3,11 @@
 
 #include "ResourceManager.h"
 
+struct Sphere {
+	glm::vec3 center;
+	float radius;
+};
+
 class GameObject
 {
 public:
@@ -51,6 +56,7 @@ public:
 protected:
 
 	Model model;
+	Sphere hbox;
 
 	std::string ID, iconTexture;
 

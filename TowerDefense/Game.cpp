@@ -92,7 +92,7 @@ void Game::InitButtons()
 		buttonList.push_back(button);
 	}
 
-	button = new Button(glm::vec2(width - 100.0f, height - 145.0f), glm::vec2(90.0f), static_cast<ButtonID>(3), this->width, this->height);
+	button = new Button(glm::vec2(width - 140.0f, height - 145.0f), glm::vec2(90.0f), static_cast<ButtonID>(3), this->width, this->height);
 	button->AddTexture(ResourceManager::GetTexture("towerIcon"));
 	buttonList.push_back(button);
 }

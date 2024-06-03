@@ -2,6 +2,7 @@
 #define TOWER_H
 
 #include "GameObject.h"
+#include "Enemy.h"
 
 enum TowerType {
 	ARROW = 1,
@@ -33,8 +34,8 @@ public:
 	bool IsSelected() { return selected; }
 	
 	// gameplay
-	// virtual void Attack();
-	// void CheckRadius(glm::vec3 targetPos);
+	void FindTarget(std::vector<Enemy*> enemies);
+	Enemy* GetTarget() { return this->target; }
 	
 	virtual void UpgradeTower();
 
@@ -43,8 +44,11 @@ public:
 protected:
 
 	int damage = 30, attackSpeed = 25, towerLvl = 1, towerCost = 50;
+	float attackRadius = 5.0f;
 	bool selected = false;
+	Enemy* target = nullptr;
 
+	bool IsInAttackRange(Enemy* enemy);
 };
 
 class FireTower : public Tower
