@@ -31,7 +31,7 @@ public:
 
 	void Move(const float dt);
 	void CheckPoint();
-	int Hit(const int damage);
+	void Hit(const int damage, float slowRate);
 
 	void UpgradeEnemy();
 
@@ -39,6 +39,8 @@ protected:
 
 	inline static float speed = 1.0f;
 	inline static int hp = 100, gold = 10;
+	
+	float slowRate = 0.0f, slowTick = 0.0f, slowDuration = 2.0f;
 
 	MoveDir dir = MOVE_RIGHT;
 	std::queue<pair<MoveDir, Grid*>> dirQ;

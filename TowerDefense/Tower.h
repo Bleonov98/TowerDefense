@@ -3,6 +3,7 @@
 
 #include "GameObject.h"
 #include "Enemy.h"
+#include "Projectile.h"
 
 enum TowerType {
 	ARROW = 1,
@@ -36,6 +37,9 @@ public:
 	// gameplay
 	void FindTarget(std::vector<Enemy*> enemies);
 	Enemy* GetTarget() { return this->target; }
+
+	virtual Projectile* GetProjectile();
+	Projectile* Attack(float dt);
 	
 	virtual void UpgradeTower();
 
@@ -44,9 +48,10 @@ public:
 protected:
 
 	int damage = 30, attackSpeed = 25, towerLvl = 1, towerCost = 50;
-	float attackRadius = 5.0f;
+	float attackRadius = 5.0f, attackDelay = 0.0f;
 	bool selected = false;
 	Enemy* target = nullptr;
+	ProjectileType pType = ARROW_P;
 
 	bool IsInAttackRange(Enemy* enemy);
 };
@@ -61,9 +66,12 @@ public:
 		this->damage = 5;
 		this->attackSpeed = 50;
 		this->towerCost = 100;
+
+		pType = FIREBALL_P;
 	};
 
 	void UpgradeTower() override;
+	Projectile* GetProjectile() override;
 
 private:
 
@@ -81,13 +89,16 @@ public:
 		this->damage = 15;
 		this->attackSpeed = 10;
 		this->towerCost = 100;
+
+		pType = ICEBALL_P;
 	};
 
 	void UpgradeTower() override;
+	Projectile* GetProjectile() override;
 
 private:
 
-	int slowRate = 0.2;
+	float slowRate = 0.2;
 
 };
 

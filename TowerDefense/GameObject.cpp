@@ -1,5 +1,13 @@
 #include "GameObject.h"
 
+Sphere GameObject::GetHBox()
+{
+    hbox.radius = std::min({ this->model.GetSize().x, this->model.GetSize().y, this->model.GetSize().z });
+    hbox.center = glm::vec3(position.x, position.y + this->model.GetSize().y / 2.0f, position.z);
+
+    return hbox;
+}
+
 void GameObject::RefreshMatrix()
 {
 	glm::mat4 modelMatrix = glm::mat4(1.0f);
@@ -39,9 +47,6 @@ void GameObject::RefreshModel()
     this->model.TranslateModel(position);
     this->model.ScaleModel(scale, position);
     this->model.RotateModel(angle); 
-
-    hbox.radius = std::min({ this->model.GetSize().x, this->model.GetSize().y, this->model.GetSize().z });
-    hbox.center = glm::vec3(position.x, position.y + this->model.GetSize().y / 2.0f, position.z);
 }
 
 std::string vec3ToString(const glm::vec3& vec) {

@@ -24,6 +24,7 @@ public:
 	glm::vec3 GetScale() { return scale; }
 	glm::vec3 GetColor() { return color; }
 	float GetAngle() { return angle; }
+	Sphere GetHBox();
 
 	std::string GetID() { return model.GetName(); }
 	std::string GetIcon() { return iconTexture; }
@@ -58,7 +59,7 @@ protected:
 	Model model;
 	Sphere hbox;
 
-	std::string ID, iconTexture;
+	std::string iconTexture = " ";
 
 	bool deleted = false;
 	float angle;

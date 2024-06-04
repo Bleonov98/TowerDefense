@@ -9,10 +9,15 @@ void Enemy::InitPath(const std::vector<std::vector<Grid*>> grid)
 
 void Enemy::Move(const float dt)
 {
-	if (dir == MOVE_RIGHT) this->position.x += speed * dt;
-	else if (dir == MOVE_LEFT) this->position.x -= speed * dt;
-	else if (dir == MOVE_UP) this->position.z -= speed * dt;
-	else if (dir == MOVE_DOWN) this->position.z += speed * dt;
+	slowTick += dt;
+	float newSpeed = speed * (1.0f - slowRate);
+
+	if (dir == MOVE_RIGHT) this->position.x += newSpeed * dt;
+	else if (dir == MOVE_LEFT) this->position.x -= newSpeed * dt;
+	else if (dir == MOVE_UP) this->position.z -= newSpeed * dt;
+	else if (dir == MOVE_DOWN) this->position.z += newSpeed * dt;
+
+	if (slowTick >= slowDuration) slowRate = 0.0f;
 }
 
 void Enemy::CheckPoint()
@@ -23,15 +28,12 @@ void Enemy::CheckPoint()
 	}
 }
 
-int Enemy::Hit(const int damage)
+void Enemy::Hit(const int damage, float slowRate)
 {
 	this->hp -= damage;
-	if (hp <= 0) {
-		DeleteObject();
-		return gold;
-	}
-
-	return 0;
+	this->slowRate = slowRate;
+	this->slowTick = 0.0f;
+	if (hp <= 0) DeleteObject();
 }
 
 void Enemy::UpgradeEnemy()

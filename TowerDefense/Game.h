@@ -25,6 +25,10 @@ enum GameState {
 	END
 };
 
+struct Player {
+	int gold = 0;
+};
+
 class Game
 {
 public:
@@ -46,7 +50,7 @@ public:
 	// Main, GamePlay
 	void ProcessInput(float dt);
 	void Update(float dt);
-	void CheckCollisions(float dt);
+	void CheckCollisions();
 
 	// placement
 	void UnactiveCells();
@@ -57,6 +61,7 @@ public:
 	void UnselectTowers();
 
 	void SpawnEnemy();
+	void AddProjectile(Projectile* projectile);
 	
 	void StartLevel();
 		
@@ -107,6 +112,7 @@ private:
 	glm::mat4 view;
 
 	// objects
+	Player player;
 	std::vector<GameObject*> objList;
 	std::vector<Tower*> towerList;
 	std::vector<Enemy*> enemyList;

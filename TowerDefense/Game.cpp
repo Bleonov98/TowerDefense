@@ -109,6 +109,9 @@ void Game::LoadResources()
 	ResourceManager::LoadModel("map.obj", "map");
 	ResourceManager::LoadModel("tower.obj", "tower");
 	ResourceManager::LoadModel("enemy.obj", "enemy");
+	ResourceManager::LoadModel("arrow.obj", "arrow");
+	ResourceManager::LoadModel("fire.obj", "fire");
+	ResourceManager::LoadModel("ice.obj", "ice");
 	// ResourceManager::LoadModel("boss.obj", "boss");
 
 	// - - - // Textures
@@ -208,6 +211,23 @@ void Game::Update(float dt)
 			enemy->CheckPoint();
 			enemy->Move(dt);
 		}
+
+		for (auto tower : towerList)
+		{
+			tower->FindTarget(enemyList);
+
+			// if target's been found
+			AddProjectile(tower->Attack(dt));
+		}
+
+		for (auto projectile : projectileList)
+		{
+			projectile->MoveProjectile(dt);
+		}
+
+		CheckCollisions();
+
+		DeleteObjects();
 	}
 }
 
@@ -216,9 +236,12 @@ void Game::StartLevel()
 	SpawnEnemy();
 }
 
-void Game::CheckCollisions(float dt)
+void Game::CheckCollisions()
 {
-	
+	for (auto proj : projectileList)
+	{
+		if (proj->ProjectileCollision() && proj->GetTarget()->IsDeleted()) player.gold += proj->GetTarget()->GetGold();
+	}
 }
 	// - placement
 void Game::SetTower(Grid* cell, TowerType type)
@@ -253,6 +276,14 @@ void Game::SpawnEnemy()
 	enemy->InitPath(grid);
 	objList.push_back(enemy);
 	enemyList.push_back(enemy);
+}
+
+void Game::AddProjectile(Projectile* projectile)
+{
+	if (!projectile) return;
+
+	objList.push_back(projectile);
+	projectileList.push_back(projectile);
 }
 
 void Game::SetActiveCell(Grid* cell)
@@ -298,14 +329,19 @@ void Game::Render(float dt)
 	// Objects
 	DrawObject(gameMap, dt);
 	
-	for (auto i : towerList)
+	for (auto tower : towerList)
 	{
-		DrawObject(i, dt);
+		DrawObject(tower, dt);
 	}
 
 	for (auto enemy : enemyList)
 	{
 		DrawObject(enemy, dt);
+	}
+
+	for (auto proj : projectileList)
+	{
+		DrawObject(proj, dt);
 	}
 
 	// Interface
