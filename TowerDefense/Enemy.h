@@ -21,6 +21,9 @@ public:
 		this->model = model;
 
 		RefreshModel();
+
+		this->hp = this->maxHp;
+		this->speed = this->maxSpeed;
 	}
 
 	void InitPath(const std::vector<std::vector<Grid*>> grid);
@@ -37,10 +40,11 @@ public:
 
 protected:
 
-	inline static float speed = 1.0f;
-	inline static int hp = 100, gold = 10;
+	inline static float maxSpeed = 1.0f;
+	inline static int maxHp = 100, gold = 10;
 	
-	float slowRate = 0.0f, slowTick = 0.0f, slowDuration = 2.0f;
+	float slowRate = 0.0f, slowTick = 0.0f, slowDuration = 2.0f, speed;
+	int hp;
 
 	MoveDir dir = MOVE_RIGHT;
 	std::queue<pair<MoveDir, Grid*>> dirQ;

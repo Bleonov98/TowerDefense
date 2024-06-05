@@ -7,6 +7,8 @@
 #include <glm/gtc/epsilon.hpp>
 
 #include <iostream>
+#include <thread>
+#include <chrono>
 
 #include "Camera.h"
 #include "TextRenderer.h"
@@ -27,6 +29,8 @@ enum GameState {
 
 struct Player {
 	int gold = 0;
+	int hp = 10;
+	int wave = 0;
 };
 
 class Game
@@ -102,7 +106,7 @@ private:
 
 	// grid
 	int rows = 30, cols = 30;
-	bool gridToggle = false;
+	bool gridToggle = false, lvlStarted = false;
 	std::vector<std::vector<Grid*>> grid;
 
 	// camera, tools

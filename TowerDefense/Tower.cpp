@@ -34,7 +34,7 @@ Projectile* Tower::Attack(float dt)
 {
 	attackDelay += attackSpeed * dt;
 
-	if (!target || attackDelay < attackSpeed) return nullptr;
+	if (!target || attackDelay < 20.0f) return nullptr;
 
 	attackDelay = 0.0f;
 

@@ -198,13 +198,9 @@ void Game::ProcessInput(float dt)
 
 void Game::Update(float dt)
 {
-	static bool lvlStarted = false;
 	if (gameState == ACTIVE) {
 
-		if (!lvlStarted) {
-			StartLevel();
-			lvlStarted = true;
-		}
+		if (!lvlStarted) StartLevel();
 
 		for (auto enemy : enemyList)
 		{
@@ -233,7 +229,22 @@ void Game::Update(float dt)
 
 void Game::StartLevel()
 {
-	SpawnEnemy();
+	lvlStarted = true;
+	std::thread spawnTh([&]() {
+		std::this_thread::sleep_for(std::chrono::duration<int>(10));
+		player.wave++;
+		for (size_t i = 0; i < 7; i++)
+		{
+			std::this_thread::sleep_for(std::chrono::duration<float>(0.8f));
+			SpawnEnemy();
+		}
+		std::this_thread::sleep_for(std::chrono::duration<int>(60));
+
+		lvlStarted = false;
+		Enemy* enemy = new Enemy(glm::vec3(0.0f), ResourceManager::GetModel("none"));
+		enemy->UpgradeEnemy();
+	});
+	spawnTh.detach();
 }
 
 void Game::CheckCollisions()

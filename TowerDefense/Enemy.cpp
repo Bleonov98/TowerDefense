@@ -31,14 +31,16 @@ void Enemy::CheckPoint()
 void Enemy::Hit(const int damage, float slowRate)
 {
 	this->hp -= damage;
-	this->slowRate = slowRate;
-	this->slowTick = 0.0f;
+	if (slowRate > 0.0f) {
+		this->slowRate = slowRate;
+		this->slowTick = 0.0f;
+	}
 	if (hp <= 0) DeleteObject();
 }
 
 void Enemy::UpgradeEnemy()
 {
-	hp += 150;
-	if (speed < 2.5f) speed += 0.5f;
+	maxHp += 150;
+	if (maxSpeed < 2.5f) maxSpeed += 0.5f;
 	gold += 5;
 }
