@@ -28,3 +28,13 @@ bool Projectile::ProjectileCollision()
 
 	return false;
 }
+
+bool Flame::SphereCollision(GameObject* obj)
+{
+	float doubleRadius = obj->GetHBox().radius + hbox.radius;
+	glm::vec3 diff = obj->GetHBox().center - position;
+
+	float distance = glm::dot(diff, diff);
+
+	return distance <= doubleRadius;
+}

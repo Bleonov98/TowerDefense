@@ -102,7 +102,7 @@ bool GameObject::RayIntersectsTriangle(const glm::vec3& rayOrigin, const glm::ve
     float a = glm::dot(edge1, h);
 
     if (a > -EPSILON && a < EPSILON) {
-         std::cout << "Ray is parallel to the triangle" << std::endl;
+         //std::cout << "Ray is parallel to the triangle" << std::endl;
         return false;
     }
 
@@ -111,9 +111,9 @@ bool GameObject::RayIntersectsTriangle(const glm::vec3& rayOrigin, const glm::ve
     float u = f * glm::dot(s, h);
 
     if (u < 0.0f || u > 1.0f) {
-         std::cout << "U out of range: " << u << std::endl;
-         std::cout << "rayOrigin: " << vec3ToString(rayOrigin) << ", rayVector: " << vec3ToString(rayVector) << std::endl;
-         std::cout << "vertex0: " << vec3ToString(vertex0) << ", vertex1: " << vec3ToString(vertex1) << ", vertex2: " << vec3ToString(vertex2) << std::endl;
+         //std::cout << "U out of range: " << u << std::endl;
+         //std::cout << "rayOrigin: " << vec3ToString(rayOrigin) << ", rayVector: " << vec3ToString(rayVector) << std::endl;
+         //std::cout << "vertex0: " << vec3ToString(vertex0) << ", vertex1: " << vec3ToString(vertex1) << ", vertex2: " << vec3ToString(vertex2) << std::endl;
         return false;
     }
 
@@ -121,9 +121,9 @@ bool GameObject::RayIntersectsTriangle(const glm::vec3& rayOrigin, const glm::ve
     float v = f * glm::dot(rayVector, q);
 
     if (v < 0.0f || u + v > 1.0f) {
-         std::cout << "V out of range: " << v << std::endl;
-         std::cout << "rayOrigin: " << vec3ToString(rayOrigin) << ", rayVector: " << vec3ToString(rayVector) << std::endl;
-         std::cout << "vertex0: " << vec3ToString(vertex0) << ", vertex1: " << vec3ToString(vertex1) << ", vertex2: " << vec3ToString(vertex2) << std::endl;
+         //std::cout << "V out of range: " << v << std::endl;
+         //std::cout << "rayOrigin: " << vec3ToString(rayOrigin) << ", rayVector: " << vec3ToString(rayVector) << std::endl;
+         //std::cout << "vertex0: " << vec3ToString(vertex0) << ", vertex1: " << vec3ToString(vertex1) << ", vertex2: " << vec3ToString(vertex2) << std::endl;
         return false;
     }
 
@@ -131,15 +131,25 @@ bool GameObject::RayIntersectsTriangle(const glm::vec3& rayOrigin, const glm::ve
 
     if (t > EPSILON) {
         outIntersectionDistance = t;
-        std::cout << "SUCCESS ----------------------------------------------------------------------------------------------------------------<";
-        std::cout << "rayOrigin: " << vec3ToString(rayOrigin) << ", rayVector: " << vec3ToString(rayVector) << std::endl;
-        std::cout << "vertex0: " << vec3ToString(vertex0) << ", vertex1: " << vec3ToString(vertex1) << ", vertex2: " << vec3ToString(vertex2) << std::endl;
+        //std::cout << "SUCCESS ----------------------------------------------------------------------------------------------------------------<";
+        //std::cout << "rayOrigin: " << vec3ToString(rayOrigin) << ", rayVector: " << vec3ToString(rayVector) << std::endl;
+        //std::cout << "vertex0: " << vec3ToString(vertex0) << ", vertex1: " << vec3ToString(vertex1) << ", vertex2: " << vec3ToString(vertex2) << std::endl;
         return true;
     }
     else {
-         std::cout << "Intersection behind the ray origin" << std::endl;
+        // std::cout << "Intersection behind the ray origin" << std::endl;
         return false; 
     }
+}
+
+bool GameObject::SphereCollision(GameObject* obj)
+{
+    float doubleRadius = obj->GetHBox().radius + this->GetHBox().radius;
+    glm::vec3 diff = obj->GetHBox().center - this->GetHBox().center;
+
+    float distance = glm::dot(diff, diff);
+
+    return distance <= doubleRadius;
 }
 
 

@@ -251,7 +251,18 @@ void Game::CheckCollisions()
 {
 	for (auto proj : projectileList)
 	{
-		if (proj->ProjectileCollision() && proj->GetTarget()->IsDeleted()) player.gold += proj->GetTarget()->GetGold();
+		if (proj->ProjectileCollision()) {
+
+			if (proj->GetTarget()->IsDeleted()) player.gold += proj->GetTarget()->GetGold(); // If a target is killed, we obtain gold
+
+			if (proj->GetType() == FIREBALL_P) { // A fireball creates flame around the target (1.5f radius) after hitting it and burns nearest targets
+				Flame flame(proj->GetTarget()->GetHBox().center, proj->GetDamage());
+				for (auto enemy : enemyList)
+				{
+					if (flame.SphereCollision(enemy) && enemy != proj->GetTarget()) enemy->Hit(flame.GetDamage(), 0.0f);
+				}
+			}
+		}
 	}
 }
 	// - placement

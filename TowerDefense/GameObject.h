@@ -42,6 +42,7 @@ public:
 
 	bool RayCollision(const glm::vec3& rayOrigin, const glm::vec3& rayDirection);
 	bool RayIntersectsTriangle(const glm::vec3& rayOrigin, const glm::vec3& rayVector, const glm::vec3& vertex0, const glm::vec3& vertex1, const glm::vec3& vertex2, float& outIntersectionDistance);
+	virtual bool SphereCollision(GameObject* obj);
 
 	void DrawObject();
 
