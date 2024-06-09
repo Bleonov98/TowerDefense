@@ -227,26 +227,6 @@ void Game::Update(float dt)
 	}
 }
 
-void Game::StartLevel()
-{
-	lvlStarted = true;
-	std::thread spawnTh([&]() {
-		std::this_thread::sleep_for(std::chrono::duration<int>(10));
-		player.wave++;
-		for (size_t i = 0; i < 7; i++)
-		{
-			std::this_thread::sleep_for(std::chrono::duration<float>(0.8f));
-			SpawnEnemy();
-		}
-		std::this_thread::sleep_for(std::chrono::duration<int>(60));
-
-		lvlStarted = false;
-		Enemy* enemy = new Enemy(glm::vec3(0.0f), ResourceManager::GetModel("none"));
-		enemy->UpgradeEnemy();
-	});
-	spawnTh.detach();
-}
-
 void Game::CheckCollisions()
 {
 	for (auto proj : projectileList)
@@ -265,7 +245,7 @@ void Game::CheckCollisions()
 		}
 	}
 }
-	// - placement
+	// - placement, gameplay
 void Game::SetTower(Grid* cell, TowerType type)
 {
 	Tower* tower = nullptr;
@@ -298,6 +278,27 @@ void Game::SpawnEnemy()
 	enemy->InitPath(grid);
 	objList.push_back(enemy);
 	enemyList.push_back(enemy);
+}
+
+void Game::StartLevel()
+{
+	lvlStarted = true;
+	std::thread spawnTh([&]() {
+		player.wave++;
+		std::this_thread::sleep_for(std::chrono::duration<int>(10));
+
+		for (size_t i = 0; i < 7; i++)
+		{
+			std::this_thread::sleep_for(std::chrono::duration<float>(0.8f));
+			SpawnEnemy();
+		}
+		std::this_thread::sleep_for(std::chrono::duration<int>(30));
+
+		lvlStarted = false;
+		Enemy* enemy = new Enemy(glm::vec3(0.0f), ResourceManager::GetModel("none"));
+		enemy->UpgradeEnemy();
+		});
+	spawnTh.detach();
 }
 
 void Game::AddProjectile(Projectile* projectile)
@@ -384,6 +385,7 @@ void Game::Render(float dt)
 	else buttonList.back()->DrawButton(gameState == MENU);
 
 	if (gameState == MENU) DrawMenuTxt();
+	DrawStats();
 }
 
 void Game::DrawObject(GameObject* obj, float dt)
@@ -425,6 +427,9 @@ void Game::DrawGrid(Grid* cell)
 
 void Game::DrawStats()
 {
+	text->RenderText(std::to_string(player.gold), glm::vec2(1440.0f, 42.5f), 1.1f);
+	text->RenderText(std::to_string(player.hp), glm::vec2(1230.0f, 40.0f), 1.1f);
+	text->RenderText(std::to_string(player.wave), glm::vec2(147.0f, 38.0f), 1.5f);
 }
 
 void Game::DrawTowerMenu()

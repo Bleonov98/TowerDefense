@@ -29,7 +29,7 @@ enum GameState {
 
 struct Player {
 	int gold = 0;
-	int hp = 10;
+	int hp = 5;
 	int wave = 0;
 };
 
@@ -65,10 +65,9 @@ public:
 	void UnselectTowers();
 
 	void SpawnEnemy();
-	void AddProjectile(Projectile* projectile);
-	
 	void StartLevel();
-		
+	void AddProjectile(Projectile* projectile);
+
 	// Render
 	void Render(float dt);
 	void DrawObject(GameObject* obj, float dt);
