@@ -5,6 +5,7 @@
 
 #include "GameObject.h"
 #include "Grid.h"
+#include "HUD.h"
 
 enum MoveDir {
 	MOVE_RIGHT,
@@ -13,17 +14,25 @@ enum MoveDir {
 	MOVE_DOWN
 };
 
+struct Indicator {
+public:
+	Indicator(int width, int height);
+private:
+	unsigned int VBO, VAO;
+};
+
 class Enemy : public GameObject
 {
 public:
 
-	Enemy(glm::vec3 position, Model model, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : GameObject(position, scale, angle) {
+	Enemy(glm::vec3 position, Model model, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : GameObject(position, scale, angle), indicator(1800.0f, 900.0f) {
 		this->model = model;
 
 		RefreshModel();
 
 		this->hp = this->maxHp;
 		this->speed = this->maxSpeed;
+		indicator.AddTexture(ResourceManager::GetTexture("indicator"));
 	}
 
 	void InitPath(const std::vector<std::vector<Grid*>> grid);
@@ -34,7 +43,8 @@ public:
 
 	void Move(const float dt);
 	void CheckPoint();
-	void Hit(const int damage, float slowRate);
+	void Hit(int damage, float slowRate);
+	void ShowHP(glm::mat4 projection, glm::mat4 view, bool menu);
 
 	void UpgradeEnemy();
 
@@ -46,6 +56,7 @@ protected:
 	float slowRate = 0.0f, slowTick = 0.0f, slowDuration = 2.0f, speed;
 	int hp;
 
+	HUD indicator;
 	MoveDir dir = MOVE_RIGHT;
 	std::queue<pair<MoveDir, Grid*>> dirQ;
 

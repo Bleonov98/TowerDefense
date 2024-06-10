@@ -41,7 +41,7 @@ public:
 	ProjectileType GetType() { return projType; }
 	Enemy* GetTarget() { return this->target; }
 
-	void MoveProjectile(float dt);
+	void MoveProjectile(const float dt);
 	bool ProjectileCollision();
 
 private:

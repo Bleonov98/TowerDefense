@@ -28,7 +28,7 @@ void Enemy::CheckPoint()
 	}
 }
 
-void Enemy::Hit(const int damage, float slowRate)
+void Enemy::Hit(int damage, float slowRate)
 {
 	this->hp -= damage;
 	if (slowRate > 0.0f) {
@@ -36,6 +36,29 @@ void Enemy::Hit(const int damage, float slowRate)
 		this->slowTick = 0.0f;
 	}
 	if (hp <= 0) DeleteObject();
+}
+
+void Enemy::ShowHP(glm::mat4 projection, glm::mat4 view, bool menu)
+{
+	float percentHP = hp / maxHp;
+	glm::vec3 indColour;
+	percentHP > 0.5f ? indColour = glm::vec3(0.0f, 1.0f, 0.0f) : (percentHP > 0.25f ? indColour = glm::vec3(0.5f, 0.5f, 0.0f) : indColour = glm::vec3(0.9f, 0.1f, 0.0f));
+
+	ResourceManager::GetShader("indShader").Use();
+	ResourceManager::GetShader("indShader").SetMatrix4("projection", projection);
+	ResourceManager::GetShader("indShader").SetMatrix4("view", view);
+	ResourceManager::GetShader("indShader").SetBool("menu", menu);
+	ResourceManager::GetShader("indShader").SetVector3f("spriteColor", indColour);
+
+	//// hp shapes
+	//float vertices[] = {
+	//	-x, 0, -z,
+	//	 x, 0, -z,
+	//	 x, 0,  z,
+	//	 x, 0,  z,
+	//	-x, 0,  z,
+	//	-x, 0, -z
+	//};
 }
 
 void Enemy::UpgradeEnemy()

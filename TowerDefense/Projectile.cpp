@@ -1,6 +1,6 @@
 #include "Projectile.h"
 
-void Projectile::MoveProjectile(float dt)
+void Projectile::MoveProjectile(const float dt)
 {
 	if (!target) {
 		DeleteObject();
