@@ -44,21 +44,38 @@ void Enemy::ShowHP(glm::mat4 projection, glm::mat4 view, bool menu)
 	glm::vec3 indColour;
 	percentHP > 0.5f ? indColour = glm::vec3(0.0f, 1.0f, 0.0f) : (percentHP > 0.25f ? indColour = glm::vec3(0.5f, 0.5f, 0.0f) : indColour = glm::vec3(0.9f, 0.1f, 0.0f));
 
+	// background texture
 	ResourceManager::GetShader("indShader").Use();
 	ResourceManager::GetShader("indShader").SetMatrix4("projection", projection);
 	ResourceManager::GetShader("indShader").SetMatrix4("view", view);
 	ResourceManager::GetShader("indShader").SetBool("menu", menu);
-	ResourceManager::GetShader("indShader").SetVector3f("spriteColor", indColour);
+	ResourceManager::GetShader("indShader").SetBool("isImage", true);
 
-	//// hp shapes
-	//float vertices[] = {
-	//	-x, 0, -z,
-	//	 x, 0, -z,
-	//	 x, 0,  z,
-	//	 x, 0,  z,
-	//	-x, 0,  z,
-	//	-x, 0, -z
-	//};
+	glm::mat4 modelMatrix = glm::mat4(1.0f);
+	modelMatrix = glm::translate(modelMatrix, indicator.position);
+
+	ResourceManager::GetShader("testShader").SetMatrix4("model", modelMatrix);
+
+	glActiveTexture(GL_TEXTURE0);
+	indicator.texture.Bind();
+
+	glBindVertexArray(indicator.VAO);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glBindVertexArray(0);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	// colour instance
+	ResourceManager::GetShader("indShader").Use();
+	ResourceManager::GetShader("indShader").SetMatrix4("projection", projection);
+	ResourceManager::GetShader("indShader").SetMatrix4("view", view);
+
+	ResourceManager::GetShader("indShader").SetBool("menu", menu);
+	ResourceManager::GetShader("indShader").SetBool("isImage", false);
+	ResourceManager::GetShader("indShader").SetVector3f("spriteColour", indColour);
+
+	glm::mat4 modelMatrix = glm::mat4(1.0f);
+	modelMatrix = glm::translate(modelMatrix, indicator.position);
 }
 
 void Enemy::UpgradeEnemy()
@@ -66,4 +83,43 @@ void Enemy::UpgradeEnemy()
 	maxHp += 150;
 	if (maxSpeed < 2.5f) maxSpeed += 0.5f;
 	gold += 5;
+}
+
+Indicator::Indicator(glm::vec3 position, glm::vec2 size)
+{
+	this->position = position;
+	this->indSize = this->size = size;
+
+	// halves
+	float x, y;
+	x = size.x / 2.0f;
+	y = size.y / 2.0f;
+
+	// indicator shapes
+	float vertices[] = {
+		-x, -y,  0, 0.0f, 1.0f,
+		-x,  y,  0, 1.0f, 0.0f,
+		 x, -y,  0, 0.0f, 0.0f,
+
+		 x, -y,  0, 0.0f, 1.0f,
+		-x,  y,  0, 1.0f, 1.0f,
+		 x,  y,  0, 1.0f, 0.0f
+	};
+
+	glGenVertexArrays(1, &this->VAO);
+	glGenBuffers(1, &VBO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glBindVertexArray(this->VAO);
+	// position
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	// textures
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 }

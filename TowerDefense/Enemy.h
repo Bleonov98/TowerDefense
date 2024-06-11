@@ -16,23 +16,28 @@ enum MoveDir {
 
 struct Indicator {
 public:
-	Indicator(int width, int height);
-private:
-	unsigned int VBO, VAO;
+	Indicator(glm::vec3 position, glm::vec2 size);
+	glm::vec3 position;
+	glm::vec2 size, indSize;
+	Texture2D texture;
+	unsigned int VBO, VAO, iVBO, iVAO;
 };
 
 class Enemy : public GameObject
 {
 public:
 
-	Enemy(glm::vec3 position, Model model, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : GameObject(position, scale, angle), indicator(1800.0f, 900.0f) {
+	Enemy(glm::vec3 position, Model model, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : 
+		GameObject(position, scale, angle), 
+		indicator(position, glm::vec2(0.5f, 0.2f)) 
+	{
 		this->model = model;
 
 		RefreshModel();
 
 		this->hp = this->maxHp;
 		this->speed = this->maxSpeed;
-		indicator.AddTexture(ResourceManager::GetTexture("indicator"));
+		indicator.texture = ResourceManager::GetTexture("indicator");
 	}
 
 	void InitPath(const std::vector<std::vector<Grid*>> grid);
@@ -56,10 +61,9 @@ protected:
 	float slowRate = 0.0f, slowTick = 0.0f, slowDuration = 2.0f, speed;
 	int hp;
 
-	HUD indicator;
+	Indicator indicator;
 	MoveDir dir = MOVE_RIGHT;
 	std::queue<pair<MoveDir, Grid*>> dirQ;
-
 };
 
 #endif // !ENEMY_H
