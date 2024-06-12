@@ -1,0 +1,20 @@
+#version 400 core
+
+out vec4 FragColour;
+
+in vec2 TexCoords;
+
+uniform bool menu;
+uniform bool isImage;
+
+uniform sampler2D image;
+uniform vec3 spriteColour;
+
+void main()
+{
+    vec4 colourVec;
+    menu ? colourVec = vec4(spriteColour * 0.4f, 1.0f) : colourVec = vec4(spriteColour * 0.9f, 1.0f);
+
+    if (isImage) FragColour = colourVec * texture(image, TexCoords);
+    else FragColour = colourVec;
+}

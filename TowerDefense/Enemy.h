@@ -4,8 +4,8 @@
 #include <queue>
 
 #include "GameObject.h"
+#include "Indicator.h"
 #include "Grid.h"
-#include "HUD.h"
 
 enum MoveDir {
 	MOVE_RIGHT,
@@ -14,22 +14,11 @@ enum MoveDir {
 	MOVE_DOWN
 };
 
-struct Indicator {
-public:
-	Indicator(glm::vec3 position, glm::vec2 size);
-	glm::vec3 position;
-	glm::vec2 size, indSize;
-	Texture2D texture;
-	unsigned int VBO, VAO, iVBO, iVAO;
-};
-
 class Enemy : public GameObject
 {
 public:
 
-	Enemy(glm::vec3 position, Model model, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : 
-		GameObject(position, scale, angle), 
-		indicator(position, glm::vec2(0.5f, 0.2f)) 
+	Enemy(glm::vec3 position, Model model, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : GameObject(position, scale, angle)
 	{
 		this->model = model;
 
@@ -37,7 +26,7 @@ public:
 
 		this->hp = this->maxHp;
 		this->speed = this->maxSpeed;
-		indicator.texture = ResourceManager::GetTexture("indicator");
+		indicator.AddTexture(ResourceManager::GetTexture("indicator"));
 	}
 
 	void InitPath(const std::vector<std::vector<Grid*>> grid);
@@ -49,6 +38,9 @@ public:
 	void Move(const float dt);
 	void CheckPoint();
 	void Hit(int damage, float slowRate);
+
+	void SetIndicator(Indicator indicator) { this->indicator = indicator; }
+	Indicator& GetIndicator() { return this->indicator; }
 	void ShowHP(glm::mat4 projection, glm::mat4 view, bool menu);
 
 	void UpgradeEnemy();

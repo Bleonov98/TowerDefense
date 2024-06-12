@@ -102,6 +102,7 @@ void Game::LoadResources()
 	ResourceManager::LoadShader("../shaders/vShader.vx", "../shaders/fShader.ft", "modelShader");
 	ResourceManager::LoadShader("../shaders/testVShader.vx", "../shaders/testFShader.ft", "testShader");
 	ResourceManager::LoadShader("../shaders/vHudShader.vx", "../shaders/fHudShader.ft", "hudShader");
+	ResourceManager::LoadShader("../shaders/indVShader.vx", "../shaders/indFShader.ft", "indShader");
 
 	// objects
 
@@ -120,11 +121,12 @@ void Game::LoadResources()
 	ResourceManager::LoadTexture("icons/fire.png", true, "fireIcon");
 	ResourceManager::LoadTexture("icons/ice.png", true, "iceIcon");
 	ResourceManager::LoadTexture("icons/bow.png", true, "bowIcon");
+	ResourceManager::LoadTexture("tower.png", true, "towerIcon");
 
 	ResourceManager::LoadTexture("stats/speed.png", true, "speedStat");
 	ResourceManager::LoadTexture("stats/attack.png", true, "attackStat");
 
-	ResourceManager::LoadTexture("tower.png", true, "towerIcon");
+	ResourceManager::LoadTexture("hpStripe.png", true, "indicator");
 }
 
 // Main, GamePlay
@@ -276,6 +278,11 @@ void Game::SpawnEnemy()
 	Enemy* enemy = new Enemy(grid[13][0]->GetPosition(), ResourceManager::GetModel("enemy"));
 	enemy->SetScale(glm::vec3(0.25f));
 	enemy->InitPath(grid);
+
+	Indicator* indicator = new Indicator(enemy->GetPosition(), glm::vec2(5.0f));
+	enemy->SetIndicator(*indicator);
+
+	std::lock_guard<mutex> lock(enemyLock);
 	objList.push_back(enemy);
 	enemyList.push_back(enemy);
 }
@@ -357,10 +364,15 @@ void Game::Render(float dt)
 		DrawObject(tower, dt);
 	}
 
-	for (auto enemy : enemyList)
 	{
-		DrawObject(enemy, dt);
+		std::lock_guard<mutex> lock(enemyLock);
+		for (auto enemy : enemyList)
+		{
+			DrawObject(enemy, dt);
+			enemy->ShowHP(projection, view, gameState == MENU);
+		}
 	}
+
 
 	for (auto proj : projectileList)
 	{

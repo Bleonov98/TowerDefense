@@ -9,6 +9,7 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include <mutex>
 
 #include "Camera.h"
 #include "TextRenderer.h"
@@ -109,6 +110,7 @@ private:
 	std::vector<std::vector<Grid*>> grid;
 
 	// camera, tools
+	std::mutex enemyLock;
 	glm::vec2 cursorPos;
 
 	glm::mat4 projection;

@@ -58,8 +58,8 @@
     <ClCompile Include="Enemy.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="indFShader.ft">
-      <Filter>Shaders</Filter>
+    <ClCompile Include="Indicator.cpp">
+      <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -120,6 +120,9 @@
     <ClInclude Include="Enemy.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Indicator.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source">
@@ -157,7 +160,10 @@
     <None Include="..\shaders\fHudShader.ft">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="indVShader.vx">
+    <None Include="..\shaders\indVShader.vx">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\shaders\indFShader.ft">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
