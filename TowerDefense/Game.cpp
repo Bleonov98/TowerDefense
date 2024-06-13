@@ -273,14 +273,12 @@ void Game::UnselectTowers()
 	}
 }
 
-void Game::SpawnEnemy()
+void Game::SpawnEnemy(Indicator indicator)
 {
 	Enemy* enemy = new Enemy(grid[13][0]->GetPosition(), ResourceManager::GetModel("enemy"));
 	enemy->SetScale(glm::vec3(0.25f));
 	enemy->InitPath(grid);
-
-	Indicator* indicator = new Indicator(enemy->GetPosition(), glm::vec2(5.0f));
-	enemy->SetIndicator(*indicator);
+	enemy->SetIndicator(indicator);
 
 	std::lock_guard<mutex> lock(enemyLock);
 	objList.push_back(enemy);
@@ -289,15 +287,17 @@ void Game::SpawnEnemy()
 
 void Game::StartLevel()
 {
+	Indicator indicator(glm::vec2(0.5f, 0.05f));
+
 	lvlStarted = true;
-	std::thread spawnTh([&]() {
+	std::thread spawnTh([&, indicator]() {
 		player.wave++;
 		std::this_thread::sleep_for(std::chrono::duration<int>(10));
 
 		for (size_t i = 0; i < 7; i++)
 		{
 			std::this_thread::sleep_for(std::chrono::duration<float>(0.8f));
-			SpawnEnemy();
+			SpawnEnemy(indicator);
 		}
 		std::this_thread::sleep_for(std::chrono::duration<int>(30));
 

@@ -65,7 +65,7 @@ public:
 	void SetTower(Grid* cell, TowerType type);
 	void UnselectTowers();
 
-	void SpawnEnemy();
+	void SpawnEnemy(Indicator indicator);
 	void StartLevel();
 	void AddProjectile(Projectile* projectile);
 

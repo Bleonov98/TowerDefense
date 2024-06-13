@@ -1,43 +1,60 @@
 #include "Indicator.h"
 
-Indicator::Indicator(glm::vec3 position, glm::vec2 size)
+Indicator::Indicator(glm::vec2 size)
 {
-	this->position = position;
-	indSize = this->size = size;
+    indSize = this->size = size;
 
-	// halves
-	float x, y;
-	x = size.x / 2.0f;
-	y = size.y / 2.0f;
+    float x = size.x / 2.0f;
+    float y = size.y / 2.0f;
 
-	// indicator shapes
-	float vertices[] = {
-		-x,  y,  0, 0.0f, 1.0f,
-		 x, -y,  0, 1.0f, 0.0f,
-		-x, -y,  0, 0.0f, 0.0f,
+    float vertices[] = {
+        // Background vertices (with texture coordinates)
+        -x,  y,  0, 0.0f, 1.0f,
+         x, -y,  0, 1.0f, 0.0f,
+        -x, -y,  0, 0.0f, 0.0f,
 
-		-x,  y,  0, 0.0f, 1.0f,
-		 x,  y,  0, 1.0f, 1.0f,
-		 x, -y,  0, 1.0f, 0.0f
-	};
+        -x,  y,  0, 0.0f, 1.0f,
+         x,  y,  0, 1.0f, 1.0f,
+         x, -y,  0, 1.0f, 0.0f,
 
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
+         // HP indicator vertices (without texture coordinates)
+         -x,  y,  0,
+          x, -y,  0,
+         -x, -y,  0,
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+         -x,  y,  0,
+          x,  y,  0,
+          x, -y,  0
+    };
 
-	glBindVertexArray(VAO);
-	// position
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-	// textures
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    // Generate VBO
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+    // Generate and bind VAO for background
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+    // Background vertex positions
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    // Background texture coordinates
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glBindVertexArray(0);
+
+    // Generate and bind VAO for HP indicator
+    glGenVertexArrays(1, &iVAO);
+    glBindVertexArray(iVAO);
+    // HP indicator vertex positions
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)(6 * 5 * sizeof(float)));
+    glBindVertexArray(0);
+
+    // Unbind VBO
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
+
 
 void Indicator::DrawIndicator(glm::mat4 projection, glm::mat4 view, bool menu)
 {
@@ -47,31 +64,37 @@ void Indicator::DrawIndicator(glm::mat4 projection, glm::mat4 view, bool menu)
 	ResourceManager::GetShader("indShader").SetMatrix4("view", view);
 
 	ResourceManager::GetShader("indShader").SetBool("menu", menu);
-	ResourceManager::GetShader("indShader").SetBool("isImage", false);
+	ResourceManager::GetShader("indShader").SetBool("isImage", true);
 
 	glm::mat4 modelMatrix = glm::mat4(1.0f);
 	modelMatrix = glm::translate(modelMatrix, position);
 
 	ResourceManager::GetShader("indShader").SetMatrix4("model", modelMatrix);
-	ResourceManager::GetShader("indShader").SetVector3f("spriteColour", indColour);
 
-	//glActiveTexture(GL_TEXTURE0);
-	//indicator.texture.Bind();
+	glActiveTexture(GL_TEXTURE0);
+	texture.Bind();
 
 	glBindVertexArray(VAO);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	glBindVertexArray(0);
 
-	//glBindTexture(GL_TEXTURE_2D, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 
-	// colour instance
-	//ResourceManager::GetShader("indShader").Use();
-	//ResourceManager::GetShader("indShader").SetMatrix4("projection", projection);
-	//ResourceManager::GetShader("indShader").SetMatrix4("view", view);
+	// hp indicator
+	ResourceManager::GetShader("indShader").Use();
+	ResourceManager::GetShader("indShader").SetMatrix4("projection", projection);
+	ResourceManager::GetShader("indShader").SetMatrix4("view", view);
 
-	//ResourceManager::GetShader("indShader").SetBool("menu", menu);
-	//ResourceManager::GetShader("indShader").SetBool("isImage", false);
+	ResourceManager::GetShader("indShader").SetBool("menu", menu);
+	ResourceManager::GetShader("indShader").SetBool("isImage", false);
 
-	//glm::mat4 modelMatrix = glm::mat4(1.0f);
-	//modelMatrix = glm::translate(modelMatrix, indicator.position);
+	ResourceManager::GetShader("indShader").SetVector3f("spriteColour", indColour);
+
+	glm::mat4 hpMatrix = glm::mat4(1.0f);
+	hpMatrix = glm::translate(hpMatrix, position + glm::vec3(0.0f, 0.0f, 0.01f));
+	ResourceManager::GetShader("indShader").SetMatrix4("model", hpMatrix);
+
+	glBindVertexArray(iVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+	glBindVertexArray(0);
 }

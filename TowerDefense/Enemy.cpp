@@ -41,10 +41,11 @@ void Enemy::Hit(int damage, float slowRate)
 void Enemy::ShowHP(glm::mat4 projection, glm::mat4 view, bool menu)
 {
 	indicator.SetPosition(glm::vec3(position.x, position.y + GetSize().y, position.z));
-	float percentHP = hp / maxHp;
+	float percentHP = static_cast<float>(hp) / static_cast<float>(maxHp);
 	glm::vec3 indColour;
-	percentHP > 0.5f ? indColour = glm::vec3(0.0f, 1.0f, 0.0f) : (percentHP > 0.25f ? indColour = glm::vec3(0.5f, 0.5f, 0.0f) : indColour = glm::vec3(0.9f, 0.1f, 0.0f));
+	percentHP > 0.5f ? indColour = glm::vec3(0.0f, 1.0f, 0.0f) : (percentHP > 0.25f ? indColour = glm::vec3(0.85f, 0.85f, 0.0f) : indColour = glm::vec3(0.9f, 0.1f, 0.0f));
 	indicator.SetColour(indColour);
+	indicator.SetSize(glm::vec2(indicator.GetSize().first.x / 2.0f * percentHP, indicator.GetSize().first.y));
 
 	indicator.DrawIndicator(projection, view, menu);
 }

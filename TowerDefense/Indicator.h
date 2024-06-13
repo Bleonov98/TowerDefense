@@ -7,7 +7,7 @@ class Indicator
 {
 public:
 	Indicator() {};
-	Indicator(glm::vec3 position, glm::vec2 size);
+	Indicator(glm::vec2 size);
 
 	void AddTexture(Texture2D texture) { this->texture = texture; }
 
@@ -24,7 +24,7 @@ private:
 	glm::vec3 position, indColour;
 	glm::vec2 size, indSize;
 	Texture2D texture;
-	unsigned int VBO, VAO, iVBO, iVAO;
+	unsigned int VBO, VAO, iVAO;
 };
 
 #endif // !INDICATOR_H
