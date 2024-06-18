@@ -58,4 +58,14 @@ protected:
 	std::queue<pair<MoveDir, Grid*>> dirQ;
 };
 
+struct Boss : public Enemy 
+{
+public:
+	Boss(glm::vec3 position, Model model, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : Enemy(position, model, scale, angle) {
+		this->speed = 2.0f;
+		this->hp = this->maxHp = 5000;
+		this->slowDuration = 0.5f;
+	}
+};
+
 #endif // !ENEMY_H

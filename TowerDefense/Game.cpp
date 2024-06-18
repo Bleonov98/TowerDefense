@@ -95,6 +95,10 @@ void Game::InitButtons()
 	button = new Button(glm::vec2(width - 140.0f, height - 145.0f), glm::vec2(90.0f), static_cast<ButtonID>(3), this->width, this->height);
 	button->AddTexture(ResourceManager::GetTexture("towerIcon"));
 	buttonList.push_back(button);
+
+	button = new Button(glm::vec2(550.0f, height - 145.0f), glm::vec2(90.0f), static_cast<ButtonID>(4), this->width, this->height);
+	button->AddTexture(ResourceManager::GetTexture("powerUpIcon"));
+	buttonList.push_back(button);
 }
 
 void Game::LoadResources()
@@ -125,6 +129,7 @@ void Game::LoadResources()
 
 	ResourceManager::LoadTexture("stats/speed.png", true, "speedStat");
 	ResourceManager::LoadTexture("stats/attack.png", true, "attackStat");
+	ResourceManager::LoadTexture("stats/powerUpIcon.png", true, "powerUpIcon");
 
 	ResourceManager::LoadTexture("hpStripe.png", true, "indicator");
 }
@@ -157,16 +162,8 @@ void Game::ProcessInput(float dt)
 		if (this->mouseKeys[GLFW_MOUSE_BUTTON_LEFT] && !mKeysProcessed[GLFW_MOUSE_BUTTON_LEFT]) {
 
 			if ((xMouse > 350.0f && xMouse < 1250.0f && yMouse < 700.0f) || (yMouse < 620.0f)) ProcessClick();
-			
-			for (size_t i = 0; i < buttonList.size(); i++)
-			{
-				if (buttonList[i]->ButtonCollision(glm::vec2(xMouse, yMouse))) {
-					if (buttonList[i]->GetID() == ARROWTOWER_BUTTON) SetTower(GetActiveCell(), ARROW);
-					else if (buttonList[i]->GetID() == FIRETOWER_BUTTON) SetTower(GetActiveCell(), FIRE);
-					else if (buttonList[i]->GetID() == ICETOWER_BUTTON) SetTower(GetActiveCell(), ICE);
-					else if (buttonList[i]->GetID() == MENU_BUTTON) gridToggle = true;
-				}
-			}
+
+			ProcessButtons();
 
 			mKeysProcessed[GLFW_MOUSE_BUTTON_LEFT] = true;
 		}
@@ -235,13 +232,46 @@ void Game::CheckCollisions()
 	{
 		if (proj->ProjectileCollision()) {
 
-			if (proj->GetTarget()->IsDeleted()) player.gold += proj->GetTarget()->GetGold(); // If a target is killed, we obtain gold
+			int reward = proj->GetTarget()->GetGold();
+			if (proj->GetTarget()->IsDeleted()) player.gold += reward; // If a target is killed, we obtain gold
 
-			if (proj->GetType() == FIREBALL_P) { // A fireball creates flame around the target (1.5f radius) after hitting it and burns nearest targets
-				Flame flame(proj->GetTarget()->GetHBox().center, proj->GetDamage());
+			if (proj->GetType() == FIREBALL_P) { // A fireball creates flame around the target after hitting it and burns nearest targets
+				Flame flame(proj->GetTarget()->GetHBox().center, proj->GetDamage(), 0.75f * player.wave);
 				for (auto enemy : enemyList)
 				{
-					if (flame.SphereCollision(enemy) && enemy != proj->GetTarget()) enemy->Hit(flame.GetDamage(), 0.0f);
+					if (flame.SphereCollision(enemy) && enemy != proj->GetTarget()) {
+						enemy->Hit(flame.GetDamage(), 0.0f);
+						if (enemy->IsDeleted()) player.gold += reward;
+					}
+				}
+			}
+		}
+	}
+}
+
+void Game::ProcessButtons()
+{
+	for (int i = 0; i < buttonList.size(); i++)
+	{
+		if (buttonList[i]->ButtonCollision(glm::vec2(xMouse, yMouse))) {
+			if (GetActiveCell() != nullptr) {
+				if (buttonList[i]->GetID() == ARROWTOWER_BUTTON) SetTower(GetActiveCell(), ARROW);
+				else if (buttonList[i]->GetID() == FIRETOWER_BUTTON) SetTower(GetActiveCell(), FIRE);
+				else if (buttonList[i]->GetID() == ICETOWER_BUTTON) SetTower(GetActiveCell(), ICE);
+			}
+			else {
+				if (buttonList[i]->GetID() == SET_BUTTON) gridToggle = true; // shows grid
+				else if (buttonList[i]->GetID() == UPGRADE_BUTTON) { // Upgrade tower when tower is chosen 
+					auto result = std::find_if(towerList.begin(), towerList.end(), [](Tower* tower) {
+						return tower->IsSelected();
+						});
+
+					if (result == towerList.end()) continue;
+
+					if (player.gold >= (*result)->GetTowerCost() && (*result)->GetTowerLvl() <= 2) {
+						(*result)->UpgradeTower();
+						player.gold -= (*result)->GetTowerCost();
+					}
 				}
 			}
 		}
@@ -255,6 +285,9 @@ void Game::SetTower(Grid* cell, TowerType type)
 	if (type == ARROW) tower = new Tower(cell->GetPosition(), ResourceManager::GetModel("tower"));
 	else if (type == FIRE) tower = new FireTower(cell->GetPosition(), ResourceManager::GetModel("tower"));
 	else if (type == ICE) tower = new IceTower(cell->GetPosition(), ResourceManager::GetModel("tower"));
+
+	if (player.gold < tower->GetTowerCost()) return;
+	else player.gold -= tower->GetTowerCost();
 
 	cell->SetCellData(static_cast<int>(type));
 	cell->SelectCell(false);
@@ -276,13 +309,24 @@ void Game::UnselectTowers()
 void Game::SpawnEnemy(Indicator indicator)
 {
 	Enemy* enemy = new Enemy(grid[13][0]->GetPosition(), ResourceManager::GetModel("enemy"));
-	enemy->SetScale(glm::vec3(0.25f));
 	enemy->InitPath(grid);
 	enemy->SetIndicator(indicator);
+	enemy->SetScale(glm::vec3(0.25f));
 
 	std::lock_guard<mutex> lock(enemyLock);
 	objList.push_back(enemy);
 	enemyList.push_back(enemy);
+}
+
+void Game::SpawnBoss(Indicator indicator)
+{
+	Boss* boss = new Boss(grid[13][0]->GetPosition(), ResourceManager::GetModel("enemy"));
+	boss->InitPath(grid);
+	boss->SetIndicator(indicator);
+
+	std::lock_guard<mutex> lock(enemyLock);
+	objList.push_back(boss);
+	enemyList.push_back(boss);
 }
 
 void Game::StartLevel()
@@ -292,13 +336,17 @@ void Game::StartLevel()
 	lvlStarted = true;
 	std::thread spawnTh([&, indicator]() {
 		player.wave++;
-		std::this_thread::sleep_for(std::chrono::duration<int>(10));
+		std::this_thread::sleep_for(std::chrono::duration<int>(5));
 
-		for (size_t i = 0; i < 7; i++)
-		{
-			std::this_thread::sleep_for(std::chrono::duration<float>(0.8f));
-			SpawnEnemy(indicator);
+		if (player.wave < 5) {
+			for (size_t i = 0; i < 6; i++)
+			{
+				std::this_thread::sleep_for(std::chrono::duration<float>(0.8f));
+				SpawnEnemy(indicator);
+			}
 		}
+		else SpawnBoss(indicator);
+		
 		std::this_thread::sleep_for(std::chrono::duration<int>(30));
 
 		lvlStarted = false;
@@ -394,7 +442,7 @@ void Game::Render(float dt)
 			}
 		}
 	}
-	else buttonList.back()->DrawButton(gameState == MENU);
+	else buttonList[buttonList.size() - 2]->DrawButton(gameState == MENU);
 
 	if (gameState == MENU) DrawMenuTxt();
 	DrawStats();
@@ -475,6 +523,13 @@ void Game::DrawTowerStats()
 	statHUD->AddTexture(ResourceManager::GetTexture("speedStat"));
 	statHUD->DrawHUD(glm::vec2(50.0f, 830.0f), glm::vec2(30.0f), gameState == MENU);
 	text->RenderText(std::to_string( (*result)->GetAttackSpeed() ), glm::vec2(100.0f, 835.0f));
+
+	// powerUp
+	if ((*result)->GetTowerLvl() <= 2) {
+		buttonList.back()->DrawButton(gameState == MENU);
+		text->RenderText(std::to_string((*result)->GetTowerCost()), buttonList.back()->GetButtonPosition() + glm::vec2(0.0f, 10.0f));
+	}
+	
 }
 
 void Game::DrawMenuTxt()
@@ -525,7 +580,8 @@ glm::vec3 Game::ProcessClick()
 	{
 		if (tower->RayCollision(rayOrigin, rayDirection)) {
 			tower->SelectTower(true);
-			
+			gridToggle = false;
+
 			return tower->GetPosition();
 		}
 	}

@@ -46,7 +46,7 @@ void Tower::UpgradeTower()
 {
 	towerLvl++;
 
-	damage += 30;
+	damage += 35;
 	attackSpeed += 25;
 }
 
@@ -61,7 +61,7 @@ void FireTower::UpgradeTower()
 {
 	towerLvl++;
 
-	damage += 5;
+	damage += 10;
 	attackSpeed += 50;
 }
 
@@ -77,7 +77,7 @@ void IceTower::UpgradeTower()
 {
 	towerLvl++;
 
-	damage += 15;
+	damage += 20;
 	attackSpeed += 10;
 	slowRate += 0.3;
 }

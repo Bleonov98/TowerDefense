@@ -51,7 +51,6 @@ Indicator::Indicator(glm::vec2 size)
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)(6 * 5 * sizeof(float)));
     glBindVertexArray(0);
 
-    // Unbind VBO
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
@@ -90,8 +89,29 @@ void Indicator::DrawIndicator(glm::mat4 projection, glm::mat4 view, bool menu)
 
 	ResourceManager::GetShader("indShader").SetVector3f("spriteColour", indColour);
 
+    float x, y;
+    y = indSize.y / 2.0f;
+    x = indSize.x / 2.0f;
+
+    float hpVertices[] = {
+        -x,  y,  0,
+         x, -y,  0,
+        -x, -y,  0,
+
+        -x,  y,  0,
+         x,  y,  0,
+         x, -y,  0
+    };
+
+    // Generate VBO
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferSubData(GL_ARRAY_BUFFER, 6 * 5 * sizeof(float), sizeof(hpVertices), hpVertices);
+
+    float percent = indSize.x / size.x;
+    float displace = -size.x * (1.0f - percent);
+
 	glm::mat4 hpMatrix = glm::mat4(1.0f);
-	hpMatrix = glm::translate(hpMatrix, position + glm::vec3(0.0f, 0.0f, 0.01f));
+	hpMatrix = glm::translate(hpMatrix, position + glm::vec3(displace / 2.0f, 0.0f, 0.01f));
 	ResourceManager::GetShader("indShader").SetMatrix4("model", hpMatrix);
 
 	glBindVertexArray(iVAO);

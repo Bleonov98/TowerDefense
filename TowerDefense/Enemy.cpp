@@ -5,6 +5,7 @@ void Enemy::InitPath(const std::vector<std::vector<Grid*>> grid)
 	dirQ.push(std::make_pair(MOVE_UP, grid[13][9]));
 	dirQ.push(std::make_pair(MOVE_RIGHT, grid[6][9]));
 	dirQ.push(std::make_pair(MOVE_DOWN, grid[6][19]));
+	dirQ.push(std::make_pair(MOVE_DOWN, grid[29][19]));
 }
 
 void Enemy::Move(const float dt)
@@ -26,6 +27,7 @@ void Enemy::CheckPoint()
 		dir = dirQ.front().first;
 		dirQ.pop();
 	}
+	else if (dirQ.empty()) DeleteObject();
 }
 
 void Enemy::Hit(int damage, float slowRate)
@@ -40,12 +42,12 @@ void Enemy::Hit(int damage, float slowRate)
 
 void Enemy::ShowHP(glm::mat4 projection, glm::mat4 view, bool menu)
 {
-	indicator.SetPosition(glm::vec3(position.x, position.y + GetSize().y, position.z));
 	float percentHP = static_cast<float>(hp) / static_cast<float>(maxHp);
 	glm::vec3 indColour;
 	percentHP > 0.5f ? indColour = glm::vec3(0.0f, 1.0f, 0.0f) : (percentHP > 0.25f ? indColour = glm::vec3(0.85f, 0.85f, 0.0f) : indColour = glm::vec3(0.9f, 0.1f, 0.0f));
 	indicator.SetColour(indColour);
-	indicator.SetSize(glm::vec2(indicator.GetSize().first.x / 2.0f * percentHP, indicator.GetSize().first.y));
+	indicator.SetPosition(glm::vec3(position.x, position.y + GetSize().y, position.z));
+	indicator.SetSize(glm::vec2(indicator.GetSize().first.x * percentHP, indicator.GetSize().first.y));
 
 	indicator.DrawIndicator(projection, view, menu);
 }
