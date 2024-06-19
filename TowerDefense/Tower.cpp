@@ -47,7 +47,8 @@ void Tower::UpgradeTower()
 	towerLvl++;
 
 	damage += 35;
-	attackSpeed += 25;
+	attackSpeed += 20;
+	towerCost += 25;
 }
 
 bool Tower::IsInAttackRange(Enemy* enemy)
@@ -62,7 +63,8 @@ void FireTower::UpgradeTower()
 	towerLvl++;
 
 	damage += 10;
-	attackSpeed += 50;
+	attackSpeed += 40;
+	towerCost += 35;
 }
 
 Projectile* FireTower::GetProjectile()
@@ -80,6 +82,7 @@ void IceTower::UpgradeTower()
 	damage += 20;
 	attackSpeed += 10;
 	slowRate += 0.3;
+	towerCost += 30;
 }
 
 Projectile* IceTower::GetProjectile()

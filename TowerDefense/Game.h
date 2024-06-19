@@ -11,6 +11,7 @@
 #include <chrono>
 #include <mutex>
 
+#include "Timer.h"
 #include "Camera.h"
 #include "TextRenderer.h"
 #include "ResourceManager.h"
@@ -25,11 +26,12 @@
 enum GameState {
 	ACTIVE,
 	MENU,
-	END
+	END_WIN,
+	END_LOSS
 };
 
 struct Player {
-	int gold = 100;
+	int gold = 50;
 	int hp = 5;
 	int wave = 0;
 };
@@ -102,6 +104,7 @@ public:
 private:
 
 	// basics
+	Timer timer;
 	GameState gameState = MENU;
 	int width, height;
 	// bool devView = false;
@@ -112,7 +115,6 @@ private:
 	std::vector<std::vector<Grid*>> grid;
 
 	// camera, tools
-	std::mutex enemyLock;
 	glm::vec2 cursorPos;
 
 	glm::mat4 projection;

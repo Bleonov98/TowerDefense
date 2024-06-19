@@ -6,9 +6,9 @@
 
 struct Flame : public GameObject {
 public:
-	Flame(glm::vec3 position, int damage, float radiusX, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : GameObject(position, scale, angle) {
+	Flame(glm::vec3 position, int damage, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : GameObject(position, scale, angle) {
 		this->damage = damage;
-		this->hbox.radius = 1.5f * radiusX;
+		this->hbox.radius = 1.0f;
 	};
 	int GetDamage() { return this->damage; }
 	bool SphereCollision(GameObject* obj) override;

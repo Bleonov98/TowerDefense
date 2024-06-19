@@ -38,6 +38,7 @@ public:
 	void Move(const float dt);
 	void CheckPoint();
 	void Hit(int damage, float slowRate);
+	bool Slipped() { return dirQ.empty() && IsDeleted(); }
 
 	void SetIndicator(Indicator indicator) { this->indicator = indicator; }
 	Indicator& GetIndicator() { return this->indicator; }
@@ -62,9 +63,9 @@ struct Boss : public Enemy
 {
 public:
 	Boss(glm::vec3 position, Model model, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : Enemy(position, model, scale, angle) {
-		this->speed = 2.0f;
-		this->hp = this->maxHp = 5000;
-		this->slowDuration = 0.5f;
+		this->speed = 2.5f;
+		this->hp = this->maxHp = 15000;
+		this->slowDuration = 0.4f;
 	}
 };
 

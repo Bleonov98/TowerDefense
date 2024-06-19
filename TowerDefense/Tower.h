@@ -47,7 +47,7 @@ public:
 
 protected:
 
-	int damage = 35, attackSpeed = 15, towerLvl = 1, towerCost = 50;
+	int damage = 35, attackSpeed = 25, towerLvl = 1, towerCost = 50;
 	float attackRadius = 5.0f, attackDelay = 0.0f;
 	bool selected = false;
 	Enemy* target = nullptr;
@@ -64,7 +64,7 @@ public:
 		this->iconTexture = "fireIcon";
 
 		this->damage = 10;
-		this->attackSpeed = 60;
+		this->attackSpeed = 50;
 		this->towerCost = 75;
 
 		pType = FIREBALL_P;
@@ -86,7 +86,7 @@ public:
 	IceTower(glm::vec3 position, Model model, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : Tower(position, model, scale, angle) {
 		this->iconTexture = "iceIcon";
 
-		this->damage = 20;
+		this->damage = 10;
 		this->attackSpeed = 25;
 		this->towerCost = 60;
 

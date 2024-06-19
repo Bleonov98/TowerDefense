@@ -192,19 +192,20 @@ void Game::ProcessInput(float dt)
 			else if (cursorPos.y == this->height / 2.0f + 40.0f) close = true;
 		}
 	}
-	else if (gameState == END && this->Keys[GLFW_KEY_ENTER]) close = true;
+	else if (gameState == END_LOSS || gameState == END_WIN && this->Keys[GLFW_KEY_ENTER]) close = true;
 }
 
 void Game::Update(float dt)
 {
 	if (gameState == ACTIVE) {
 
-		if (!lvlStarted) StartLevel();
+		if (!lvlStarted && timer.SecondsFromLast() >= 5) StartLevel();
 
 		for (auto enemy : enemyList)
 		{
 			enemy->CheckPoint();
 			enemy->Move(dt);
+			if (enemy->Slipped()) player.hp -= 1;
 		}
 
 		for (auto tower : towerList)
@@ -222,6 +223,19 @@ void Game::Update(float dt)
 
 		CheckCollisions();
 
+		if (player.hp <= 0) gameState = END_LOSS;
+		else if (enemyList.empty() && player.wave == 8) gameState = END_WIN;
+
+		if (enemyList.empty() && timer.SecondsFromLast() > 6) {
+			lvlStarted = false;
+
+			Enemy* enemy = new Enemy(glm::vec3(0.0f), ResourceManager::GetModel("none"));
+			enemy->UpgradeEnemy();
+			delete enemy;
+			
+			timer.ResetLastPoint();
+		}
+
 		DeleteObjects();
 	}
 }
@@ -236,7 +250,7 @@ void Game::CheckCollisions()
 			if (proj->GetTarget()->IsDeleted()) player.gold += reward; // If a target is killed, we obtain gold
 
 			if (proj->GetType() == FIREBALL_P) { // A fireball creates flame around the target after hitting it and burns nearest targets
-				Flame flame(proj->GetTarget()->GetHBox().center, proj->GetDamage(), 0.75f * player.wave);
+				Flame flame(proj->GetTarget()->GetHBox().center, proj->GetDamage());
 				for (auto enemy : enemyList)
 				{
 					if (flame.SphereCollision(enemy) && enemy != proj->GetTarget()) {
@@ -269,8 +283,8 @@ void Game::ProcessButtons()
 					if (result == towerList.end()) continue;
 
 					if (player.gold >= (*result)->GetTowerCost() && (*result)->GetTowerLvl() <= 2) {
-						(*result)->UpgradeTower();
 						player.gold -= (*result)->GetTowerCost();
+						(*result)->UpgradeTower();
 					}
 				}
 			}
@@ -308,12 +322,12 @@ void Game::UnselectTowers()
 
 void Game::SpawnEnemy(Indicator indicator)
 {
-	Enemy* enemy = new Enemy(grid[13][0]->GetPosition(), ResourceManager::GetModel("enemy"));
+	Enemy* enemy = new Enemy(grid[13][0]->GetPosition() - glm::vec3(0.5f * enemyList.size(), -0.1f, 0.0f), ResourceManager::GetModel("enemy"));
 	enemy->InitPath(grid);
 	enemy->SetIndicator(indicator);
 	enemy->SetScale(glm::vec3(0.25f));
 
-	std::lock_guard<mutex> lock(enemyLock);
+
 	objList.push_back(enemy);
 	enemyList.push_back(enemy);
 }
@@ -324,7 +338,6 @@ void Game::SpawnBoss(Indicator indicator)
 	boss->InitPath(grid);
 	boss->SetIndicator(indicator);
 
-	std::lock_guard<mutex> lock(enemyLock);
 	objList.push_back(boss);
 	enemyList.push_back(boss);
 }
@@ -332,28 +345,16 @@ void Game::SpawnBoss(Indicator indicator)
 void Game::StartLevel()
 {
 	Indicator indicator(glm::vec2(0.5f, 0.05f));
-
+	player.wave++;
 	lvlStarted = true;
-	std::thread spawnTh([&, indicator]() {
-		player.wave++;
-		std::this_thread::sleep_for(std::chrono::duration<int>(5));
 
-		if (player.wave < 5) {
-			for (size_t i = 0; i < 6; i++)
-			{
-				std::this_thread::sleep_for(std::chrono::duration<float>(0.8f));
-				SpawnEnemy(indicator);
-			}
+	if (player.wave < 7) {
+		for (size_t i = 0; i < 10; i++)
+		{
+			SpawnEnemy(indicator);
 		}
-		else SpawnBoss(indicator);
-		
-		std::this_thread::sleep_for(std::chrono::duration<int>(30));
-
-		lvlStarted = false;
-		Enemy* enemy = new Enemy(glm::vec3(0.0f), ResourceManager::GetModel("none"));
-		enemy->UpgradeEnemy();
-		});
-	spawnTh.detach();
+	}
+	else SpawnBoss(indicator);
 }
 
 void Game::AddProjectile(Projectile* projectile)
@@ -412,13 +413,10 @@ void Game::Render(float dt)
 		DrawObject(tower, dt);
 	}
 
+	for (auto enemy : enemyList)
 	{
-		std::lock_guard<mutex> lock(enemyLock);
-		for (auto enemy : enemyList)
-		{
-			DrawObject(enemy, dt);
-			enemy->ShowHP(projection, view, gameState == MENU);
-		}
+		DrawObject(enemy, dt);
+		enemy->ShowHP(projection, view, gameState == MENU);
 	}
 
 

@@ -54,7 +54,7 @@ void Enemy::ShowHP(glm::mat4 projection, glm::mat4 view, bool menu)
 
 void Enemy::UpgradeEnemy()
 {
-	maxHp += 150;
+	maxHp += 175;
 	if (maxSpeed < 2.5f) maxSpeed += 0.5f;
-	gold += 5;
+	gold += 2;
 }

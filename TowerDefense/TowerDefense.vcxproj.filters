@@ -61,6 +61,9 @@
     <ClCompile Include="Indicator.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h">
@@ -121,6 +124,9 @@
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="Indicator.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
       <Filter>Header</Filter>
     </ClInclude>
   </ItemGroup>
