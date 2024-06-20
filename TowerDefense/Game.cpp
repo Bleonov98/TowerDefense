@@ -59,7 +59,8 @@ void Game::InitGrid()
 	{
 		for (size_t j = 0; j < cols; j++)
 		{
-			if (i >= 7 && i <= 18 && j >= 11 && j <= 17) cellData = 0;
+			if ((i == 9 || i == 11 || i == 13) && 
+				(j == 12 || j == 14 || j == 16)) cellData = 0;
 			else cellData = 99;
 
 			Grid* cell = new Grid(glm::vec3(startGridPos.x + j * cellWidth, startGridPos.y + gameMap->GetSize().y, startGridPos.z + i * cellHeight) + centerVec, cellWidth, cellHeight, cellData);
@@ -400,6 +401,15 @@ void Game::UnactiveCells()
 	}
 }
 
+void LightObject::MoveLight(float dt)
+{
+}
+
+void LightObject::CalculatePath()
+{
+
+}
+
 // Render
 void Game::Render(float dt)
 {
@@ -410,7 +420,14 @@ void Game::Render(float dt)
 	
 	for (auto tower : towerList)
 	{
+		if (gridToggle) {
+			tower->SetTransparency(0.8f);
+			glDepthMask(GL_FALSE);
+		}
+		else tower->SetTransparency(0.0f);
+
 		DrawObject(tower, dt);
+		glDepthMask(GL_TRUE);
 	}
 
 	for (auto enemy : enemyList)
@@ -418,7 +435,6 @@ void Game::Render(float dt)
 		DrawObject(enemy, dt);
 		enemy->ShowHP(projection, view, gameState == MENU);
 	}
-
 
 	for (auto proj : projectileList)
 	{
@@ -453,6 +469,7 @@ void Game::DrawObject(GameObject* obj, float dt)
 	ResourceManager::GetShader("modelShader").Use();
 	ResourceManager::GetShader("modelShader").SetMatrix4("projection", projection);
 	ResourceManager::GetShader("modelShader").SetMatrix4("view", view);
+	ResourceManager::GetShader("modelShader").SetFloat("transparency", obj->GetTransparency());
 
 	if (obj->IsAnimated()) {
 		ResourceManager::GetShader("modelShader").SetBool("animated", true);
@@ -462,6 +479,9 @@ void Game::DrawObject(GameObject* obj, float dt)
 			ResourceManager::GetShader("modelShader").SetMatrix4("finalBonesMatrices[" + std::to_string(i) + "]", transforms[i]);
 	}
 	else ResourceManager::GetShader("modelShader").SetBool("animated", false);
+
+	ResourceManager::GetShader("modelShader").SetVector3f("lightPos", light.lPos);
+	ResourceManager::GetShader("modelShader").SetVector3f("lightColour", light.lColour);
 
 	obj->RefreshMatrix();
 
@@ -492,10 +512,16 @@ void Game::DrawStats()
 
 void Game::DrawTowerMenu()
 {
+	string cost;
 	if (GetActiveCell() != nullptr) {
 		for (size_t i = 0; i < buttonList.size() - 1; i++)
 		{
+			if (buttonList[i]->GetID() == SET_BUTTON && gridToggle) continue;
+
 			buttonList[i]->DrawButton(gameState == MENU);
+			buttonList[i]->GetID() == ARROWTOWER_BUTTON ? cost = "50" : (buttonList[i]->GetID() == FIRETOWER_BUTTON ? cost = "75" : cost = "60");
+
+			text->RenderText(cost, buttonList[i]->GetButtonPosition() + glm::vec2(-15.0f, 0.0f));
 		}
 	}
 }
@@ -576,9 +602,8 @@ glm::vec3 Game::ProcessClick()
 	// check tower click
 	for (auto& tower : towerList)
 	{
-		if (tower->RayCollision(rayOrigin, rayDirection)) {
+		if (tower->RayCollision(rayOrigin, rayDirection) && !gridToggle) {
 			tower->SelectTower(true);
-			gridToggle = false;
 
 			return tower->GetPosition();
 		}
@@ -597,6 +622,7 @@ glm::vec3 Game::ProcessClick()
 		}
 	}
 
+	gridToggle = false;
 	return glm::vec3(0.0f);
 }
 

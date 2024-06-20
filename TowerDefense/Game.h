@@ -36,6 +36,18 @@ struct Player {
 	int wave = 0;
 };
 
+struct LightObject {
+public:
+	LightObject() {
+		CalculatePath();
+	};
+	glm::vec3 lPos = glm::vec3(-lRadius, lRadius, 0.0f), lColour = glm::vec3(1.3f, 1.3f, 1.0f);
+	void MoveLight(float dt);
+private:
+	void CalculatePath();
+	float lRadius = 10.0f, lSpeed = 0.25f;
+};
+
 class Game
 {
 public:
@@ -105,6 +117,8 @@ private:
 
 	// basics
 	Timer timer;
+	LightObject light;
+
 	GameState gameState = MENU;
 	int width, height;
 	// bool devView = false;

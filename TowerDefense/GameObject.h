@@ -24,6 +24,7 @@ public:
 	glm::vec3 GetScale() { return scale; }
 	glm::vec3 GetColor() { return color; }
 	float GetAngle() { return angle; }
+	float GetTransparency() { return transparency; }
 	Sphere GetHBox();
 
 	std::string GetID() { return model.GetName(); }
@@ -35,6 +36,7 @@ public:
 	void SetScale(glm::vec3 scale);
 	void SetColor(glm::vec3 color) { this->color = color; }
 	void SetAngle(float angle);
+	void SetTransparency(float transparency) { this->transparency = transparency; }
 
 	void SetModel(Model model);
 	void RefreshModel();
@@ -63,7 +65,7 @@ protected:
 	std::string iconTexture = " ";
 
 	bool deleted = false;
-	float angle;
+	float angle, transparency = 0.0f;
 	glm::vec3 position, scale, color = glm::vec3(1.0f);
 	glm::mat4 objMatrix;
 
