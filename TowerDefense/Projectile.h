@@ -4,18 +4,6 @@
 #include "GameObject.h"
 #include "Enemy.h"
 
-struct Flame : public GameObject {
-public:
-	Flame(glm::vec3 position, int damage, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : GameObject(position, scale, angle) {
-		this->damage = damage;
-		this->hbox.radius = 1.0f;
-	};
-	int GetDamage() { return this->damage; }
-	bool SphereCollision(GameObject* obj) override;
-private:
-	int damage;
-};
-
 enum ProjectileType {
 	ARROW_P,
 	FIREBALL_P,
@@ -38,6 +26,8 @@ public:
 
 	float GetSpeed() { return projSpeed; }
 	int GetDamage() { return this->damage; }
+	float GetSlowRate() { return this->slowRate; }
+
 	ProjectileType GetType() { return projType; }
 	Enemy* GetTarget() { return this->target; }
 
@@ -52,5 +42,33 @@ private:
 
 	Enemy* target = nullptr;
 };
+
+
+
+class ElementalEffect : public GameObject {
+public:
+	ElementalEffect(glm::vec3 position, int damage, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : GameObject(position, scale, angle) {
+		this->damage = damage;
+		this->hbox.radius = 1.5f;
+	};
+	int GetDamage() { return this->damage; }
+	bool SphereCollision(GameObject* obj) override;
+protected:
+	int damage;
+};
+
+
+
+struct Cold : public ElementalEffect {
+public:
+	Cold(glm::vec3 position, float slowRate, int damage = 0.0f, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : ElementalEffect(position, damage, scale, angle) {
+		this->hbox.radius = 0.4f;
+		this->slowRate = slowRate;
+	};
+	float GetElSlowRate() { return this->slowRate * 0.5f; };
+private:
+	float slowRate = 0.0f;
+};
+
 
 #endif // !PROJECTILE_H

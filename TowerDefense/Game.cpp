@@ -27,6 +27,9 @@ void Game::Init()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	ResourceManager::GetShader("modelShader").Use();
+	ResourceManager::GetShader("modelShader").SetMatrix4("projection", projection);
+
 	// sounds
 	// music = sound->addSoundSourceFromFile("../sounds/music.mp3");
 	// music->setDefaultVolume(0.5f);
@@ -114,7 +117,7 @@ void Game::LoadResources()
 	// - - - // Models
 	ResourceManager::LoadModel("map.obj", "map");
 	ResourceManager::LoadModel("tower.obj", "tower");
-	ResourceManager::LoadModel("enemy.obj", "enemy");
+	ResourceManager::LoadModel("enemy/FoxRun.fbx", "enemy");
 	ResourceManager::LoadModel("arrow.obj", "arrow");
 	ResourceManager::LoadModel("fire.obj", "fire");
 	ResourceManager::LoadModel("ice.obj", "ice");
@@ -222,6 +225,12 @@ void Game::Update(float dt)
 			projectile->MoveProjectile(dt);
 		}
 
+		// light movement
+		ResourceManager::GetShader("modelShader").Use();
+		ResourceManager::GetShader("modelShader").SetVector3f("lightPos", light.lPos);
+		ResourceManager::GetShader("modelShader").SetVector3f("lightColour", light.lColour);
+		light.MoveLight(dt);
+
 		CheckCollisions();
 
 		if (player.hp <= 0) gameState = END_LOSS;
@@ -233,7 +242,7 @@ void Game::Update(float dt)
 			Enemy* enemy = new Enemy(glm::vec3(0.0f), ResourceManager::GetModel("none"));
 			enemy->UpgradeEnemy();
 			delete enemy;
-			
+
 			timer.ResetLastPoint();
 		}
 
@@ -251,7 +260,7 @@ void Game::CheckCollisions()
 			if (proj->GetTarget()->IsDeleted()) player.gold += reward; // If a target is killed, we obtain gold
 
 			if (proj->GetType() == FIREBALL_P) { // A fireball creates flame around the target after hitting it and burns nearest targets
-				Flame flame(proj->GetTarget()->GetHBox().center, proj->GetDamage());
+				ElementalEffect flame(proj->GetTarget()->GetHBox().center, proj->GetDamage());
 				for (auto enemy : enemyList)
 				{
 					if (flame.SphereCollision(enemy) && enemy != proj->GetTarget()) {
@@ -260,6 +269,13 @@ void Game::CheckCollisions()
 					}
 				}
 			}
+			//else if (proj->GetType() == ICEBALL_P) { // A iceball creates ice breath around the target after hitting it and slows nearest targets
+			//	Cold cold(proj->GetTarget()->GetHBox().center, proj->GetSlowRate());
+			//	for (auto enemy : enemyList)
+			//	{
+			//		if (cold.SphereCollision(enemy) && enemy != proj->GetTarget()) enemy->Hit(cold.GetDamage(), cold.GetElSlowRate());
+			//	}
+			//}
 		}
 	}
 }
@@ -323,11 +339,10 @@ void Game::UnselectTowers()
 
 void Game::SpawnEnemy(Indicator indicator)
 {
-	Enemy* enemy = new Enemy(grid[13][0]->GetPosition() - glm::vec3(0.5f * enemyList.size(), -0.1f, 0.0f), ResourceManager::GetModel("enemy"));
+	Enemy* enemy = new Enemy(grid[13][0]->GetPosition() - glm::vec3(0.75f * enemyList.size(), -0.1f, 0.0f), ResourceManager::GetModel("enemy"));
 	enemy->InitPath(grid);
 	enemy->SetIndicator(indicator);
-	enemy->SetScale(glm::vec3(0.25f));
-
+	enemy->SetScale(glm::vec3(0.02f));
 
 	objList.push_back(enemy);
 	enemyList.push_back(enemy);
@@ -338,6 +353,7 @@ void Game::SpawnBoss(Indicator indicator)
 	Boss* boss = new Boss(grid[13][0]->GetPosition(), ResourceManager::GetModel("enemy"));
 	boss->InitPath(grid);
 	boss->SetIndicator(indicator);
+	boss->SetScale(glm::vec3(0.075f));
 
 	objList.push_back(boss);
 	enemyList.push_back(boss);
@@ -350,7 +366,7 @@ void Game::StartLevel()
 	lvlStarted = true;
 
 	if (player.wave < 7) {
-		for (size_t i = 0; i < 10; i++)
+		for (size_t i = 0; i < 50; i++)
 		{
 			SpawnEnemy(indicator);
 		}
@@ -403,11 +419,11 @@ void Game::UnactiveCells()
 
 void LightObject::MoveLight(float dt)
 {
-}
-
-void LightObject::CalculatePath()
-{
-
+	angle -= lSpeed * dt;
+	if (angle > 2.0f * glm::pi<float>()) {
+		angle -= 2.0f * glm::pi<float>();
+	}
+	lPos = glm::vec3(lRadius * cos(angle), lRadius * sin(angle), 0.0f);
 }
 
 // Render
@@ -464,25 +480,12 @@ void Game::Render(float dt)
 
 void Game::DrawObject(GameObject* obj, float dt)
 {
-	if (obj->IsAnimated()) ResourceManager::GetAnimator(obj->GetID()).UpdateAnimation(dt);
-
 	ResourceManager::GetShader("modelShader").Use();
-	ResourceManager::GetShader("modelShader").SetMatrix4("projection", projection);
 	ResourceManager::GetShader("modelShader").SetMatrix4("view", view);
+
 	ResourceManager::GetShader("modelShader").SetFloat("transparency", obj->GetTransparency());
 
-	if (obj->IsAnimated()) {
-		ResourceManager::GetShader("modelShader").SetBool("animated", true);
-
-		auto transforms = ResourceManager::GetAnimator(obj->GetID()).GetFinalBoneMatrices();
-		for (int i = 0; i < transforms.size(); ++i)
-			ResourceManager::GetShader("modelShader").SetMatrix4("finalBonesMatrices[" + std::to_string(i) + "]", transforms[i]);
-	}
-	else ResourceManager::GetShader("modelShader").SetBool("animated", false);
-
-	ResourceManager::GetShader("modelShader").SetVector3f("lightPos", light.lPos);
-	ResourceManager::GetShader("modelShader").SetVector3f("lightColour", light.lColour);
-
+	// obj->UpdateAnimation(dt);
 	obj->RefreshMatrix();
 
 	ResourceManager::GetShader("modelShader").SetMatrix4("model", obj->GetMatrix());
@@ -680,12 +683,33 @@ Game::~Game()
 {
 	delete text;
 	delete sound;
+	delete music;
+	delete HUDisplay;
+	delete statHUD;
+	delete gameMap;
 
-	for (auto i : objList)
+	for (auto& i : objList)
 	{
 		delete i;
+		i = nullptr;
 	}
 	objList.clear();
+	enemyList.clear();
+	towerList.clear();
+	projectileList.clear();
 
-	// delete grid, buttons, hud, clear all vectors
+	for (auto& row : grid) {
+		for (auto& cell : row) {
+			delete cell;
+			cell = nullptr;
+		}
+	}
+	grid.clear();
+
+	for (auto& button : buttonList)
+	{
+		delete button;
+		button = nullptr;
+	}
+	buttonList.clear();
 }

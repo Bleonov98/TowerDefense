@@ -28,6 +28,22 @@ void Enemy::CheckPoint()
 		dirQ.pop();
 	}
 	else if (dirQ.empty()) DeleteObject();
+
+	switch (dir)
+	{
+	case MOVE_RIGHT:
+		angle = 180.0f;
+		break;
+	case MOVE_LEFT:
+		angle = 0.0f;
+		break;
+	case MOVE_UP:
+		angle = 270.0f;
+		break;
+	case MOVE_DOWN:
+		angle = 90.0f;
+		break;
+	}
 }
 
 void Enemy::Hit(int damage, float slowRate)

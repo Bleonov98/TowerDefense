@@ -57,8 +57,8 @@ bool Grid::CenterCollision(const glm::vec3& rayOrigin)
 
 	glm::vec3 ray = glm::vec3(rayOrigin.x, cellPos.y, rayOrigin.z);
 
-	glm::vec3 minPoint = cellPos - glm::vec3(0.02f, 0.0f, 0.02f);
-	glm::vec3 maxPoint = cellPos + glm::vec3(0.02f, 0.0f, 0.02f);
+	glm::vec3 minPoint = cellPos - glm::vec3(0.05f, 0.0f, 0.05f);
+	glm::vec3 maxPoint = cellPos + glm::vec3(0.05f, 0.0f, 0.05f);
 
 	glm::vec3 tMin = (minPoint - ray) * invRayDirection;
 	glm::vec3 tMax = (maxPoint - ray) * invRayDirection;

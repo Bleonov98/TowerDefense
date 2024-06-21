@@ -8,6 +8,7 @@ in vec3 fragPos;
 in vec3 normalVec;
 
 uniform sampler2D texture_diffuse1;
+uniform bool useTexture;
 uniform float transparency;
 
 uniform vec3 lightPos;
@@ -34,9 +35,17 @@ void main()
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
     vec3 specular = specularStrength * spec * lightColour;  
 
-    // vec4 texColor = texture(texture_diffuse1, TexCoords);
-    // vec3 finalColor = texColor.rgb * (0.1 + Colours);
+    // Calculate final color
+    vec3 lighting = (ambient + diffuse + specular);
+    vec3 finalColor;
 
-    vec3 result = (ambient + diffuse + specular) * Colours;
-    FragColor = vec4(result, 1.0f - transparency);
+    if (useTexture) {
+        vec4 texColor = texture(texture_diffuse1, TexCoords);
+        finalColor = texColor.rgb * Colours * lighting;
+        FragColor = vec4(finalColor, texColor.a * (1.0f - transparency));
+    } 
+    else {
+        finalColor = Colours * lighting;
+        FragColor = vec4(finalColor, 1.0f - transparency);
+    }
 }

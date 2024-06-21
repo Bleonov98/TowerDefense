@@ -29,7 +29,7 @@ bool Projectile::ProjectileCollision()
 	return false;
 }
 
-bool Flame::SphereCollision(GameObject* obj)
+bool ElementalEffect::SphereCollision(GameObject* obj)
 {
 	float doubleRadius = obj->GetHBox().radius + hbox.radius;
 	glm::vec3 diff = obj->GetHBox().center - position;

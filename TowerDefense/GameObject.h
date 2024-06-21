@@ -16,6 +16,11 @@ public:
 		this->position = position;
 		this->scale = scale;
 		this->angle = angle;
+
+		if (IsAnimated()) {
+			SetAnimation(ResourceManager::GetAnimation(GetID()));
+			SetAnimator(ResourceManager::GetAnimator(GetID()));
+		}
 	};
 
 	glm::mat4 GetMatrix() { return objMatrix; }
@@ -38,8 +43,13 @@ public:
 	void SetAngle(float angle);
 	void SetTransparency(float transparency) { this->transparency = transparency; }
 
+	void SetAnimation(Animation anim) { this->anim = anim; }
+	void SetAnimator(Animator animator) { this->animator = animator; }
+	void UpdateAnimation(float dt);
+
 	void SetModel(Model model);
 	void RefreshModel();
+
 	void SetIcon(std::string iconTexture) { this->iconTexture = iconTexture; }
 
 	bool RayCollision(const glm::vec3& rayOrigin, const glm::vec3& rayDirection);
@@ -60,6 +70,9 @@ public:
 protected:
 
 	Model model;
+	Animation anim;
+	Animator animator;
+
 	Sphere hbox;
 
 	std::string iconTexture = " ";

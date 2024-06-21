@@ -14,6 +14,7 @@ void GameObject::RefreshMatrix()
 
 	modelMatrix = glm::translate(modelMatrix, position);
 	modelMatrix = glm::scale(modelMatrix, scale);
+    modelMatrix = glm::rotate(modelMatrix, glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	objMatrix = modelMatrix;
 }
@@ -34,6 +35,21 @@ void GameObject::SetAngle(float angle)
 {
 	model.RotateModel(angle - this->angle);
 	this->angle = angle;
+}
+
+void GameObject::UpdateAnimation(float dt)
+{
+    if (!IsAnimated()) {
+        ResourceManager::GetShader("modelShader").SetBool("animated", false);
+        return;
+    }
+
+    ResourceManager::GetShader("modelShader").SetBool("animated", true);
+    animator.UpdateAnimation(dt);
+
+    auto transforms = animator.GetFinalBoneMatrices();
+    for (int i = 0; i < transforms.size(); ++i)
+        ResourceManager::GetShader("modelShader").SetMatrix4("finalBonesMatrices[" + std::to_string(i) + "]", transforms[i]);
 }
 
 void GameObject::SetModel(Model model)

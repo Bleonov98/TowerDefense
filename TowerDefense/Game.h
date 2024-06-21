@@ -31,21 +31,18 @@ enum GameState {
 };
 
 struct Player {
-	int gold = 50;
+	int gold = 1000;
 	int hp = 5;
 	int wave = 0;
 };
 
 struct LightObject {
 public:
-	LightObject() {
-		CalculatePath();
-	};
-	glm::vec3 lPos = glm::vec3(-lRadius, lRadius, 0.0f), lColour = glm::vec3(1.3f, 1.3f, 1.0f);
+	LightObject() {};
+	glm::vec3 lPos = glm::vec3(lRadius * cos(angle), lRadius * sin(angle), 0.0f), lColour = glm::vec3(1.2f, 1.2f, 1.0f);
 	void MoveLight(float dt);
 private:
-	void CalculatePath();
-	float lRadius = 10.0f, lSpeed = 0.25f;
+	float lRadius = 10.0f, lSpeed = 0.1f, angle = -90.0f;
 };
 
 class Game
@@ -116,9 +113,6 @@ public:
 private:
 
 	// basics
-	Timer timer;
-	LightObject light;
-
 	GameState gameState = MENU;
 	int width, height;
 	// bool devView = false;
@@ -135,7 +129,10 @@ private:
 	glm::mat4 view;
 
 	// objects
+	Timer timer;
+	LightObject light;
 	Player player;
+
 	std::vector<GameObject*> objList;
 	std::vector<Tower*> towerList;
 	std::vector<Enemy*> enemyList;
