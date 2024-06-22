@@ -6,7 +6,6 @@ void Projectile::MoveProjectile(const float dt)
 		DeleteObject();
 		return;
 	}
-
 	projSpeed = target->GetSpeed() + 10.0f;
 
 	glm::vec3 direction = glm::normalize(glm::vec3(target->GetPosition().x, target->GetPosition().y + target->GetSize().y / 2.0f, target->GetPosition().z) - this->position);

@@ -212,9 +212,10 @@ void Game::Update(float dt)
 			if (enemy->Slipped()) player.hp -= 1;
 		}
 
+		// TARGET ISSUE
 		for (auto tower : towerList)
 		{
-			tower->FindTarget(enemyList);
+			tower->FindTarget(enemyList); // HERE
 
 			// if target's been found
 			AddProjectile(tower->Attack(dt));
@@ -222,8 +223,10 @@ void Game::Update(float dt)
 
 		for (auto projectile : projectileList)
 		{
-			projectile->MoveProjectile(dt);
+			projectile->MoveProjectile(dt); // AND HERE
 		}
+		// ------------
+
 
 		// light movement
 		ResourceManager::GetShader("modelShader").Use();
@@ -248,6 +251,7 @@ void Game::Update(float dt)
 
 		DeleteObjects();
 	}
+
 }
 
 void Game::CheckCollisions()
@@ -269,13 +273,13 @@ void Game::CheckCollisions()
 					}
 				}
 			}
-			//else if (proj->GetType() == ICEBALL_P) { // A iceball creates ice breath around the target after hitting it and slows nearest targets
-			//	Cold cold(proj->GetTarget()->GetHBox().center, proj->GetSlowRate());
-			//	for (auto enemy : enemyList)
-			//	{
-			//		if (cold.SphereCollision(enemy) && enemy != proj->GetTarget()) enemy->Hit(cold.GetDamage(), cold.GetElSlowRate());
-			//	}
-			//}
+			else if (proj->GetType() == ICEBALL_P) { // A iceball creates ice breath around the target after hitting it and slows nearest targets
+				Cold cold(proj->GetTarget()->GetHBox().center, proj->GetSlowRate());
+				for (auto enemy : enemyList)
+				{
+					if (cold.SphereCollision(enemy) && enemy != proj->GetTarget()) enemy->Hit(cold.GetDamage(), cold.GetElSlowRate());
+				}
+			}
 		}
 	}
 }
@@ -339,7 +343,7 @@ void Game::UnselectTowers()
 
 void Game::SpawnEnemy(Indicator indicator)
 {
-	Enemy* enemy = new Enemy(grid[13][0]->GetPosition() - glm::vec3(0.75f * enemyList.size(), -0.1f, 0.0f), ResourceManager::GetModel("enemy"));
+	Enemy* enemy = new Enemy(grid[13][0]->GetPosition() /*- glm::vec3(0.75f * enemyList.size(), -0.1f, 0.0f)*/, ResourceManager::GetModel("enemy"));
 	enemy->InitPath(grid);
 	enemy->SetIndicator(indicator);
 	enemy->SetScale(glm::vec3(0.02f));
@@ -366,7 +370,7 @@ void Game::StartLevel()
 	lvlStarted = true;
 
 	if (player.wave < 7) {
-		for (size_t i = 0; i < 50; i++)
+		for (size_t i = 0; i < 1; i++)
 		{
 			SpawnEnemy(indicator);
 		}
@@ -378,8 +382,8 @@ void Game::AddProjectile(Projectile* projectile)
 {
 	if (!projectile) return;
 
-	objList.push_back(projectile);
 	projectileList.push_back(projectile);
+	objList.push_back(projectile);
 }
 
 void Game::SetActiveCell(Grid* cell)

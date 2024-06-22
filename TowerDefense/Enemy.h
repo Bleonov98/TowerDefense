@@ -46,6 +46,8 @@ public:
 
 	void UpgradeEnemy();
 
+	virtual ~Enemy() {};
+
 protected:
 
 	inline static float maxSpeed = 1.0f;
