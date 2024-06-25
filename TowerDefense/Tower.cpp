@@ -2,9 +2,7 @@
 
 void Tower::FindTarget(std::vector<Enemy*> enemies)
 {
-	if (target && IsInAttackRange(target)) {
-		return;
-	}
+	if (target && IsInAttackRange(target)) return;
 
 	target = nullptr;
 	float closestDistanceSquared = attackRadius * attackRadius;

@@ -227,7 +227,6 @@ void Game::Update(float dt)
 		}
 		// ------------
 
-
 		// light movement
 		ResourceManager::GetShader("modelShader").Use();
 		ResourceManager::GetShader("modelShader").SetVector3f("lightPos", light.lPos);
@@ -370,7 +369,7 @@ void Game::StartLevel()
 	lvlStarted = true;
 
 	if (player.wave < 7) {
-		for (size_t i = 0; i < 1; i++)
+		for (size_t i = 0; i < 12; i++)
 		{
 			SpawnEnemy(indicator);
 		}
