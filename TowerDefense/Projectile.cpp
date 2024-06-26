@@ -14,6 +14,11 @@ void Projectile::MoveProjectile(const float dt)
 
 bool Projectile::ProjectileCollision()
 {
+	if (!target) {
+		DeleteObject();
+		return false;
+	}
+
 	float doubleRadius = target->GetHBox().radius + this->GetHBox().radius;
 	glm::vec3 diff = target->GetHBox().center - this->GetHBox().center;
 

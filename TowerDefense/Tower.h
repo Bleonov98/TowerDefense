@@ -37,6 +37,7 @@ public:
 	// gameplay
 	void FindTarget(std::vector<Enemy*> enemies);
 	Enemy* GetTarget() { return this->target; }
+	void ResetTarget() { this->target = nullptr; }
 
 	virtual Projectile* GetProjectile();
 	Projectile* Attack(float dt);

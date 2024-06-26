@@ -212,20 +212,18 @@ void Game::Update(float dt)
 			if (enemy->Slipped()) player.hp -= 1;
 		}
 
-		// TARGET ISSUE
 		for (auto tower : towerList)
 		{
-			tower->FindTarget(enemyList); // HERE
+			tower->FindTarget(enemyList);
 
 			// if target's been found
 			AddProjectile(tower->Attack(dt));
 		}
 
-		for (auto projectile : projectileList)
+		for (auto projectile : projectileList)	
 		{
-			projectile->MoveProjectile(dt); // AND HERE
+			projectile->MoveProjectile(dt);
 		}
-		// ------------
 
 		// light movement
 		ResourceManager::GetShader("modelShader").Use();
@@ -236,7 +234,7 @@ void Game::Update(float dt)
 		CheckCollisions();
 
 		if (player.hp <= 0) gameState = END_LOSS;
-		else if (enemyList.empty() && player.wave == 8) gameState = END_WIN;
+		else if (enemyList.empty() && player.wave == 7) gameState = END_WIN;
 
 		if (enemyList.empty() && timer.SecondsFromLast() > 6) {
 			lvlStarted = false;
@@ -342,7 +340,7 @@ void Game::UnselectTowers()
 
 void Game::SpawnEnemy(Indicator indicator)
 {
-	Enemy* enemy = new Enemy(grid[13][0]->GetPosition() /*- glm::vec3(0.75f * enemyList.size(), -0.1f, 0.0f)*/, ResourceManager::GetModel("enemy"));
+	Enemy* enemy = new Enemy(grid[13][0]->GetPosition() - glm::vec3(0.75f * enemyList.size(), -0.1f, 0.0f), ResourceManager::GetModel("enemy"));
 	enemy->InitPath(grid);
 	enemy->SetIndicator(indicator);
 	enemy->SetScale(glm::vec3(0.02f));
@@ -675,7 +673,24 @@ void Game::DeleteObjectFromVector(std::vector<T*>& vector, bool deleteMemory)
 	for (auto i = vector.begin(); i != vector.end();)
 	{
 		if ((*i)->IsDeleted()) {
-			if (deleteMemory) delete* i;
+			if (deleteMemory) {
+
+				// set null target
+				Enemy* enemy = dynamic_cast<Enemy*>(*i);
+				if (enemy) {
+					for (auto tower : towerList)
+					{
+						if (tower->GetTarget() == enemy) tower->ResetTarget();
+					}
+
+					for (auto projectile : projectileList)
+					{
+						if (projectile->GetTarget() == enemy) projectile->ResetTarget();
+					}
+				}
+
+				delete* i;
+			}
 			i = vector.erase(i);
 		}
 		else ++i;

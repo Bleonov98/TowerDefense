@@ -30,6 +30,7 @@ public:
 
 	ProjectileType GetType() { return projType; }
 	Enemy* GetTarget() { return this->target; }
+	void ResetTarget() { this->target = nullptr; }
 
 	void MoveProjectile(const float dt);
 	bool ProjectileCollision();

@@ -31,8 +31,8 @@ enum GameState {
 };
 
 struct Player {
-	int gold = 1000;
-	int hp = 1000;
+	int gold = 55;
+	int hp = 5;
 	int wave = 0;
 };
 
