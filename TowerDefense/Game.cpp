@@ -117,11 +117,10 @@ void Game::LoadResources()
 	// - - - // Models
 	ResourceManager::LoadModel("map.obj", "map");
 	ResourceManager::LoadModel("tower.obj", "tower");
-	ResourceManager::LoadModel("enemy/FoxRun.fbx", "enemy");
+	ResourceManager::LoadModel("enemy/enemy.fbx", "enemy");
 	ResourceManager::LoadModel("arrow.obj", "arrow");
 	ResourceManager::LoadModel("fire.obj", "fire");
 	ResourceManager::LoadModel("ice.obj", "ice");
-	// ResourceManager::LoadModel("boss.obj", "boss");
 
 	// - - - // Textures
 	ResourceManager::LoadTexture("HudFrame.png", true, "HUDTexture");
@@ -239,7 +238,7 @@ void Game::Update(float dt)
 		if (enemyList.empty() && timer.SecondsFromLast() > 6) {
 			lvlStarted = false;
 
-			Enemy* enemy = new Enemy(glm::vec3(0.0f), ResourceManager::GetModel("none"));
+			Enemy* enemy = new Enemy(glm::vec3(0.0f));
 			enemy->UpgradeEnemy();
 			delete enemy;
 
@@ -312,11 +311,12 @@ void Game::ProcessButtons()
 	// - placement, gameplay
 void Game::SetTower(Grid* cell, TowerType type)
 {
-	Tower* tower = nullptr;
+	Tower* tower = new Tower(cell->GetPosition());
+	tower->SetModel(ResourceManager::GetModel("tower"));
 
-	if (type == ARROW) tower = new Tower(cell->GetPosition(), ResourceManager::GetModel("tower"));
-	else if (type == FIRE) tower = new FireTower(cell->GetPosition(), ResourceManager::GetModel("tower"));
-	else if (type == ICE) tower = new IceTower(cell->GetPosition(), ResourceManager::GetModel("tower"));
+	//if (type == ARROW) tower->SetModel(ResourceManager::GetModel("arrow_tower_model"));
+	//else if (type == FIRE) tower->SetModel(ResourceManager::GetModel("fire_tower_model"));
+	//else if (type == ICE) tower->SetModel(ResourceManager::GetModel("ice_tower_model"));
 
 	if (player.gold < tower->GetTowerCost()) return;
 	else player.gold -= tower->GetTowerCost();
@@ -340,10 +340,11 @@ void Game::UnselectTowers()
 
 void Game::SpawnEnemy(Indicator indicator)
 {
-	Enemy* enemy = new Enemy(grid[13][0]->GetPosition() - glm::vec3(0.75f * enemyList.size(), -0.1f, 0.0f), ResourceManager::GetModel("enemy"));
+	Enemy* enemy = new Enemy(grid[13][0]->GetPosition() - glm::vec3(0.75f * enemyList.size(), -0.1f, 0.0f));
 	enemy->InitPath(grid);
+	enemy->SetModel(ResourceManager::GetModel("enemy"));
 	enemy->SetIndicator(indicator);
-	enemy->SetScale(glm::vec3(0.02f));
+	// enemy->SetScale(glm::vec3(0.02f));
 
 	objList.push_back(enemy);
 	enemyList.push_back(enemy);
@@ -367,7 +368,7 @@ void Game::StartLevel()
 	lvlStarted = true;
 
 	if (player.wave < 7) {
-		for (size_t i = 0; i < 12; i++)
+		for (size_t i = 0; i < 1; i++)
 		{
 			SpawnEnemy(indicator);
 		}
@@ -486,7 +487,7 @@ void Game::DrawObject(GameObject* obj, float dt)
 
 	ResourceManager::GetShader("modelShader").SetFloat("transparency", obj->GetTransparency());
 
-	// obj->UpdateAnimation(dt);
+	obj->UpdateAnimation(dt);
 	obj->RefreshMatrix();
 
 	ResourceManager::GetShader("modelShader").SetMatrix4("model", obj->GetMatrix());

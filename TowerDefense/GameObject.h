@@ -16,11 +16,6 @@ public:
 		this->position = position;
 		this->scale = scale;
 		this->angle = angle;
-
-		if (IsAnimated()) {
-			SetAnimation(ResourceManager::GetAnimation(GetID()));
-			SetAnimator(ResourceManager::GetAnimator(GetID()));
-		}
 	};
 
 	glm::mat4 GetMatrix() { return objMatrix; }
@@ -43,12 +38,9 @@ public:
 	void SetAngle(float angle);
 	void SetTransparency(float transparency) { this->transparency = transparency; }
 
-	void SetAnimation(Animation anim) { this->anim = anim; }
-	void SetAnimator(Animator animator) { this->animator = animator; }
-	void UpdateAnimation(float dt);
-
 	void SetModel(Model model);
 	void RefreshModel();
+	void UpdateAnimation(float dt);
 
 	void SetIcon(std::string iconTexture) { this->iconTexture = iconTexture; }
 

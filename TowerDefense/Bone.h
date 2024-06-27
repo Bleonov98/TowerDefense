@@ -4,6 +4,7 @@
 /* Container for bone data */
 
 #include <vector>
+#include <iostream>
 #include <assimp/scene.h>
 #include <list>
 #include <glm/glm.hpp>

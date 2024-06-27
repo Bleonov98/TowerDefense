@@ -56,6 +56,7 @@ public:
     glm::vec3 GetSize() { return modelSize; }
 
     std::string GetName() { return this->name; }
+    std::string GetPath() { return this->filePath; }
 
     void Animated() { animated = true; }
     bool IsAnimated() { return animated; }
@@ -82,7 +83,7 @@ private:
     // model properties 
     glm::vec3 modelSize;
     bool animated = false;
-    std::string name;
+    std::string name, filePath;
 
     std::map<string, BoneInfo> m_BoneInfoMap;
     int m_BoneCounter = 0;

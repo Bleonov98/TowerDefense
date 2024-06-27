@@ -18,12 +18,8 @@ class Enemy : public GameObject
 {
 public:
 
-	Enemy(glm::vec3 position, Model model, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : GameObject(position, scale, angle)
+	Enemy(glm::vec3 position, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : GameObject(position, scale, angle)
 	{
-		this->model = model;
-
-		RefreshModel();
-
 		this->hp = this->maxHp;
 		this->speed = this->maxSpeed;
 		indicator.AddTexture(ResourceManager::GetTexture("indicator"));
@@ -64,7 +60,7 @@ protected:
 struct Boss : public Enemy 
 {
 public:
-	Boss(glm::vec3 position, Model model, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : Enemy(position, model, scale, angle) {
+	Boss(glm::vec3 position, Model model, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : Enemy(position, scale, angle) {
 		this->speed = 2.5f;
 		this->hp = this->maxHp = 22000;
 		this->slowDuration = 0.4f;

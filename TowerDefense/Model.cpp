@@ -7,6 +7,7 @@
 Model::Model(string const& path, string name, bool gamma) : gammaCorrection(gamma)
 {
     loadModel(path);
+    this->filePath = path;
     this->name = name;
     CalculateSize();
 }

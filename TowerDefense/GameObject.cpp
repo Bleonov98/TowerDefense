@@ -56,6 +56,13 @@ void GameObject::SetModel(Model model)
 {
     this->model = model;
     RefreshModel();
+
+    if (!model.IsAnimated()) return;
+
+    Animation nAnim(model.GetPath(), &model);
+    this->anim = nAnim;
+    Animator nAnimator(&anim);
+    this->animator = nAnimator;
 }
 
 void GameObject::RefreshModel()
