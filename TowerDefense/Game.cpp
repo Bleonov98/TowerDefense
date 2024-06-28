@@ -129,7 +129,7 @@ void Game::LoadResources()
 	ResourceManager::LoadTexture("icons/ice.png", true, "iceIcon");
 	ResourceManager::LoadTexture("icons/bow.png", true, "bowIcon");
 	ResourceManager::LoadTexture("tower.png", true, "towerIcon");
-
+	// 
 	ResourceManager::LoadTexture("stats/speed.png", true, "speedStat");
 	ResourceManager::LoadTexture("stats/attack.png", true, "attackStat");
 	ResourceManager::LoadTexture("stats/powerUpIcon.png", true, "powerUpIcon");
