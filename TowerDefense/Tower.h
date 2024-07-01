@@ -17,6 +17,7 @@ public:
 
 	Tower(glm::vec3 position, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : GameObject(position, scale, angle) {
 		this->iconTexture = "bowIcon";
+		towerType = ARROW;
 	};
 
 	// basics
@@ -28,6 +29,7 @@ public:
 	void SetAttackSpeed(int aSpeed) { this->attackSpeed = aSpeed; }
 	void SetDamage(int damage) { this->damage = damage; }
 
+	TowerType GetType() { return towerType; }
 	void SelectTower(bool select) { this->selected = select; }
 	bool IsSelected() { return selected; }
 	
@@ -49,6 +51,7 @@ protected:
 	float attackRadius = 5.0f, attackDelay = 0.0f;
 	bool selected = false;
 	Enemy* target = nullptr;
+	TowerType towerType;
 	ProjectileType pType = ARROW_P;
 
 	bool IsInAttackRange(Enemy* enemy);
@@ -60,6 +63,7 @@ public:
 
 	FireTower(glm::vec3 position, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : Tower(position, scale, angle) {
 		this->iconTexture = "fireIcon";
+		towerType = FIRE;
 
 		this->damage = 10;
 		this->attackSpeed = 50;
@@ -83,6 +87,7 @@ public:
 
 	IceTower(glm::vec3 position, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : Tower(position, scale, angle) {
 		this->iconTexture = "iceIcon";
+		towerType = ICE;
 
 		this->damage = 10;
 		this->attackSpeed = 25;

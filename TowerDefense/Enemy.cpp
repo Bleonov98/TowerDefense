@@ -32,16 +32,16 @@ void Enemy::CheckPoint()
 	switch (dir)
 	{
 	case MOVE_RIGHT:
-		angle = 180.0f;
-		break;
-	case MOVE_LEFT:
 		angle = 0.0f;
 		break;
+	case MOVE_LEFT:
+		angle = 180.0f;
+		break;
 	case MOVE_UP:
-		angle = 270.0f;
+		angle = 90.0f;
 		break;
 	case MOVE_DOWN:
-		angle = 90.0f;
+		angle = 270.0f;
 		break;
 	}
 }

@@ -31,7 +31,7 @@ enum GameState {
 };
 
 struct Player {
-	int gold = 55;
+	int gold = 60;
 	int hp = 5;
 	int wave = 0;
 };
@@ -74,7 +74,8 @@ public:
 	Grid* GetActiveCell();
 	void SetActiveCell(Grid* cell);
 
-	void SetTower(Grid* cell, TowerType type);
+	template<typename Tower>
+	void SetTower(Grid* cell, Tower* tower);
 	void UnselectTowers();
 
 	void SpawnEnemy(Indicator indicator);

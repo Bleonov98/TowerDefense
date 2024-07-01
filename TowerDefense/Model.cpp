@@ -277,6 +277,10 @@ void Model::ExtractBoneWeightForVertices(std::vector<Vertex>& vertices, aiMesh* 
 unsigned int TextureFromFile(const char* path, const string& directory, bool gamma)
 {
     string filename = string(path);
+
+    string basename, format;
+    basename.assign(filename.begin(), filename.begin() + filename.find_last_of('.'));
+    format.assign(filename.begin() + filename.find_last_of('.'), filename.end());
     filename = directory + '/' + filename;
 
     unsigned int textureID;
@@ -284,6 +288,13 @@ unsigned int TextureFromFile(const char* path, const string& directory, bool gam
 
     int width, height, nrComponents;
     unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
+
+    if ((format == ".jpg" || format == ".jpeg") && !data) {
+        format == ".jpg" ? format = ".jpeg" : format = ".jpg";
+        filename = directory + '/' + basename + format;
+        data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
+    }
+
     if (data)
     {
         GLenum format;
@@ -307,7 +318,8 @@ unsigned int TextureFromFile(const char* path, const string& directory, bool gam
     }
     else
     {
-        std::cout << "Texture failed to load at path: " << path << std::endl;
+        std::cout << "Texture failed to load at path: " << filename << std::endl;
+        cout << "Failed to load texture: " << stbi_failure_reason() << endl;
         stbi_image_free(data);
     }
 

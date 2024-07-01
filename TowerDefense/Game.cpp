@@ -75,7 +75,7 @@ void Game::InitGrid()
 void Game::InitGameObjects()
 {
 	gameMap = new GameObject(glm::vec3(0.0f), glm::vec3(1.0f));
-	gameMap->SetModel(ResourceManager::GetModel("map"));
+	gameMap->SetModel(ResourceManager::GetModel("mapModel"));
 
 	InitGrid();
 	InitButtons();
@@ -115,12 +115,16 @@ void Game::LoadResources()
 	// objects
 
 	// - - - // Models
-	ResourceManager::LoadModel("map.obj", "map");
-	ResourceManager::LoadModel("tower.obj", "tower");
-	ResourceManager::LoadModel("enemy/enemy.fbx", "enemy");
-	ResourceManager::LoadModel("arrow.obj", "arrow");
-	ResourceManager::LoadModel("fire.obj", "fire");
-	ResourceManager::LoadModel("ice.obj", "ice");
+	ResourceManager::LoadModel("map.obj", "mapModel");
+	ResourceManager::LoadModel("enemy/enemy.fbx", "enemyModel");
+
+	ResourceManager::LoadModel("arrow.obj", "arrowProjectileModel");
+	// ResourceManager::LoadModel("fire.obj", "fireProjectileModel");
+	// ResourceManager::LoadModel("ice.obj", "iceProjectileModel");
+
+	ResourceManager::LoadModel("tower/tower.fbx", "towerModel");
+	// ResourceManager::LoadModel("firetower/firetower.fbx", "firetowerModel");
+	ResourceManager::LoadModel("icetower/icetower.fbx", "icetowerModel");
 
 	// - - - // Textures
 	ResourceManager::LoadTexture("HudFrame.png", true, "HUDTexture");
@@ -129,11 +133,12 @@ void Game::LoadResources()
 	ResourceManager::LoadTexture("icons/ice.png", true, "iceIcon");
 	ResourceManager::LoadTexture("icons/bow.png", true, "bowIcon");
 	ResourceManager::LoadTexture("tower.png", true, "towerIcon");
-	// 
+	ResourceManager::LoadTexture("stats/powerUpIcon.png", true, "powerUpIcon");
+	// Stat Icons
 	ResourceManager::LoadTexture("stats/speed.png", true, "speedStat");
 	ResourceManager::LoadTexture("stats/attack.png", true, "attackStat");
-	ResourceManager::LoadTexture("stats/powerUpIcon.png", true, "powerUpIcon");
-
+	
+	// other
 	ResourceManager::LoadTexture("hpStripe.png", true, "indicator");
 }
 
@@ -286,9 +291,18 @@ void Game::ProcessButtons()
 	{
 		if (buttonList[i]->ButtonCollision(glm::vec2(xMouse, yMouse))) {
 			if (GetActiveCell() != nullptr) {
-				if (buttonList[i]->GetID() == ARROWTOWER_BUTTON) SetTower(GetActiveCell(), ARROW);
-				else if (buttonList[i]->GetID() == FIRETOWER_BUTTON) SetTower(GetActiveCell(), FIRE);
-				else if (buttonList[i]->GetID() == ICETOWER_BUTTON) SetTower(GetActiveCell(), ICE);
+				if (buttonList[i]->GetID() == ARROWTOWER_BUTTON) {
+					Tower* tower = new Tower(GetActiveCell()->GetPosition());
+					SetTower(GetActiveCell(), tower);
+				}
+				else if (buttonList[i]->GetID() == FIRETOWER_BUTTON) {
+					FireTower* tower = new FireTower(GetActiveCell()->GetPosition());
+					SetTower(GetActiveCell(), tower);
+				}
+				else if (buttonList[i]->GetID() == ICETOWER_BUTTON) {
+					IceTower* tower = new IceTower(GetActiveCell()->GetPosition());
+					SetTower(GetActiveCell(), tower);
+				}
 			}
 			else {
 				if (buttonList[i]->GetID() == SET_BUTTON) gridToggle = true; // shows grid
@@ -309,23 +323,20 @@ void Game::ProcessButtons()
 	}
 }
 	// - placement, gameplay
-void Game::SetTower(Grid* cell, TowerType type)
+template<typename Tower>
+void Game::SetTower(Grid* cell, Tower* tower)
 {
-	Tower* tower = new Tower(cell->GetPosition());
-	tower->SetModel(ResourceManager::GetModel("tower"));
-
-	//if (type == ARROW) tower->SetModel(ResourceManager::GetModel("arrow_tower_model"));
-	//else if (type == FIRE) tower->SetModel(ResourceManager::GetModel("fire_tower_model"));
-	//else if (type == ICE) tower->SetModel(ResourceManager::GetModel("ice_tower_model"));
+	if (tower->GetType() == ARROW) tower->SetModel(ResourceManager::GetModel("towerModel"));
+	else if (tower->GetType() == FIRE) tower->SetModel(ResourceManager::GetModel("firetowerModel"));
+	else if (tower->GetType() == ICE) tower->SetModel(ResourceManager::GetModel("icetowerModel"));
 
 	if (player.gold < tower->GetTowerCost()) return;
 	else player.gold -= tower->GetTowerCost();
 
-	cell->SetCellData(static_cast<int>(type));
+	cell->SetCellData(static_cast<int>(tower->GetType()));
 	cell->SelectCell(false);
 	gridToggle = false;
 
-	tower->SetScale(glm::vec3(0.9f, 1.0f, 0.8f));
 	objList.push_back(tower);
 	towerList.push_back(tower);
 }
@@ -342,9 +353,9 @@ void Game::SpawnEnemy(Indicator indicator)
 {
 	Enemy* enemy = new Enemy(grid[13][0]->GetPosition() - glm::vec3(0.75f * enemyList.size(), -0.1f, 0.0f));
 	enemy->InitPath(grid);
-	enemy->SetModel(ResourceManager::GetModel("enemy"));
+	enemy->SetModel(ResourceManager::GetModel("enemyModel"));
 	enemy->SetIndicator(indicator);
-	// enemy->SetScale(glm::vec3(0.02f));
+	enemy->SetScale(glm::vec3(0.015f));
 
 	objList.push_back(enemy);
 	enemyList.push_back(enemy);
@@ -352,7 +363,7 @@ void Game::SpawnEnemy(Indicator indicator)
 
 void Game::SpawnBoss(Indicator indicator)
 {
-	Boss* boss = new Boss(grid[13][0]->GetPosition(), ResourceManager::GetModel("enemy"));
+	Boss* boss = new Boss(grid[13][0]->GetPosition(), ResourceManager::GetModel("enemyModel"));
 	boss->InitPath(grid);
 	boss->SetIndicator(indicator);
 	boss->SetScale(glm::vec3(0.075f));
