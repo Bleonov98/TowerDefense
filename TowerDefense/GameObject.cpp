@@ -28,7 +28,7 @@ void GameObject::SetPosition(glm::vec3 pos)
 void GameObject::SetScale(glm::vec3 scale)
 {
 	model.ScaleModel(scale, position);
-	this->scale = scale;
+    this->scale *= scale;
 }
 
 void GameObject::SetAngle(float angle)

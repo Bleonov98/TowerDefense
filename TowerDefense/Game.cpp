@@ -326,9 +326,15 @@ void Game::ProcessButtons()
 template<typename Tower>
 void Game::SetTower(Grid* cell, Tower* tower)
 {
-	if (tower->GetType() == ARROW) tower->SetModel(ResourceManager::GetModel("towerModel"));
+	if (tower->GetType() == ARROW) {
+		tower->SetModel(ResourceManager::GetModel("towerModel"));
+		tower->SetScale(glm::vec3(0.005f));
+	}
 	else if (tower->GetType() == FIRE) tower->SetModel(ResourceManager::GetModel("firetowerModel"));
-	else if (tower->GetType() == ICE) tower->SetModel(ResourceManager::GetModel("icetowerModel"));
+	else if (tower->GetType() == ICE) {
+		tower->SetModel(ResourceManager::GetModel("icetowerModel"));
+		tower->SetScale(glm::vec3(0.01f));
+	}
 
 	if (player.gold < tower->GetTowerCost()) return;
 	else player.gold -= tower->GetTowerCost();
@@ -379,7 +385,7 @@ void Game::StartLevel()
 	lvlStarted = true;
 
 	if (player.wave < 7) {
-		for (size_t i = 0; i < 1; i++)
+		for (size_t i = 0; i < 12; i++)
 		{
 			SpawnEnemy(indicator);
 		}
