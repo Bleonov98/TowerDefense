@@ -27,7 +27,7 @@ public:
 	Animation(const std::string& animationPath, Model* model)
 	{
 		Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile(animationPath, aiProcess_Triangulate);
+		const aiScene* scene = importer.ReadFile(animationPath, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
 		assert(scene && scene->mRootNode);
 		if (scene->mAnimations == nullptr) throw false;
 		auto animation = scene->mAnimations[0];
@@ -50,6 +50,8 @@ public:
 	inline float GetDuration() { return m_Duration; }
 	inline const AssimpNodeData& GetRootNode() { return m_RootNode; }
 	inline const std::map<std::string, BoneInfo>& GetBoneIDMap() { return m_BoneInfoMap; }
+
+	int GetBoneQuantity() { return this->m_Bones.size(); }
 
 private:
 	void ReadMissingBones(const aiAnimation* animation, Model& model);

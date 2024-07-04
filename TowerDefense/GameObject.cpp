@@ -48,7 +48,8 @@ void GameObject::UpdateAnimation(float dt)
     animator.UpdateAnimation(dt);
 
     auto transforms = animator.GetFinalBoneMatrices();
-    for (int i = 0; i < transforms.size(); ++i)
+    int size = transforms.size();
+    for (int i = 0; i < size; ++i)
         ResourceManager::GetShader("modelShader").SetMatrix4("finalBonesMatrices[" + std::to_string(i) + "]", transforms[i]);
 }
 

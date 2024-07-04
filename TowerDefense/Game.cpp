@@ -205,6 +205,8 @@ void Game::ProcessInput(float dt)
 
 void Game::Update(float dt)
 {
+	if (dt > 0.015f) dt = 0.015f;
+
 	if (gameState == ACTIVE) {
 
 		if (!lvlStarted && timer.SecondsFromLast() >= 5) StartLevel();
@@ -385,7 +387,7 @@ void Game::StartLevel()
 	lvlStarted = true;
 
 	if (player.wave < 7) {
-		for (size_t i = 0; i < 12; i++)
+		for (size_t i = 0; i < 200; i++)
 		{
 			SpawnEnemy(indicator);
 		}

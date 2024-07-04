@@ -13,7 +13,11 @@ uniform vec3 spriteColour;
 void main()
 {
     vec4 colourVec;
-    menu ? colourVec = vec4(spriteColour * 0.4f, 1.0f) : colourVec = vec4(spriteColour * 0.9f, 1.0f);
+
+    if (menu)
+        colourVec = vec4(spriteColour * 0.4f, 1.0f);
+    else
+        colourVec = vec4(spriteColour * 0.9f, 1.0f);
 
     if (isImage) FragColour = colourVec * texture(image, TexCoords);
     else FragColour = colourVec;
