@@ -30,7 +30,7 @@ public:
 	std::string GetID() { return model.GetName(); }
 	std::string GetIcon() { return iconTexture; }
 
-	// model should be transformed here
+	// matrices, vectors
 	void RefreshMatrix();
 	void SetPosition(glm::vec3 pos);
 	void SetScale(glm::vec3 scale);

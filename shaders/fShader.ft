@@ -19,7 +19,7 @@ void main()
     vec3 viewPos = vec3(0.0f, 8.0f, 12.0f);
 
     // ambient
-    float ambientStrength = 0.8;
+    float ambientStrength = 0.7;
     vec3 ambient = ambientStrength * lightColour;
 
     // diffuse
@@ -29,7 +29,7 @@ void main()
     vec3 diffuse = diff * lightColour;
 
     // specular
-    float specularStrength = 0.8f;
+    float specularStrength = 0.7f;
     vec3 viewDir = normalize(viewPos - fragPos);
     vec3 reflectDir = reflect(-lightDir, norm);  
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
