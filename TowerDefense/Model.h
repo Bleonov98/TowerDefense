@@ -13,6 +13,7 @@
 #include <stb_image.h>
 
 #include "Mesh.h"
+#include "ResourceManager.h"
 #include "AssimpGlmHelpers.h"
 #include "Animdata.h"
 

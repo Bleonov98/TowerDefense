@@ -2,8 +2,10 @@
 
 Sphere GameObject::GetHBox()
 {
-    hbox.radius = std::min({ this->model.GetSize().x, this->model.GetSize().y, this->model.GetSize().z });
-    hbox.center = glm::vec3(position.x, position.y + this->model.GetSize().y / 2.0f, position.z);
+    glm::vec3 modelSize = scale * ResourceManager::GetModel(modelName).GetSize();
+
+    hbox.radius = std::min({ modelSize.x, modelSize.y, modelSize.z });
+    hbox.center = glm::vec3(position.x, position.y + modelSize.y / 2.0f, position.z);
 
     return hbox;
 }
@@ -17,24 +19,6 @@ void GameObject::RefreshMatrix()
     modelMatrix = glm::rotate(modelMatrix, glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	objMatrix = modelMatrix;
-}
-
-void GameObject::SetPosition(glm::vec3 pos)
-{
-	model.TranslateModel(pos - this->position);
-	this->position = pos;
-}
-
-void GameObject::SetScale(glm::vec3 scale)
-{
-	model.ScaleModel(scale, position);
-    this->scale *= scale;
-}
-
-void GameObject::SetAngle(float angle)
-{
-	model.RotateModel(angle - this->angle);
-	this->angle = angle;
 }
 
 void GameObject::UpdateAnimation(float dt)
@@ -51,26 +35,6 @@ void GameObject::UpdateAnimation(float dt)
     int size = transforms.size();
     for (int i = 0; i < size; ++i)
         ResourceManager::GetShader("modelShader").SetMatrix4("finalBonesMatrices[" + std::to_string(i) + "]", transforms[i]);
-}
-
-void GameObject::SetModel(Model model)
-{
-    this->model = model;
-    RefreshModel();
-
-    if (!model.IsAnimated()) return;
-
-    Animation nAnim(model.GetPath(), &model);
-    this->anim = nAnim;
-    Animator nAnimator(&anim);
-    this->animator = nAnimator;
-}
-
-void GameObject::RefreshModel()
-{
-    this->model.TranslateModel(position);
-    this->model.ScaleModel(scale, position);
-    this->model.RotateModel(angle); 
 }
 
 std::string vec3ToString(const glm::vec3& vec) {

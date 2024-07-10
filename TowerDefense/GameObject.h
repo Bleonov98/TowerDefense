@@ -20,26 +20,25 @@ public:
 
 	glm::mat4 GetMatrix() { return objMatrix; }
 	glm::vec3 GetPosition() { return position; }
-	glm::vec3 GetSize() { return model.GetSize(); }
+	glm::vec3 GetSize() { return ResourceManager::GetModel(modelName).GetSize(); }
 	glm::vec3 GetScale() { return scale; }
 	glm::vec3 GetColor() { return color; }
 	float GetAngle() { return angle; }
 	float GetTransparency() { return transparency; }
-	Sphere GetHBox();
 
-	std::string GetID() { return model.GetName(); }
+	Sphere GetHBox();
 	std::string GetIcon() { return iconTexture; }
+	std::string GetModelName() { return modelName; }
 
 	// matrices, vectors
 	void RefreshMatrix();
-	void SetPosition(glm::vec3 pos);
-	void SetScale(glm::vec3 scale);
+	void SetPosition(glm::vec3 pos) { this->position = pos; }
+	void SetScale(glm::vec3 scale) { this->scale = scale; }
 	void SetColor(glm::vec3 color) { this->color = color; }
-	void SetAngle(float angle);
+	void SetAngle(float angle) { this->angle = angle; }
 	void SetTransparency(float transparency) { this->transparency = transparency; }
 
-	void SetModel(Model model);
-	void RefreshModel();
+	void SetModel(std::string modelName) { this->modelName = modelName; }
 	void UpdateAnimation(float dt);
 
 	void SetIcon(std::string iconTexture) { this->iconTexture = iconTexture; }
@@ -48,11 +47,9 @@ public:
 	bool RayIntersectsTriangle(const glm::vec3& rayOrigin, const glm::vec3& rayVector, const glm::vec3& vertex0, const glm::vec3& vertex1, const glm::vec3& vertex2, float& outIntersectionDistance);
 	virtual bool SphereCollision(GameObject* obj);
 
-	void DrawObject();
-
 	// - - - - - -
 
-	bool IsAnimated() { return this->model.IsAnimated(); }
+	bool IsAnimated() { return ResourceManager::GetModel(modelName).IsAnimated(); }
 
 	bool IsDeleted() { return this->deleted; }
 	void DeleteObject() { this->deleted = true; }
@@ -61,13 +58,11 @@ public:
 
 protected:
 
-	Model model;
-	Animation anim;
-	Animator animator;
-
-	Sphere hbox;
-
 	std::string iconTexture = " ";
+
+	std::string modelName;
+	Animator animator;
+	Sphere hbox;
 
 	bool deleted = false;
 	float angle, transparency = 0.0f;

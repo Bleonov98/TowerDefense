@@ -501,16 +501,19 @@ void Game::Render(float dt)
 
 void Game::DrawObject(GameObject* obj, float dt)
 {
-	ResourceManager::GetShader("modelShader").Use();
-	ResourceManager::GetShader("modelShader").SetMatrix4("view", view);
+	Shader shader = ResourceManager::GetShader("modelShader");
 
-	ResourceManager::GetShader("modelShader").SetFloat("transparency", obj->GetTransparency());
+	shader.Use();
+	shader.SetMatrix4("view", view);
+	shader.SetFloat("transparency", obj->GetTransparency());
 
 	obj->UpdateAnimation(dt);
 	obj->RefreshMatrix();
 
-	ResourceManager::GetShader("modelShader").SetMatrix4("model", obj->GetMatrix());
-	obj->DrawObject();
+	shader.SetMatrix4("model", obj->GetMatrix());
+	
+	Model model = ResourceManager::GetModel(obj->GetModelName());
+	model.Draw(shader);
 }
 
 void Game::DrawGrid(Grid* cell)
