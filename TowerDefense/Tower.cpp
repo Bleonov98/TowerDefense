@@ -23,7 +23,7 @@ void Tower::FindTarget(std::vector<Enemy*> enemies)
 Projectile* Tower::GetProjectile()
 {
 	Projectile* projectile = new Projectile(this->position, target, pType, this->damage);
-	projectile->SetModel(ResourceManager::GetModel("arrowProjectileModel"));
+	projectile->SetModel("arrowProjectileModel");
 
 	return projectile;
 }
@@ -68,7 +68,7 @@ void FireTower::UpgradeTower()
 Projectile* FireTower::GetProjectile()
 {
 	Projectile* projectile = new Projectile(this->position, target, pType, this->damage);
-	projectile->SetModel(ResourceManager::GetModel("fireProjectileModel"));
+	projectile->SetModel("fireProjectileModel");
 
 	return projectile;
 }
@@ -86,7 +86,7 @@ void IceTower::UpgradeTower()
 Projectile* IceTower::GetProjectile()
 {
 	Projectile* projectile = new Projectile(this->position, target, pType, this->damage, this->slowRate);
-	projectile->SetModel(ResourceManager::GetModel("iceProjectileModel"));
+	projectile->SetModel("iceProjectileModel");
 
 	return projectile;
 }

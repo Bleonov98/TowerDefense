@@ -16,6 +16,9 @@ public:
 		this->position = position;
 		this->scale = scale;
 		this->angle = angle;
+
+		//Animator nAnimator(&ResourceManager::GetAnimation(modelName));
+		//animator = nAnimator;
 	};
 
 	glm::mat4 GetMatrix() { return objMatrix; }
@@ -61,7 +64,7 @@ protected:
 	std::string iconTexture = " ";
 
 	std::string modelName;
-	Animator animator;
+	// Animator animator;
 	Sphere hbox;
 
 	bool deleted = false;

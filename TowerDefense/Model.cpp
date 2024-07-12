@@ -42,54 +42,6 @@ void Model::CalculateSize()
     modelSize = maxPoint - minPoint;
 }
 
-void Model::TranslateModel(glm::vec3 displacement)
-{
-    for (auto& i : meshes)
-    {
-        for (auto& j : i.vertices)
-        {
-            j.Position += displacement;
-        }
-    }
-}
-
-void Model::ScaleModel(glm::vec3 scale, glm::vec3 position)
-{
-    modelSize *= scale;
-
-    for (auto& i : meshes)
-    {
-        for (auto& j : i.vertices)
-        {
-            j.Position = position + (j.Position - position) * scale;
-        }
-    }
-}
-
-void Model::RotateModel(float disAngle)
-{
-    // Convert degrees to radians
-    float radiansAngle = glm::radians(disAngle);
-
-    // Create rotation matrix around Y-axis
-    glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), radiansAngle, glm::vec3(0.0f, 1.0f, 0.0f));
-
-    for (auto& i : meshes)
-    {
-        for (auto& j : i.vertices)
-        {
-            // Convert vertex position to vec4 for matrix multiplication
-            glm::vec4 vertexPosition(j.Position, 1.0f);
-
-            // Apply rotation to vertex position
-            vertexPosition = rotationMatrix * vertexPosition;
-
-            // Update vertex position
-            j.Position = glm::vec3(vertexPosition);
-        }
-    }
-}
-
 void Model::loadModel(string const& path)
 {
     // read file via ASSIMP

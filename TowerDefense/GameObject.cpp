@@ -21,21 +21,21 @@ void GameObject::RefreshMatrix()
 	objMatrix = modelMatrix;
 }
 
-void GameObject::UpdateAnimation(float dt)
-{
-    if (!IsAnimated()) {
-        ResourceManager::GetShader("modelShader").SetBool("animated", false);
-        return;
-    }
-
-    ResourceManager::GetShader("modelShader").SetBool("animated", true);
-    animator.UpdateAnimation(dt);
-
-    auto transforms = animator.GetFinalBoneMatrices();
-    int size = transforms.size();
-    for (int i = 0; i < size; ++i)
-        ResourceManager::GetShader("modelShader").SetMatrix4("finalBonesMatrices[" + std::to_string(i) + "]", transforms[i]);
-}
+//void GameObject::UpdateAnimation(float dt)
+//{
+//    if (!IsAnimated()) {
+//        ResourceManager::GetShader("modelShader").SetBool("animated", false);
+//        return;
+//    }
+//
+//    ResourceManager::GetShader("modelShader").SetBool("animated", true);
+//    animator.UpdateAnimation(dt);
+//
+//    auto transforms = animator.GetFinalBoneMatrices();
+//    int size = transforms.size();
+//    for (int i = 0; i < size; ++i)
+//        ResourceManager::GetShader("modelShader").SetMatrix4("finalBonesMatrices[" + std::to_string(i) + "]", transforms[i]);
+//}
 
 std::string vec3ToString(const glm::vec3& vec) {
     std::ostringstream oss;
@@ -43,43 +43,43 @@ std::string vec3ToString(const glm::vec3& vec) {
     return oss.str();
 }
 
-bool GameObject::RayCollision(const glm::vec3& rayOrigin, const glm::vec3& rayDirection)
-{
-    bool hit = false;
-    float closestT = FLT_MAX;
-
-    glm::vec3 normRayDirection = glm::normalize(rayDirection);
-
-    for (size_t i = 0; i < model.meshes.size(); ++i)
-    {
-        const auto& mesh = model.meshes[i];
-
-        for (size_t j = 0; j < mesh.indices.size(); j += 3)
-        {
-            unsigned int index0 = mesh.indices[j];
-            unsigned int index1 = mesh.indices[j + 1];
-            unsigned int index2 = mesh.indices[j + 2];
-
-            glm::vec3 v0 = mesh.vertices[index0].Position;
-            glm::vec3 v1 = mesh.vertices[index1].Position;
-            glm::vec3 v2 = mesh.vertices[index2].Position;
-
-            // std::cout << "Triangle vertices: " << vec3ToString(v0) << ", " << vec3ToString(v1) << ", " << vec3ToString(v2) << std::endl;
-
-            float t;
-            if (RayIntersectsTriangle(rayOrigin, normRayDirection, v0, v1, v2, t))
-            {
-                if (t < closestT)
-                {
-                    closestT = t;
-                    hit = true;
-                }
-            }
-        }
-    }
-
-    return hit;
-}
+//bool GameObject::RayCollision(const glm::vec3& rayOrigin, const glm::vec3& rayDirection)
+//{
+//    bool hit = false;
+//    float closestT = FLT_MAX;
+//
+//    glm::vec3 normRayDirection = glm::normalize(rayDirection);
+//
+//    for (size_t i = 0; i < model.meshes.size(); ++i)
+//    {
+//        const auto& mesh = model.meshes[i];
+//
+//        for (size_t j = 0; j < mesh.indices.size(); j += 3)
+//        {
+//            unsigned int index0 = mesh.indices[j];
+//            unsigned int index1 = mesh.indices[j + 1];
+//            unsigned int index2 = mesh.indices[j + 2];
+//
+//            glm::vec3 v0 = mesh.vertices[index0].Position;
+//            glm::vec3 v1 = mesh.vertices[index1].Position;
+//            glm::vec3 v2 = mesh.vertices[index2].Position;
+//
+//            // std::cout << "Triangle vertices: " << vec3ToString(v0) << ", " << vec3ToString(v1) << ", " << vec3ToString(v2) << std::endl;
+//
+//            float t;
+//            if (RayIntersectsTriangle(rayOrigin, normRayDirection, v0, v1, v2, t))
+//            {
+//                if (t < closestT)
+//                {
+//                    closestT = t;
+//                    hit = true;
+//                }
+//            }
+//        }
+//    }
+//
+//    return hit;
+//}
 
 bool GameObject::RayIntersectsTriangle(const glm::vec3& rayOrigin, const glm::vec3& rayVector, const glm::vec3& vertex0, const glm::vec3& vertex1, const glm::vec3& vertex2, float& outIntersectionDistance)
 {
@@ -138,11 +138,4 @@ bool GameObject::SphereCollision(GameObject* obj)
     float distance = glm::dot(diff, diff);
 
     return distance <= doubleRadius;
-}
-
-
-void GameObject::DrawObject()
-{
-	Shader shader = ResourceManager::GetShader("modelShader");
-	model.Draw(shader);
 }

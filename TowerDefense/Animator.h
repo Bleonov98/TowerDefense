@@ -13,8 +13,10 @@
 class Animator
 {
 public:
-	Animator(Animation* animation);
+
 	Animator() {};
+
+	Animator(Animation* animation);
 
 	void UpdateAnimation(float dt);
 

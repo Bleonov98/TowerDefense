@@ -75,7 +75,7 @@ void Game::InitGrid()
 void Game::InitGameObjects()
 {
 	gameMap = new GameObject(glm::vec3(0.0f), glm::vec3(1.0f));
-	gameMap->SetModel(ResourceManager::GetModel("mapModel"));
+	gameMap->SetModel("mapModel");
 
 	InitGrid();
 	InitButtons();
@@ -329,12 +329,12 @@ template<typename Tower>
 void Game::SetTower(Grid* cell, Tower* tower)
 {
 	if (tower->GetType() == ARROW) {
-		tower->SetModel(ResourceManager::GetModel("towerModel"));
+		tower->SetModel("towerModel");
 		tower->SetScale(glm::vec3(0.005f));
 	}
-	else if (tower->GetType() == FIRE) tower->SetModel(ResourceManager::GetModel("firetowerModel"));
+	else if (tower->GetType() == FIRE) tower->SetModel("firetowerModel");
 	else if (tower->GetType() == ICE) {
-		tower->SetModel(ResourceManager::GetModel("icetowerModel"));
+		tower->SetModel("icetowerModel");
 		tower->SetScale(glm::vec3(0.01f));
 	}
 
@@ -361,7 +361,7 @@ void Game::SpawnEnemy(Indicator indicator)
 {
 	Enemy* enemy = new Enemy(grid[13][0]->GetPosition() - glm::vec3(0.75f * enemyList.size(), -0.1f, 0.0f));
 	enemy->InitPath(grid);
-	enemy->SetModel(ResourceManager::GetModel("enemyModel"));
+	enemy->SetModel("enemyModel");
 	enemy->SetIndicator(indicator);
 	enemy->SetScale(glm::vec3(0.015f));
 
@@ -507,7 +507,7 @@ void Game::DrawObject(GameObject* obj, float dt)
 	shader.SetMatrix4("view", view);
 	shader.SetFloat("transparency", obj->GetTransparency());
 
-	obj->UpdateAnimation(dt);
+	// obj->UpdateAnimation(dt);
 	obj->RefreshMatrix();
 
 	shader.SetMatrix4("model", obj->GetMatrix());

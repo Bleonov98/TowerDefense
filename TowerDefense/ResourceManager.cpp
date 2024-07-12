@@ -1,6 +1,7 @@
 #include "ResourceManager.h"
 
 std::map<std::string, Model> ResourceManager::models;
+// std::map<std::string, Animation> ResourceManager::animations;
 
 std::map<std::string, Shader> ResourceManager::shaders;
 std::map<std::string, Texture2D> ResourceManager::textures;
@@ -32,6 +33,11 @@ Model ResourceManager::GetModel(std::string name)
     return models[name];
 }
 
+//Animation ResourceManager::GetAnimation(std::string name) 
+//{
+//    return animations[name];
+//}
+
 // Texture2D
 Texture2D ResourceManager::LoadTexture(const char* fileName, bool alpha, std::string name)
 {
@@ -55,7 +61,7 @@ Model ResourceManager::LoadModelFromFile(std::string& const fileName, std::strin
     try
     {
         Animation anim(fileName, &model);
-        Animator animator(&anim);
+        // animations[name] = anim;
 
         model.Animated();
     }

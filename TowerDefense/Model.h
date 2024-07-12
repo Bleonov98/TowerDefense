@@ -46,14 +46,8 @@ public:
     auto& GetBoneInfoMap() { return m_BoneInfoMap; }
     int& GetBoneCount() { return m_BoneCounter; }
     
-    // calculations
-    void CalculateSize();
-
-    void TranslateModel(glm::vec3 newPosition);
-    void ScaleModel(glm::vec3 scale, glm::vec3 position);
-    void RotateModel(float rotate);
-
     // properties
+    void CalculateSize();
     glm::vec3 GetSize() { return modelSize; }
 
     std::string GetName() { return this->name; }
