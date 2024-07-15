@@ -21,6 +21,7 @@ public:
 	// models
 	static Model LoadModel(const char* fileName, std::string name);
 	static Model GetModel(std::string name);
+	static Animation GetAnimation(std::string name);
 
 	// Textures
 	static Texture2D LoadTexture(const char* fileName, bool alpha, std::string name);
@@ -31,6 +32,8 @@ private:
 	ResourceManager() {};
 
 	static std::map<std::string, Model> models;
+	static std::map<std::string, Animation> animations;
+
 	static std::map<std::string, Shader> shaders;
 	static std::map<std::string, Texture2D> textures;
 

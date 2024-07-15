@@ -20,7 +20,7 @@ public:
 
 	glm::mat4 GetMatrix() { return objMatrix; }
 	glm::vec3 GetPosition() { return position; }
-	glm::vec3 GetSize() { return model.GetSize(); }
+	glm::vec3 GetSize() { return ResourceManager::GetModel(modelName).GetSize(); }
 	glm::vec3 GetScale() { return scale; }
 	glm::vec3 GetColor() { return color; }
 	float GetAngle() { return angle; }
@@ -32,13 +32,13 @@ public:
 
 	// matrices, vectors
 	void RefreshMatrix();
-	void SetPosition(glm::vec3 pos);
-	void SetScale(glm::vec3 scale);
+	void SetPosition(glm::vec3 pos) { this->position = pos; }
+	void SetScale(glm::vec3 scale) { this->scale = scale; }
 	void SetColor(glm::vec3 color) { this->color = color; }
-	void SetAngle(float angle);
+	void SetAngle(float angle) { this->angle = angle; }
 	void SetTransparency(float transparency) { this->transparency = transparency; }
 
-	void SetModel(Model model);
+	void SetModel(std::string modelName) { this->modelName = modelName; }
 	void RefreshModel();
 	void UpdateAnimation(float dt);
 
@@ -68,6 +68,7 @@ protected:
 	Sphere hbox;
 
 	std::string iconTexture = " ";
+	std::string modelName;
 
 	bool deleted = false;
 	float angle, transparency = 0.0f;
