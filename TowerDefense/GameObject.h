@@ -20,14 +20,14 @@ public:
 
 	glm::mat4 GetMatrix() { return objMatrix; }
 	glm::vec3 GetPosition() { return position; }
-	glm::vec3 GetSize() { return ResourceManager::GetModel(modelName).GetSize(); }
+	glm::vec3 GetSize() { return ResourceManager::GetModel(modelName).GetSize() * scale; }
 	glm::vec3 GetScale() { return scale; }
 	glm::vec3 GetColor() { return color; }
 	float GetAngle() { return angle; }
 	float GetTransparency() { return transparency; }
 	Sphere GetHBox();
 
-	std::string GetID() { return model.GetName(); }
+	std::string GetModelName() { return modelName; }
 	std::string GetIcon() { return iconTexture; }
 
 	// matrices, vectors
@@ -39,7 +39,6 @@ public:
 	void SetTransparency(float transparency) { this->transparency = transparency; }
 
 	void SetModel(std::string modelName) { this->modelName = modelName; }
-	void RefreshModel();
 	void UpdateAnimation(float dt);
 
 	void SetIcon(std::string iconTexture) { this->iconTexture = iconTexture; }
@@ -48,11 +47,9 @@ public:
 	bool RayIntersectsTriangle(const glm::vec3& rayOrigin, const glm::vec3& rayVector, const glm::vec3& vertex0, const glm::vec3& vertex1, const glm::vec3& vertex2, float& outIntersectionDistance);
 	virtual bool SphereCollision(GameObject* obj);
 
-	void DrawObject();
-
 	// - - - - - -
 
-	bool IsAnimated() { return this->model.IsAnimated(); }
+	bool IsAnimated() { return ResourceManager::GetModel(modelName).IsAnimated(); }
 
 	bool IsDeleted() { return this->deleted; }
 	void DeleteObject() { this->deleted = true; }
@@ -61,8 +58,6 @@ public:
 
 protected:
 
-	Model model;
-	Animation anim;
 	Animator animator;
 
 	Sphere hbox;

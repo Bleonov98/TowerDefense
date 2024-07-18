@@ -387,7 +387,7 @@ void Game::StartLevel()
 	lvlStarted = true;
 
 	if (player.wave < 7) {
-		for (size_t i = 0; i < 200; i++)
+		for (size_t i = 0; i < 12; i++)
 		{
 			SpawnEnemy(indicator);
 		}
@@ -501,16 +501,16 @@ void Game::Render(float dt)
 
 void Game::DrawObject(GameObject* obj, float dt)
 {
-	ResourceManager::GetShader("modelShader").Use();
-	ResourceManager::GetShader("modelShader").SetMatrix4("view", view);
+	Shader shader = ResourceManager::GetShader("modelShader").Use();
+	shader.SetMatrix4("view", view);
 
-	ResourceManager::GetShader("modelShader").SetFloat("transparency", obj->GetTransparency());
+	shader.SetFloat("transparency", obj->GetTransparency());
 
 	// obj->UpdateAnimation(dt);
 	obj->RefreshMatrix();
 
-	ResourceManager::GetShader("modelShader").SetMatrix4("model", obj->GetMatrix());
-	obj->DrawObject();
+	shader.SetMatrix4("model", obj->GetMatrix());
+	ResourceManager::GetModel(obj->GetModelName()).Draw(shader);
 }
 
 void Game::DrawGrid(Grid* cell)

@@ -2,8 +2,10 @@
 
 Sphere GameObject::GetHBox()
 {
-    hbox.radius = std::min({ this->model.GetSize().x, this->model.GetSize().y, this->model.GetSize().z });
-    hbox.center = glm::vec3(position.x, position.y + this->model.GetSize().y / 2.0f, position.z);
+    glm::vec3 modelSize = scale * ResourceManager::GetModel(modelName).GetSize();
+
+    hbox.radius = std::min({ modelSize.x, modelSize.y, modelSize.z });
+    hbox.center = glm::vec3(position.x, position.y + modelSize.y / 2.0f, position.z);
 
     return hbox;
 }
@@ -48,6 +50,8 @@ bool GameObject::RayCollision(const glm::vec3& rayOrigin, const glm::vec3& rayDi
 
     glm::vec3 normRayDirection = glm::normalize(rayDirection);
 
+    const Model& model = ResourceManager::GetModel(modelName);
+
     for (size_t i = 0; i < model.meshes.size(); ++i)
     {
         const auto& mesh = model.meshes[i];
@@ -58,9 +62,9 @@ bool GameObject::RayCollision(const glm::vec3& rayOrigin, const glm::vec3& rayDi
             unsigned int index1 = mesh.indices[j + 1];
             unsigned int index2 = mesh.indices[j + 2];
 
-            glm::vec3 v0 = mesh.vertices[index0].Position;
-            glm::vec3 v1 = mesh.vertices[index1].Position;
-            glm::vec3 v2 = mesh.vertices[index2].Position;
+            glm::vec3 v0 = glm::vec3(objMatrix * glm::vec4(mesh.vertices[index0].Position, 1.0f));
+            glm::vec3 v1 = glm::vec3(objMatrix * glm::vec4(mesh.vertices[index1].Position, 1.0f));
+            glm::vec3 v2 = glm::vec3(objMatrix * glm::vec4(mesh.vertices[index2].Position, 1.0f));
 
             // std::cout << "Triangle vertices: " << vec3ToString(v0) << ", " << vec3ToString(v1) << ", " << vec3ToString(v2) << std::endl;
 
@@ -136,11 +140,4 @@ bool GameObject::SphereCollision(GameObject* obj)
     float distance = glm::dot(diff, diff);
 
     return distance <= doubleRadius;
-}
-
-
-void GameObject::DrawObject()
-{
-	Shader shader = ResourceManager::GetShader("modelShader");
-	model.Draw(shader);
 }
