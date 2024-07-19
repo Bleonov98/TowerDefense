@@ -122,9 +122,9 @@ void Game::LoadResources()
 	// ResourceManager::LoadModel("fire.obj", "fireProjectileModel");
 	// ResourceManager::LoadModel("ice.obj", "iceProjectileModel");
 
-	ResourceManager::LoadModel("tower/tower.fbx", "towerModel");
-	// ResourceManager::LoadModel("firetower/firetower.fbx", "firetowerModel");
-	ResourceManager::LoadModel("icetower/icetower.fbx", "icetowerModel");
+	ResourceManager::LoadModel("tower/tower.fbx", "arrowTowerModel");
+	// ResourceManager::LoadModel("firetower/firetower.fbx", "fireTowerModel");
+	ResourceManager::LoadModel("icetower/icetower.fbx", "iceTowerModel");
 
 	// - - - // Textures
 	ResourceManager::LoadTexture("HudFrame.png", true, "HUDTexture");
@@ -329,13 +329,21 @@ template<typename Tower>
 void Game::SetTower(Grid* cell, Tower* tower)
 {
 	if (tower->GetType() == ARROW) {
-		tower->SetModel("towerModel");
+		tower->SetModel("arrowTowerModel");
 		tower->SetScale(glm::vec3(0.005f));
+
+		arrowTowerList.push_back(tower);
 	}
-	else if (tower->GetType() == FIRE) tower->SetModel("firetowerModel");
+	else if (tower->GetType() == FIRE) {
+		tower->SetModel("fireTowerModel");
+
+		fireTowerList.push_back(tower);
+	}
 	else if (tower->GetType() == ICE) {
-		tower->SetModel("icetowerModel");
+		tower->SetModel("iceTowerModel");
 		tower->SetScale(glm::vec3(0.01f));
+
+		iceTowerList.push_back(tower);
 	}
 
 	if (player.gold < tower->GetTowerCost()) return;
@@ -401,6 +409,10 @@ void Game::AddProjectile(Projectile* projectile)
 
 	projectileList.push_back(projectile);
 	objList.push_back(projectile);
+
+	if (projectile->GetModelName() == "arrowProjectileModel") arrowProjectileList.push_back(projectile);
+	else if (projectile->GetModelName() == "fireProjectileModel") fireProjectileList.push_back(projectile);
+	else if (projectile->GetModelName() == "iceProjectileModel") iceProjectileList.push_back(projectile);
 }
 
 void Game::SetActiveCell(Grid* cell)
@@ -455,6 +467,7 @@ void Game::Render(float dt)
 	// Objects
 	DrawObject(gameMap, dt);
 	
+	// Towers
 	for (auto tower : towerList)
 	{
 		if (gridToggle) {
@@ -462,21 +475,23 @@ void Game::Render(float dt)
 			glDepthMask(GL_FALSE);
 		}
 		else tower->SetTransparency(0.0f);
-
-		DrawObject(tower, dt);
-		glDepthMask(GL_TRUE);
 	}
+	DrawObject(arrowTowerList, dt);
+	DrawObject(fireTowerList, dt);
+	DrawObject(iceTowerList, dt);
+	glDepthMask(GL_TRUE);
 
+	// Enemies
 	for (auto enemy : enemyList)
 	{
-		DrawObject(enemy, dt);
 		enemy->ShowHP(projection, view, gameState == MENU);
 	}
+	DrawObject(enemyList, dt);
 
-	for (auto proj : projectileList)
-	{
-		DrawObject(proj, dt);
-	}
+	// Projectiles
+	DrawObject(arrowProjectileList, dt);
+	DrawObject(iceProjectileList, dt);
+	DrawObject(fireProjectileList, dt);
 
 	// Interface
 	HUDisplay->DrawHUD(gameState == MENU);
@@ -499,9 +514,29 @@ void Game::Render(float dt)
 	DrawStats();
 }
 
+template<typename T>
+void Game::DrawObject(vector<T> objectList, float dt)
+{
+	Shader& shader = ResourceManager::GetShader("modelShader").Use();
+	shader.SetMatrix4("view", view);
+
+	std::string modelName = objectList[0].GetModelName();
+	std::vector<pair<glm::mat4, float transparency>> objectData;
+
+	for (size_t i = 0; i < objectList.size(); i++)
+	{
+		shader.SetFloat("transparency", obj->GetTransparency());
+		// obj->UpdateAnimation(dt);
+		obj->RefreshMatrix();
+		shader.SetMatrix4("model", obj->GetMatrix());
+	}
+
+	ResourceManager::GetModel(modelName).Draw(shader);
+}
+
 void Game::DrawObject(GameObject* obj, float dt)
 {
-	Shader shader = ResourceManager::GetShader("modelShader").Use();
+	Shader& shader = ResourceManager::GetShader("modelShader").Use();
 	shader.SetMatrix4("view", view);
 
 	shader.SetFloat("transparency", obj->GetTransparency());
@@ -510,6 +545,7 @@ void Game::DrawObject(GameObject* obj, float dt)
 	obj->RefreshMatrix();
 
 	shader.SetMatrix4("model", obj->GetMatrix());
+
 	ResourceManager::GetModel(obj->GetModelName()).Draw(shader);
 }
 
@@ -681,8 +717,17 @@ void Game::CheckGLError(const std::string& context)
 void Game::DeleteObjects()
 {
 	DeleteObjectFromVector(towerList, false);
+	DeleteObjectFromVector(arrowTowerList, false);
+	DeleteObjectFromVector(fireTowerList, false);
+	DeleteObjectFromVector(iceTowerList, false);
+
+
 	DeleteObjectFromVector(enemyList, false);
+
 	DeleteObjectFromVector(projectileList, false);
+	DeleteObjectFromVector(arrowProjectileList, false);
+	DeleteObjectFromVector(fireProjectileList, false);
+	DeleteObjectFromVector(iceProjectileList, false);
 
 	DeleteObjectFromVector(objList, true);
 }

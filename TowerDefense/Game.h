@@ -85,12 +85,14 @@ public:
 
 	// Render
 	void Render(float dt);
-	void DrawObject(GameObject* obj, float dt);
-	void DrawGrid(Grid* cell);
 
+	template<typename T>
+	void DrawObject(vector<T> objectList, float dt);
+	void DrawObject(GameObject* obj, float dt);
+	
+	void DrawGrid(Grid* cell);
 	void DrawTowerMenu();
 	void DrawTowerStats();
-
 	void DrawStats();
 	void DrawMenuTxt();
 
@@ -135,9 +137,18 @@ private:
 	Player player;
 
 	std::vector<GameObject*> objList;
+	
 	std::vector<Tower*> towerList;
+	std::vector<Tower*> arrowTowerList;
+	std::vector<FireTower*> fireTowerList;
+	std::vector<IceTower*> iceTowerList;
+
 	std::vector<Enemy*> enemyList;
+
 	std::vector<Projectile*> projectileList;
+	std::vector<Projectile*> arrowProjectileList;
+	std::vector<Projectile*> fireProjectileList;
+	std::vector<Projectile*> iceProjectileList;
 
 	std::vector<Button*> buttonList;
 };

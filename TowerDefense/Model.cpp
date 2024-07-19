@@ -18,6 +18,12 @@ void Model::Draw(Shader& shader)
         meshes[i].Draw(shader);
 }
 
+void Model::DrawInstanced(Shader& shader, std::vector<pair<glm::mat4, float>> objectData) {
+    for (unsigned int i = 0; i < meshes.size(); i++) {
+
+    }
+}
+
 void Model::CalculateSize()
 {
     if (meshes.empty()) return;

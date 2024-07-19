@@ -41,6 +41,7 @@ public:
 
     // draws the model, and thus all its meshes
     void Draw(Shader& shader);
+    void DrawInstanced(Shader& shader, std::vector<pair<glm::mat4, float>> objectData);
 
     auto& GetBoneInfoMap() { return m_BoneInfoMap; }
     int& GetBoneCount() { return m_BoneCounter; }
