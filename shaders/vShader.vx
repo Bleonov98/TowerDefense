@@ -8,8 +8,10 @@ layout(location = 4) in vec3 bitangent;
 layout(location = 5) in vec3 col;
 layout(location = 6) in ivec4 boneIds; 
 layout(location = 7) in vec4 weights;
+layout(location = 8) in mat4 instanceMat;
 
 uniform bool animated;
+uniform bool instanced;
 
 uniform mat4 projection;
 uniform mat4 view;
@@ -46,15 +48,18 @@ void main()
         }
 
         normalVec = mat3(transpose(inverse(model))) * localNormal;
-        fragPos = vec3(model * totalPosition);
 
-        gl_Position =  projection * view * vec4(fragPos, 1.0);
-    } else {
-        fragPos = vec3(model * vec4(pos, 1.0f));
-        normalVec = mat3(transpose(inverse(model))) * norm; 
-
-        gl_Position = projection * view * vec4(fragPos, 1.0);
+        if (instanced) fragPos = vec3(instanceMat * totalPosition);
+        else fragPos = vec3(model * totalPosition);
+    } 
+    else {
+        normalVec = mat3(transpose(inverse(model))) * norm;
+        
+        if (instanced) fragPos = vec3(instanceMat * vec4(pos, 1.0f));
+        else fragPos = vec3(model * vec4(pos, 1.0f));
     }
+
+    gl_Position = projection * view * vec4(fragPos, 1.0);
 
     TexCoords = tex;
     Colours = col;

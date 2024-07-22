@@ -18,10 +18,42 @@ void Model::Draw(Shader& shader)
         meshes[i].Draw(shader);
 }
 
-void Model::DrawInstanced(Shader& shader, std::vector<pair<glm::mat4, float>> objectData) {
+void Model::DrawInstanced(Shader& shader, const std::vector<glm::mat4> objectMat) {
+
+    shader.SetBool("instanced", true);
+
+    unsigned int instanceBuffer;
+    glGenBuffers(1, &instanceBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, instanceBuffer);
+    glBufferData(GL_ARRAY_BUFFER, objectMat.size() * sizeof(glm::mat4), &objectMat.data()[0], GL_STATIC_DRAW);
+
     for (unsigned int i = 0; i < meshes.size(); i++) {
 
+        unsigned int VAO = meshes[i].VAO;
+        glBindVertexArray(VAO);
+
+        // instance matrix
+        std::size_t vec4Size = sizeof(glm::vec4);
+        glEnableVertexAttribArray(8);
+        glVertexAttribPointer(8, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)0);
+        glEnableVertexAttribArray(9);
+        glVertexAttribPointer(9, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(1 * vec4Size));
+        glEnableVertexAttribArray(10);
+        glVertexAttribPointer(10, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(2 * vec4Size));
+        glEnableVertexAttribArray(11);
+        glVertexAttribPointer(11, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(3 * vec4Size));
+
+        glVertexAttribDivisor(8, 1);
+        glVertexAttribDivisor(9, 1);
+        glVertexAttribDivisor(10, 1);
+        glVertexAttribDivisor(11, 1);
+
+        glBindVertexArray(meshes[i].VAO);
+        glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(meshes[i].indices.size()), GL_UNSIGNED_INT, 0, objectMat.size());
+        glBindVertexArray(0);
     }
+
+    shader.SetBool("instanced", false);
 }
 
 void Model::CalculateSize()

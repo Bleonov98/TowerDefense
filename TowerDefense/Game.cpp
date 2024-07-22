@@ -205,7 +205,8 @@ void Game::ProcessInput(float dt)
 
 void Game::Update(float dt)
 {
-	if (dt > 0.015f) dt = 0.015f;
+	//if (dt > 0.015f) dt = 0.015f;
+	cout << dt << endl;
 
 	if (gameState == ACTIVE) {
 
@@ -325,30 +326,30 @@ void Game::ProcessButtons()
 	}
 }
 	// - placement, gameplay
-template<typename Tower>
-void Game::SetTower(Grid* cell, Tower* tower)
+template<typename TowerType>
+void Game::SetTower(Grid* cell, TowerType* tower)
 {
+	if (player.gold < tower->GetTowerCost()) return;
+
 	if (tower->GetType() == ARROW) {
 		tower->SetModel("arrowTowerModel");
 		tower->SetScale(glm::vec3(0.005f));
 
-		arrowTowerList.push_back(tower);
+		arrowTowerList.push_back(dynamic_cast<Tower*>(tower));
 	}
 	else if (tower->GetType() == FIRE) {
 		tower->SetModel("fireTowerModel");
 
-		fireTowerList.push_back(tower);
+		fireTowerList.push_back(dynamic_cast<FireTower*>(tower));
 	}
 	else if (tower->GetType() == ICE) {
 		tower->SetModel("iceTowerModel");
 		tower->SetScale(glm::vec3(0.01f));
 
-		iceTowerList.push_back(tower);
+		iceTowerList.push_back(dynamic_cast<IceTower*>(tower));
 	}
 
-	if (player.gold < tower->GetTowerCost()) return;
-	else player.gold -= tower->GetTowerCost();
-
+	player.gold -= tower->GetTowerCost();
 	cell->SetCellData(static_cast<int>(tower->GetType()));
 	cell->SelectCell(false);
 	gridToggle = false;
@@ -395,7 +396,7 @@ void Game::StartLevel()
 	lvlStarted = true;
 
 	if (player.wave < 7) {
-		for (size_t i = 0; i < 12; i++)
+		for (size_t i = 0; i < 200; i++)
 		{
 			SpawnEnemy(indicator);
 		}
@@ -468,20 +469,15 @@ void Game::Render(float dt)
 	DrawObject(gameMap, dt);
 	
 	// Towers
-	for (auto tower : towerList)
-	{
-		if (gridToggle) {
-			tower->SetTransparency(0.8f);
-			glDepthMask(GL_FALSE);
-		}
-		else tower->SetTransparency(0.0f);
-	}
+	glDepthMask(GL_FALSE);
 	DrawObject(arrowTowerList, dt);
 	DrawObject(fireTowerList, dt);
 	DrawObject(iceTowerList, dt);
 	glDepthMask(GL_TRUE);
 
 	// Enemies
+
+	// ============================================================================================= HERE
 	for (auto enemy : enemyList)
 	{
 		enemy->ShowHP(projection, view, gameState == MENU);
@@ -499,6 +495,8 @@ void Game::Render(float dt)
 	DrawTowerStats();
 
 	// Menu, Helpers
+
+	// ============================================================================================= HERE
 	if (gridToggle) {
 		for (auto i : grid)
 		{
@@ -515,23 +513,31 @@ void Game::Render(float dt)
 }
 
 template<typename T>
-void Game::DrawObject(vector<T> objectList, float dt)
+void Game::DrawObject(vector<T*> objectList, float dt)
 {
+	if (objectList.empty()) return;
+
 	Shader& shader = ResourceManager::GetShader("modelShader").Use();
 	shader.SetMatrix4("view", view);
 
-	std::string modelName = objectList[0].GetModelName();
-	std::vector<pair<glm::mat4, float transparency>> objectData;
+	std::string modelName = objectList[0]->GetModelName();
+	std::vector<glm::mat4> objectMat;
+	objectMat.resize(objectList.size());
+	
+	float transparency = 0.0f;
+	if (gridToggle) transparency = 0.8f;
+	shader.SetFloat("transparency", transparency);
 
-	for (size_t i = 0; i < objectList.size(); i++)
+	// ============================================================================================= HERE
+	size_t size = objectList.size();
+	for (size_t i = 0; i < size; ++i) 
 	{
-		shader.SetFloat("transparency", obj->GetTransparency());
 		// obj->UpdateAnimation(dt);
-		obj->RefreshMatrix();
-		shader.SetMatrix4("model", obj->GetMatrix());
+		objectList[i]->RefreshMatrix();
+		objectMat.push_back(objectList[i]->GetMatrix());
 	}
 
-	ResourceManager::GetModel(modelName).Draw(shader);
+	ResourceManager::GetModel(modelName).DrawInstanced(shader, objectMat);
 }
 
 void Game::DrawObject(GameObject* obj, float dt)
@@ -549,6 +555,7 @@ void Game::DrawObject(GameObject* obj, float dt)
 	ResourceManager::GetModel(obj->GetModelName()).Draw(shader);
 }
 
+// ============================================================================================= HERE
 void Game::DrawGrid(Grid* cell)
 {
 	ResourceManager::GetShader("testShader").Use();

@@ -74,8 +74,8 @@ public:
 	Grid* GetActiveCell();
 	void SetActiveCell(Grid* cell);
 
-	template<typename Tower>
-	void SetTower(Grid* cell, Tower* tower);
+	template<typename TowerType>
+	void SetTower(Grid* cell, TowerType* tower);
 	void UnselectTowers();
 
 	void SpawnEnemy(Indicator indicator);
@@ -87,7 +87,7 @@ public:
 	void Render(float dt);
 
 	template<typename T>
-	void DrawObject(vector<T> objectList, float dt);
+	void DrawObject(vector<T*> objectList, float dt);
 	void DrawObject(GameObject* obj, float dt);
 	
 	void DrawGrid(Grid* cell);
