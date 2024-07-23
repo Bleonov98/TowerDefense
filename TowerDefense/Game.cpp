@@ -27,9 +27,6 @@ void Game::Init()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	ResourceManager::GetShader("modelShader").Use();
-	ResourceManager::GetShader("modelShader").SetMatrix4("projection", projection);
-
 	// sounds
 	// music = sound->addSoundSourceFromFile("../sounds/music.mp3");
 	// music->setDefaultVolume(0.5f);
@@ -57,6 +54,9 @@ void Game::InitGrid()
 	glm::vec3 startGridPos = gameMap->GetPosition() - glm::vec3(gameMap->GetSize() / 2.0f);
 	startGridPos.y = gameMap->GetPosition().y - gameMap->GetSize().y + 0.11f;
 
+	std::vector<glm::mat4> cellMat;
+	std::vector<glm::vec3> cellCol;
+
 	int cellData = 0;
 	for (size_t i = 0; i < rows; i++)
 	{
@@ -68,8 +68,12 @@ void Game::InitGrid()
 
 			Grid* cell = new Grid(glm::vec3(startGridPos.x + j * cellWidth, startGridPos.y + gameMap->GetSize().y, startGridPos.z + i * cellHeight) + centerVec, cellWidth, cellHeight, cellData);
 			grid[i][j] = cell;
+			cellMat.push_back(cell->GetMatrix());
+			cellCol.push_back(cell->GetColour());
 		}
 	}
+
+	grid[0][0]->InitInstanceBuffer(cellMat, cellCol);
 }
 
 void Game::InitGameObjects()
@@ -212,6 +216,7 @@ void Game::Update(float dt)
 
 		if (!lvlStarted && timer.SecondsFromLast() >= 5) StartLevel();
 
+		// ============================================================================================= HERE
 		for (auto enemy : enemyList)
 		{
 			enemy->CheckPoint();
@@ -396,7 +401,7 @@ void Game::StartLevel()
 	lvlStarted = true;
 
 	if (player.wave < 7) {
-		for (size_t i = 0; i < 200; i++)
+		for (size_t i = 0; i < 500; i++)
 		{
 			SpawnEnemy(indicator);
 		}
@@ -476,11 +481,9 @@ void Game::Render(float dt)
 	glDepthMask(GL_TRUE);
 
 	// Enemies
-
-	// ============================================================================================= HERE
 	for (auto enemy : enemyList)
 	{
-		enemy->ShowHP(projection, view, gameState == MENU);
+		enemy->ShowHP(projection, view, gameState == MENU);	// ============================================================================================= HERE
 	}
 	DrawObject(enemyList, dt);
 
@@ -495,17 +498,7 @@ void Game::Render(float dt)
 	DrawTowerStats();
 
 	// Menu, Helpers
-
-	// ============================================================================================= HERE
-	if (gridToggle) {
-		for (auto i : grid)
-		{
-			for (auto j : i)
-			{
-				DrawGrid(j);
-			}
-		}
-	}
+	if (gridToggle) DrawGrid();
 	else buttonList[buttonList.size() - 2]->DrawButton(gameState == MENU);
 
 	if (gameState == MENU) DrawMenuTxt();
@@ -518,19 +511,17 @@ void Game::DrawObject(vector<T*> objectList, float dt)
 	if (objectList.empty()) return;
 
 	Shader& shader = ResourceManager::GetShader("modelShader").Use();
+	shader.SetMatrix4("projection", projection);
 	shader.SetMatrix4("view", view);
 
 	std::string modelName = objectList[0]->GetModelName();
 	std::vector<glm::mat4> objectMat;
-	objectMat.resize(objectList.size());
 	
 	float transparency = 0.0f;
 	if (gridToggle) transparency = 0.8f;
 	shader.SetFloat("transparency", transparency);
 
-	// ============================================================================================= HERE
-	size_t size = objectList.size();
-	for (size_t i = 0; i < size; ++i) 
+	for (size_t i = 0; i < objectList.size(); i++)
 	{
 		// obj->UpdateAnimation(dt);
 		objectList[i]->RefreshMatrix();
@@ -543,6 +534,7 @@ void Game::DrawObject(vector<T*> objectList, float dt)
 void Game::DrawObject(GameObject* obj, float dt)
 {
 	Shader& shader = ResourceManager::GetShader("modelShader").Use();
+	shader.SetMatrix4("projection", projection);
 	shader.SetMatrix4("view", view);
 
 	shader.SetFloat("transparency", obj->GetTransparency());
@@ -555,19 +547,27 @@ void Game::DrawObject(GameObject* obj, float dt)
 	ResourceManager::GetModel(obj->GetModelName()).Draw(shader);
 }
 
-// ============================================================================================= HERE
-void Game::DrawGrid(Grid* cell)
+void Game::DrawGrid()
 {
 	ResourceManager::GetShader("testShader").Use();
 	ResourceManager::GetShader("testShader").SetMatrix4("projection", projection);
 	ResourceManager::GetShader("testShader").SetMatrix4("view", view);
 
-	cell->RefreshMatrix();
+	std::vector<glm::mat4> cellMatrices;
+	std::vector<glm::vec3> cellColours;
 
-	ResourceManager::GetShader("testShader").SetMatrix4("model", cell->GetMatrix());
-	ResourceManager::GetShader("testShader").SetVector3f("cellColour", cell->GetColour());
+	for (auto rows : grid)
+	{
+		for (auto cell : rows)
+		{
+			if (cell->GetCellData() == 0) {
+				cellMatrices.push_back(cell->GetMatrix());
+				cellColours.push_back(cell->GetColour());
+			}
+		}
+	}
 
-	if (cell->GetCellData() == 0) cell->DrawCell();
+	grid[0][0]->DrawGrid(cellMatrices, cellColours);
 }
 
 void Game::DrawStats()

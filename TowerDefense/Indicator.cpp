@@ -61,8 +61,8 @@ void Indicator::DrawIndicator(glm::mat4 projection, glm::mat4 view, bool menu)
 	ResourceManager::GetShader("indShader").Use();
 	ResourceManager::GetShader("indShader").SetMatrix4("projection", projection);
 	ResourceManager::GetShader("indShader").SetMatrix4("view", view);
-
 	ResourceManager::GetShader("indShader").SetBool("menu", menu);
+    
 	ResourceManager::GetShader("indShader").SetBool("isImage", true);
 
 	glm::mat4 modelMatrix = glm::mat4(1.0f);
@@ -80,13 +80,7 @@ void Indicator::DrawIndicator(glm::mat4 projection, glm::mat4 view, bool menu)
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	// hp indicator
-	ResourceManager::GetShader("indShader").Use();
-	ResourceManager::GetShader("indShader").SetMatrix4("projection", projection);
-	ResourceManager::GetShader("indShader").SetMatrix4("view", view);
-
-	ResourceManager::GetShader("indShader").SetBool("menu", menu);
 	ResourceManager::GetShader("indShader").SetBool("isImage", false);
-
 	ResourceManager::GetShader("indShader").SetVector3f("spriteColour", indColour);
 
     float x, y;

@@ -32,6 +32,36 @@ void Model::DrawInstanced(Shader& shader, const std::vector<glm::mat4> objectMat
         unsigned int VAO = meshes[i].VAO;
         glBindVertexArray(VAO);
 
+        bool hasTextures = !meshes[i].textures.empty();
+
+        if (hasTextures) {
+            unsigned int diffuseNr = 1;
+            unsigned int specularNr = 1;
+            unsigned int normalNr = 1;
+            unsigned int heightNr = 1;
+
+            for (unsigned int meshIt = 0; meshIt < meshes[i].textures.size(); meshIt++)
+            {
+                glActiveTexture(GL_TEXTURE0 + meshIt);
+                std::string number;
+                std::string name = meshes[i].textures[meshIt].type;
+                if (name == "texture_diffuse")
+                    number = std::to_string(diffuseNr++);
+                else if (name == "texture_specular")
+                    number = std::to_string(specularNr++);
+                else if (name == "texture_normal")
+                    number = std::to_string(normalNr++);
+                else if (name == "texture_height")
+                    number = std::to_string(heightNr++);
+
+                glUniform1i(glGetUniformLocation(shader.GetID(), (name + number).c_str()), meshIt);
+                glUniform1i(glGetUniformLocation(shader.GetID(), "useTexture"), true);
+
+                glBindTexture(GL_TEXTURE_2D, meshes[i].textures[meshIt].id);
+            }
+        }
+        else glUniform1i(glGetUniformLocation(shader.GetID(), "useTexture"), false);
+
         // instance matrix
         std::size_t vec4Size = sizeof(glm::vec4);
         glEnableVertexAttribArray(8);
@@ -53,6 +83,7 @@ void Model::DrawInstanced(Shader& shader, const std::vector<glm::mat4> objectMat
         glBindVertexArray(0);
     }
 
+    glActiveTexture(GL_TEXTURE0);
     shader.SetBool("instanced", false);
 }
 

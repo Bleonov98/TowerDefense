@@ -1,7 +1,7 @@
 #version 400 core
 out vec4 FragColor;
 
-uniform vec3 cellColour;
+in vec3 cellColour;
 
 void main()
 {   
