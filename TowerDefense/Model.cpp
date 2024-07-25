@@ -18,73 +18,10 @@ void Model::Draw(Shader& shader)
         meshes[i].Draw(shader);
 }
 
-void Model::DrawInstanced(Shader& shader, const std::vector<glm::mat4> objectMat) {
-
-    shader.SetBool("instanced", true);
-
-    unsigned int instanceBuffer;
-    glGenBuffers(1, &instanceBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, instanceBuffer);
-    glBufferData(GL_ARRAY_BUFFER, objectMat.size() * sizeof(glm::mat4), &objectMat.data()[0], GL_STATIC_DRAW);
-
-    for (unsigned int i = 0; i < meshes.size(); i++) {
-
-        unsigned int VAO = meshes[i].VAO;
-        glBindVertexArray(VAO);
-
-        bool hasTextures = !meshes[i].textures.empty();
-
-        if (hasTextures) {
-            unsigned int diffuseNr = 1;
-            unsigned int specularNr = 1;
-            unsigned int normalNr = 1;
-            unsigned int heightNr = 1;
-
-            for (unsigned int meshIt = 0; meshIt < meshes[i].textures.size(); meshIt++)
-            {
-                glActiveTexture(GL_TEXTURE0 + meshIt);
-                std::string number;
-                std::string name = meshes[i].textures[meshIt].type;
-                if (name == "texture_diffuse")
-                    number = std::to_string(diffuseNr++);
-                else if (name == "texture_specular")
-                    number = std::to_string(specularNr++);
-                else if (name == "texture_normal")
-                    number = std::to_string(normalNr++);
-                else if (name == "texture_height")
-                    number = std::to_string(heightNr++);
-
-                glUniform1i(glGetUniformLocation(shader.GetID(), (name + number).c_str()), meshIt);
-                glUniform1i(glGetUniformLocation(shader.GetID(), "useTexture"), true);
-
-                glBindTexture(GL_TEXTURE_2D, meshes[i].textures[meshIt].id);
-            }
-        }
-        else glUniform1i(glGetUniformLocation(shader.GetID(), "useTexture"), false);
-
-        // instance matrix
-        std::size_t vec4Size = sizeof(glm::vec4);
-        glEnableVertexAttribArray(8);
-        glVertexAttribPointer(8, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)0);
-        glEnableVertexAttribArray(9);
-        glVertexAttribPointer(9, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(1 * vec4Size));
-        glEnableVertexAttribArray(10);
-        glVertexAttribPointer(10, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(2 * vec4Size));
-        glEnableVertexAttribArray(11);
-        glVertexAttribPointer(11, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(3 * vec4Size));
-
-        glVertexAttribDivisor(8, 1);
-        glVertexAttribDivisor(9, 1);
-        glVertexAttribDivisor(10, 1);
-        glVertexAttribDivisor(11, 1);
-
-        glBindVertexArray(meshes[i].VAO);
-        glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(meshes[i].indices.size()), GL_UNSIGNED_INT, 0, objectMat.size());
-        glBindVertexArray(0);
-    }
-
-    glActiveTexture(GL_TEXTURE0);
-    shader.SetBool("instanced", false);
+void Model::DrawInstanced(Shader& shader, const std::vector<glm::mat4>& objectMat) 
+{
+    for (unsigned int i = 0; i < meshes.size(); i++)
+        meshes[i].DrawInstanced(shader, objectMat);
 }
 
 void Model::CalculateSize()

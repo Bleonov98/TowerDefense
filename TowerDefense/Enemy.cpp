@@ -32,16 +32,16 @@ void Enemy::CheckPoint()
 	switch (dir)
 	{
 	case MOVE_RIGHT:
-		angle = 0.0f;
+		angle = glm::vec3(-90.0f, 0.0f, 0.0f);
 		break;
 	case MOVE_LEFT:
-		angle = 180.0f;
+		angle = glm::vec3(-90.0f, 0.0f, 180.0f);
 		break;
 	case MOVE_UP:
-		angle = 90.0f;
+		angle = glm::vec3(-90.0f, 0.0f, 90.0f);
 		break;
 	case MOVE_DOWN:
-		angle = 270.0f;
+		angle = glm::vec3(-90.0f, 0.0f,  -90.0f);
 		break;
 	}
 }
@@ -62,7 +62,7 @@ void Enemy::ShowHP(glm::mat4 projection, glm::mat4 view, bool menu)
 	glm::vec3 indColour;
 	percentHP > 0.5f ? indColour = glm::vec3(0.0f, 1.0f, 0.0f) : (percentHP > 0.25f ? indColour = glm::vec3(0.85f, 0.85f, 0.0f) : indColour = glm::vec3(0.9f, 0.1f, 0.0f));
 	indicator.SetColour(indColour);
-	indicator.SetPosition(glm::vec3(position.x, position.y + GetSize().y, position.z));
+	indicator.SetPosition(glm::vec3(position.x, position.y + GetSize().z, position.z));
 	indicator.SetSize(glm::vec2(indicator.GetSize().first.x * percentHP, indicator.GetSize().first.y));
 
 	indicator.DrawIndicator(projection, view, menu);

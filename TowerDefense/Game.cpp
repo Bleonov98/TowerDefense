@@ -209,7 +209,7 @@ void Game::ProcessInput(float dt)
 
 void Game::Update(float dt)
 {
-	//if (dt > 0.015f) dt = 0.015f;
+	if (dt > 0.015f) dt = 0.015f;
 	cout << dt << endl;
 
 	if (gameState == ACTIVE) {
@@ -359,6 +359,8 @@ void Game::SetTower(Grid* cell, TowerType* tower)
 	cell->SelectCell(false);
 	gridToggle = false;
 
+	tower->SetAngle(glm::vec3(-90.0f, 0.0f, 45.0f));
+
 	objList.push_back(tower);
 	towerList.push_back(tower);
 }
@@ -378,6 +380,7 @@ void Game::SpawnEnemy(Indicator indicator)
 	enemy->SetModel("enemyModel");
 	enemy->SetIndicator(indicator);
 	enemy->SetScale(glm::vec3(0.015f));
+	enemy->SetAngle(glm::vec3(-90.0f, 0.0f, 0.0f));
 
 	objList.push_back(enemy);
 	enemyList.push_back(enemy);
@@ -401,7 +404,7 @@ void Game::StartLevel()
 	lvlStarted = true;
 
 	if (player.wave < 7) {
-		for (size_t i = 0; i < 500; i++)
+		for (size_t i = 0; i < 12; i++)
 		{
 			SpawnEnemy(indicator);
 		}

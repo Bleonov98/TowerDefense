@@ -14,7 +14,7 @@ class Projectile : public GameObject
 {
 public:
 
-	Projectile(glm::vec3 position, Enemy* target, ProjectileType pType, int damage, float slowRate = 0.0f, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : GameObject(position, scale, angle) {
+	Projectile(glm::vec3 position, Enemy* target, ProjectileType pType, int damage, float slowRate = 0.0f, glm::vec3 scale = glm::vec3(1.0f), glm::vec3 angle = glm::vec3(0.0f)) : GameObject(position, scale, angle) {
 		this->target = target;
 		this->projType = pType;
 		this->damage = damage;
@@ -48,7 +48,7 @@ private:
 
 class ElementalEffect : public GameObject {
 public:
-	ElementalEffect(glm::vec3 position, int damage, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : GameObject(position, scale, angle) {
+	ElementalEffect(glm::vec3 position, int damage, glm::vec3 scale = glm::vec3(1.0f), glm::vec3 angle = glm::vec3(0.0f)) : GameObject(position, scale, angle) {
 		this->damage = damage;
 		this->hbox.radius = 1.5f;
 	};
@@ -62,7 +62,7 @@ protected:
 
 struct Cold : public ElementalEffect {
 public:
-	Cold(glm::vec3 position, float slowRate, int damage = 0.0f, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : ElementalEffect(position, damage, scale, angle) {
+	Cold(glm::vec3 position, float slowRate, int damage = 0.0f, glm::vec3 scale = glm::vec3(1.0f), glm::vec3 angle = glm::vec3(0.0f)) : ElementalEffect(position, damage, scale, angle) {
 		this->hbox.radius = 0.4f;
 		this->slowRate = slowRate;
 	};

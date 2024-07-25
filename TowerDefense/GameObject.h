@@ -12,7 +12,7 @@ class GameObject
 {
 public:
 
-	GameObject(glm::vec3 position, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) {
+	GameObject(glm::vec3 position, glm::vec3 scale = glm::vec3(1.0f), glm::vec3 angle = glm::vec3(0.0f)) {
 		this->position = position;
 		this->scale = scale;
 		this->angle = angle;
@@ -23,7 +23,7 @@ public:
 	glm::vec3 GetSize() { return ResourceManager::GetModel(modelName).GetSize() * scale; }
 	glm::vec3 GetScale() { return scale; }
 	glm::vec3 GetColor() { return color; }
-	float GetAngle() { return angle; }
+	glm::vec3 GetAngle() { return angle; }
 	float GetTransparency() { return transparency; }
 	Sphere GetHBox();
 
@@ -35,7 +35,7 @@ public:
 	void SetPosition(glm::vec3 pos) { this->position = pos; }
 	void SetScale(glm::vec3 scale) { this->scale = scale; }
 	void SetColor(glm::vec3 color) { this->color = color; }
-	void SetAngle(float angle) { this->angle = angle; }
+	void SetAngle(glm::vec3 angle) { this->angle = angle; }
 	void SetTransparency(float transparency) { this->transparency = transparency; }
 
 	void SetModel(std::string modelName) { this->modelName = modelName; }
@@ -66,8 +66,8 @@ protected:
 	std::string modelName;
 
 	bool deleted = false;
-	float angle, transparency = 0.0f;
-	glm::vec3 position, scale, color = glm::vec3(1.0f);
+	float transparency = 0.0f;
+	glm::vec3 position, scale, angle, color = glm::vec3(1.0f);
 	glm::mat4 objMatrix;
 
 };

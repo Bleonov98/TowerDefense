@@ -38,13 +38,14 @@ public:
     std::vector<Vertex>       vertices;
     std::vector<unsigned int> indices;
     std::vector<Texture>      textures;
-    unsigned int VAO, VBO;
+    unsigned int VAO, VBO, matBuffer;
 
     // constructor
     Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
 
     // render the mesh
     void Draw(Shader& shader);
+    void DrawInstanced(Shader& shader, const std::vector<glm::mat4>& objectMat);
 
 private:
     // render data 

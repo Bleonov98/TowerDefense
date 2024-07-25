@@ -15,7 +15,7 @@ class Tower : public GameObject
 {
 public:
 
-	Tower(glm::vec3 position, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : GameObject(position, scale, angle) {
+	Tower(glm::vec3 position, glm::vec3 scale = glm::vec3(1.0f), glm::vec3 angle = glm::vec3(0.0f)) : GameObject(position, scale, angle) {
 		this->iconTexture = "bowIcon";
 		towerType = ARROW;
 	};
@@ -61,7 +61,7 @@ class FireTower : public Tower
 {
 public:
 
-	FireTower(glm::vec3 position, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : Tower(position, scale, angle) {
+	FireTower(glm::vec3 position, glm::vec3 scale = glm::vec3(1.0f), glm::vec3 angle = glm::vec3(0.0f)) : Tower(position, scale, angle) {
 		this->iconTexture = "fireIcon";
 		towerType = FIRE;
 
@@ -85,7 +85,7 @@ class IceTower : public Tower
 {
 public:
 
-	IceTower(glm::vec3 position, glm::vec3 scale = glm::vec3(1.0f), float angle = 0.0f) : Tower(position, scale, angle) {
+	IceTower(glm::vec3 position, glm::vec3 scale = glm::vec3(1.0f), glm::vec3 angle = glm::vec3(0.0f)) : Tower(position, scale, angle) {
 		this->iconTexture = "iceIcon";
 		towerType = ICE;
 

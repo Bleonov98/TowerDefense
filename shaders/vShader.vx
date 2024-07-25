@@ -29,6 +29,9 @@ out vec3 normalVec;
 
 void main()
 {
+    mat4 localMatrix = model;
+    if (instanced) localMatrix = instanceMat;
+
     if (animated) {
         vec4 totalPosition = vec4(0.0f);
         vec3 localNormal = vec3(0.0f);
@@ -47,16 +50,12 @@ void main()
             localNormal += mat3(finalBonesMatrices[boneIds[i]]) * norm * weights[i];
         }
 
-        normalVec = mat3(transpose(inverse(model))) * localNormal;
-
-        if (instanced) fragPos = vec3(instanceMat * totalPosition);
-        else fragPos = vec3(model * totalPosition);
+        normalVec = mat3(transpose(inverse(localMatrix))) * localNormal;
+        fragPos = vec3(localMatrix * totalPosition);
     } 
     else {
-        normalVec = mat3(transpose(inverse(model))) * norm;
-        
-        if (instanced) fragPos = vec3(instanceMat * vec4(pos, 1.0f));
-        else fragPos = vec3(model * vec4(pos, 1.0f));
+        normalVec = mat3(transpose(inverse(localMatrix))) * norm;
+        fragPos = vec3(localMatrix * vec4(pos, 1.0f));
     }
 
     gl_Position = projection * view * vec4(fragPos, 1.0);
