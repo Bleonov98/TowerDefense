@@ -29,6 +29,8 @@ Indicator::Indicator(glm::vec2 size)
 
     // Generate VBO
     glGenBuffers(1, &VBO);
+    glGenBuffers(1, &matBuffer);
+
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
@@ -54,34 +56,14 @@ Indicator::Indicator(glm::vec2 size)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-
-void Indicator::DrawIndicator(glm::mat4 projection, glm::mat4 view, bool menu)
+void Indicator::RefreshData()
 {
-	// background texture
-	ResourceManager::GetShader("indShader").Use();
-	ResourceManager::GetShader("indShader").SetMatrix4("projection", projection);
-	ResourceManager::GetShader("indShader").SetMatrix4("view", view);
-	ResourceManager::GetShader("indShader").SetBool("menu", menu);
-    
-	ResourceManager::GetShader("indShader").SetBool("isImage", true);
+    // hp matrix
+    float percent = indSize.x / size.x;
+    float displace = -size.x * (1.0f - percent);
 
-	glm::mat4 modelMatrix = glm::mat4(1.0f);
-	modelMatrix = glm::translate(modelMatrix, position);
-
-	ResourceManager::GetShader("indShader").SetMatrix4("model", modelMatrix);
-
-	glActiveTexture(GL_TEXTURE0);
-	texture.Bind();
-
-	glBindVertexArray(VAO);
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-	glBindVertexArray(0);
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	// hp indicator
-	ResourceManager::GetShader("indShader").SetBool("isImage", false);
-	ResourceManager::GetShader("indShader").SetVector3f("spriteColour", indColour);
+    hpMatrix = glm::mat4(1.0f);
+    hpMatrix = glm::translate(hpMatrix, position + glm::vec3(displace / 2.0f, 0.0f, 0.01f));
 
     float x, y;
     y = indSize.y / 2.0f;
@@ -97,18 +79,102 @@ void Indicator::DrawIndicator(glm::mat4 projection, glm::mat4 view, bool menu)
          x, -y,  0
     };
 
-    // Generate VBO
+    // Set new hp vertices
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferSubData(GL_ARRAY_BUFFER, 6 * 5 * sizeof(float), sizeof(hpVertices), hpVertices);
 
-    float percent = indSize.x / size.x;
-    float displace = -size.x * (1.0f - percent);
+    // texture matrix 
+    indMatrix = glm::mat4(1.0f);
+    indMatrix = glm::translate(indMatrix, position);
+}
 
-	glm::mat4 hpMatrix = glm::mat4(1.0f);
-	hpMatrix = glm::translate(hpMatrix, position + glm::vec3(displace / 2.0f, 0.0f, 0.01f));
-	ResourceManager::GetShader("indShader").SetMatrix4("model", hpMatrix);
+void Indicator::DrawIndicator(const std::vector<glm::mat4>& indicatorMatrices, const std::vector<glm::mat4>& hpMatrices, const std::vector<glm::vec3>& indColours, glm::mat4 projection, glm::mat4 view, bool menu)
+{
+    // setting shader
+    ResourceManager::GetShader("indShader").Use();
+    ResourceManager::GetShader("indShader").SetMatrix4("projection", projection);
+    ResourceManager::GetShader("indShader").SetMatrix4("view", view);
+    ResourceManager::GetShader("indShader").SetBool("menu", menu);
 
-	glBindVertexArray(iVAO);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-	glBindVertexArray(0);
+    DrawIndicatorsTexture(indicatorMatrices);
+    DrawIndicatorsHP(hpMatrices, indColours);
+}
+
+void Indicator::DrawIndicatorsTexture(const std::vector<glm::mat4>& indicatorMatrices)
+{
+    // refresh matrix buffer
+    glBindBuffer(GL_ARRAY_BUFFER, matBuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * indicatorMatrices.size(), &indicatorMatrices.data()[0], GL_STATIC_DRAW);
+
+    // matrix instructions for texture
+    glBindVertexArray(VAO);
+
+    std::size_t vec4Size = sizeof(glm::vec4);
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)0);
+    glEnableVertexAttribArray(4);
+    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(1 * vec4Size));
+    glEnableVertexAttribArray(5);
+    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(2 * vec4Size));
+    glEnableVertexAttribArray(6);
+    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(3 * vec4Size));
+
+    glVertexAttribDivisor(3, 1);
+    glVertexAttribDivisor(4, 1);
+    glVertexAttribDivisor(5, 1);
+    glVertexAttribDivisor(6, 1);
+
+    // indicator texture
+    ResourceManager::GetShader("indShader").SetBool("isImage", true);
+    glActiveTexture(GL_TEXTURE0);
+    texture.Bind();
+
+    // draw
+    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, indicatorMatrices.size());
+    glBindVertexArray(0);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void Indicator::DrawIndicatorsHP(const std::vector<glm::mat4>& hpMatrices, const std::vector<glm::vec3>& indColours)
+{
+    ResourceManager::GetShader("indShader").SetBool("isImage", false);
+
+    // refresh colour buffer
+    unsigned int colourVBO;
+    glGenBuffers(1, &colourVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, colourVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * indColours.size(), &indColours.data()[0], GL_STATIC_DRAW);
+
+    // refresh matrix buffer
+    glBindBuffer(GL_ARRAY_BUFFER, matBuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * hpMatrices.size(), &hpMatrices.data()[0], GL_STATIC_DRAW);
+
+    glBindVertexArray(iVAO);
+
+    // colour instructions
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
+
+    glVertexAttribDivisor(2, 1);
+
+    // matrix instructions for colour
+    std::size_t vec4Size = sizeof(glm::vec4);
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)0);
+    glEnableVertexAttribArray(4);
+    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(1 * vec4Size));
+    glEnableVertexAttribArray(5);
+    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(2 * vec4Size));
+    glEnableVertexAttribArray(6);
+    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(3 * vec4Size));
+
+    glVertexAttribDivisor(3, 1);
+    glVertexAttribDivisor(4, 1);
+    glVertexAttribDivisor(5, 1);
+    glVertexAttribDivisor(6, 1);
+
+    // draw
+    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, hpMatrices.size());
+    glBindVertexArray(0);
 }

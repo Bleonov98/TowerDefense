@@ -90,6 +90,8 @@ public:
 	void DrawObject(vector<T*> objectList, float dt);
 	void DrawObject(GameObject* obj, float dt);
 	
+	void DrawHP();
+
 	void DrawGrid();
 	void DrawTowerMenu();
 	void DrawTowerStats();

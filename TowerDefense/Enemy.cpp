@@ -56,7 +56,7 @@ void Enemy::Hit(int damage, float slowRate)
 	if (hp <= 0) DeleteObject();
 }
 
-void Enemy::ShowHP(glm::mat4 projection, glm::mat4 view, bool menu)
+void Enemy::SetHP()
 {
 	float percentHP = static_cast<float>(hp) / static_cast<float>(maxHp);
 	glm::vec3 indColour;
@@ -65,7 +65,7 @@ void Enemy::ShowHP(glm::mat4 projection, glm::mat4 view, bool menu)
 	indicator.SetPosition(glm::vec3(position.x, position.y + GetSize().z, position.z));
 	indicator.SetSize(glm::vec2(indicator.GetSize().first.x * percentHP, indicator.GetSize().first.y));
 
-	indicator.DrawIndicator(projection, view, menu);
+	indicator.RefreshData();
 }
 
 void Enemy::UpgradeEnemy()

@@ -38,7 +38,7 @@ public:
 
 	void SetIndicator(Indicator indicator) { this->indicator = indicator; }
 	Indicator& GetIndicator() { return this->indicator; }
-	void ShowHP(glm::mat4 projection, glm::mat4 view, bool menu);
+	void SetHP();
 
 	void UpgradeEnemy();
 

@@ -20,7 +20,7 @@ public:
 
 	glm::mat4 GetMatrix() { return objMatrix; }
 	glm::vec3 GetPosition() { return position; }
-	glm::vec3 GetSize() { return ResourceManager::GetModel(modelName).GetSize() * scale; }
+	glm::vec3 GetSize() { return size; }
 	glm::vec3 GetScale() { return scale; }
 	glm::vec3 GetColor() { return color; }
 	glm::vec3 GetAngle() { return angle; }
@@ -33,12 +33,18 @@ public:
 	// matrices, vectors
 	void RefreshMatrix();
 	void SetPosition(glm::vec3 pos) { this->position = pos; }
-	void SetScale(glm::vec3 scale) { this->scale = scale; }
+	void SetScale(glm::vec3 scale) { 
+		this->scale = scale;
+		this->size = ResourceManager::GetModel(modelName).GetSize() * scale;
+	}
 	void SetColor(glm::vec3 color) { this->color = color; }
 	void SetAngle(glm::vec3 angle) { this->angle = angle; }
 	void SetTransparency(float transparency) { this->transparency = transparency; }
 
-	void SetModel(std::string modelName) { this->modelName = modelName; }
+	void SetModel(std::string modelName) { 
+		this->modelName = modelName;
+		this->size = ResourceManager::GetModel(modelName).GetSize() * scale;
+	}
 	void UpdateAnimation(float dt);
 
 	void SetIcon(std::string iconTexture) { this->iconTexture = iconTexture; }
@@ -67,7 +73,7 @@ protected:
 
 	bool deleted = false;
 	float transparency = 0.0f;
-	glm::vec3 position, scale, angle, color = glm::vec3(1.0f);
+	glm::vec3 position, scale, size, angle, color = glm::vec3(1.0f);
 	glm::mat4 objMatrix;
 
 };

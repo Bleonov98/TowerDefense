@@ -216,12 +216,12 @@ void Game::Update(float dt)
 
 		if (!lvlStarted && timer.SecondsFromLast() >= 5) StartLevel();
 
-		// ============================================================================================= HERE
 		for (auto enemy : enemyList)
 		{
 			enemy->CheckPoint();
 			enemy->Move(dt);
 			if (enemy->Slipped()) player.hp -= 1;
+			enemy->SetHP();
 		}
 
 		for (auto tower : towerList)
@@ -404,7 +404,7 @@ void Game::StartLevel()
 	lvlStarted = true;
 
 	if (player.wave < 7) {
-		for (size_t i = 0; i < 12; i++)
+		for (size_t i = 0; i < 500; i++)
 		{
 			SpawnEnemy(indicator);
 		}
@@ -484,11 +484,8 @@ void Game::Render(float dt)
 	glDepthMask(GL_TRUE);
 
 	// Enemies
-	for (auto enemy : enemyList)
-	{
-		enemy->ShowHP(projection, view, gameState == MENU);	// ============================================================================================= HERE
-	}
 	DrawObject(enemyList, dt);
+	DrawHP();
 
 	// Projectiles
 	DrawObject(arrowProjectileList, dt);
@@ -548,6 +545,23 @@ void Game::DrawObject(GameObject* obj, float dt)
 	shader.SetMatrix4("model", obj->GetMatrix());
 
 	ResourceManager::GetModel(obj->GetModelName()).Draw(shader);
+}
+
+void Game::DrawHP()
+{
+	if (enemyList.empty()) return;
+
+	std::vector<glm::mat4> indMatVec, hpMatVec;
+	std::vector<glm::vec3> colourVec;
+
+	for (auto enemy : enemyList)
+	{
+		indMatVec.push_back(enemy->GetIndicator().GetIndicatorMatrix());
+		hpMatVec.push_back(enemy->GetIndicator().GetHPMatrix());
+		colourVec.push_back(enemy->GetIndicator().GetColour());
+	}
+
+	enemyList[0]->GetIndicator().DrawIndicator(indMatVec, hpMatVec, colourVec, projection, view, gameState == MENU);
 }
 
 void Game::DrawGrid()
