@@ -19,6 +19,6 @@ void main()
     else
         colourVec = vec4(spriteColour * 0.9f, 1.0f);
 
-    if (isImage) FragColour = colourVec * texture(image, TexCoords);
+    if (isImage) FragColour = texture(image, TexCoords);
     else FragColour = colourVec;
 }

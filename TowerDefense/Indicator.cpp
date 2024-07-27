@@ -140,23 +140,23 @@ void Indicator::DrawIndicatorsHP(const std::vector<glm::mat4>& hpMatrices, const
 {
     ResourceManager::GetShader("indShader").SetBool("isImage", false);
 
+    glBindVertexArray(iVAO);
+
     // refresh colour buffer
     unsigned int colourVBO;
     glGenBuffers(1, &colourVBO);
     glBindBuffer(GL_ARRAY_BUFFER, colourVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * indColours.size(), &indColours.data()[0], GL_STATIC_DRAW);
 
-    // refresh matrix buffer
-    glBindBuffer(GL_ARRAY_BUFFER, matBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * hpMatrices.size(), &hpMatrices.data()[0], GL_STATIC_DRAW);
-
-    glBindVertexArray(iVAO);
-
     // colour instructions
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
 
     glVertexAttribDivisor(2, 1);
+
+    // refresh matrix buffer
+    glBindBuffer(GL_ARRAY_BUFFER, matBuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * hpMatrices.size(), &hpMatrices.data()[0], GL_STATIC_DRAW);
 
     // matrix instructions for colour
     std::size_t vec4Size = sizeof(glm::vec4);

@@ -91,7 +91,7 @@ void Game::InitButtons()
 
 	for (int i = 0; i < 3; i++)
 	{
-		button = new Button(glm::vec2(550.0f + 150.0f * i, this->height - 145.0f), glm::vec2(90.0f), static_cast<ButtonID>(i), this->width, this->height);
+		button = new Button(glm::vec2(width * 0.35f + 150.0f * i, this->height - this->height * 0.17f), glm::vec2(90.0f), static_cast<ButtonID>(i), this->width, this->height);
 
 		if (i == 0) button->AddTexture(ResourceManager::GetTexture("bowIcon"));
 		else if (i == 1) button->AddTexture(ResourceManager::GetTexture("fireIcon"));
@@ -100,11 +100,11 @@ void Game::InitButtons()
 		buttonList.push_back(button);
 	}
 
-	button = new Button(glm::vec2(width - 140.0f, height - 145.0f), glm::vec2(90.0f), static_cast<ButtonID>(3), this->width, this->height);
+	button = new Button(glm::vec2(width - width * 0.09f, this->height - this->height * 0.17f), glm::vec2(90.0f), static_cast<ButtonID>(3), this->width, this->height);
 	button->AddTexture(ResourceManager::GetTexture("towerIcon"));
 	buttonList.push_back(button);
 
-	button = new Button(glm::vec2(550.0f, height - 145.0f), glm::vec2(90.0f), static_cast<ButtonID>(4), this->width, this->height);
+	button = new Button(glm::vec2(width * 0.35f, this->height - this->height * 0.17f), glm::vec2(90.0f), static_cast<ButtonID>(4), this->width, this->height);
 	button->AddTexture(ResourceManager::GetTexture("powerUpIcon"));
 	buttonList.push_back(button);
 }
@@ -205,7 +205,7 @@ void Game::ProcessInput(float dt)
 		}
 	}
 	else if (gameState == END_LOSS || gameState == END_WIN && this->Keys[GLFW_KEY_ENTER]) close = true;
-}
+} 
 
 void Game::Update(float dt)
 {
@@ -260,7 +260,6 @@ void Game::Update(float dt)
 
 		DeleteObjects();
 	}
-
 }
 
 void Game::CheckCollisions()
@@ -620,16 +619,16 @@ void Game::DrawTowerStats()
 
 	// tower
 	statHUD->AddTexture(ResourceManager::GetTexture( (*result)->GetIcon() ));
-	statHUD->DrawHUD(glm::vec2(125.0f, 670.0f), glm::vec2(75.0f), gameState == MENU);
+	statHUD->DrawHUD(glm::vec2(0.08f * width, 0.75f * height), glm::vec2(0.085f * height), gameState == MENU);
 
 	// attack
 	statHUD->AddTexture(ResourceManager::GetTexture("attackStat"));
-	statHUD->DrawHUD(glm::vec2(50.0f, 780.0f), glm::vec2(30.0f), gameState == MENU);
+	statHUD->DrawHUD(glm::vec2(0.031f * width, 0.87f * height), glm::vec2(0.034f * height), gameState == MENU);
 	text->RenderText(std::to_string( (*result)->GetDamage() ), glm::vec2(100.0f, 785.0f));
 
 	// attackspeed
 	statHUD->AddTexture(ResourceManager::GetTexture("speedStat"));
-	statHUD->DrawHUD(glm::vec2(50.0f, 830.0f), glm::vec2(30.0f), gameState == MENU);
+	statHUD->DrawHUD(glm::vec2(0.031f * width, 0.92f * height), glm::vec2(0.034f * height), gameState == MENU);
 	text->RenderText(std::to_string( (*result)->GetAttackSpeed() ), glm::vec2(100.0f, 835.0f));
 
 	// powerUp
@@ -637,7 +636,6 @@ void Game::DrawTowerStats()
 		buttonList.back()->DrawButton(gameState == MENU);
 		text->RenderText(std::to_string((*result)->GetTowerCost()), buttonList.back()->GetButtonPosition() + glm::vec2(0.0f, 10.0f));
 	}
-	
 }
 
 void Game::DrawMenuTxt()
@@ -726,6 +724,27 @@ std::pair<glm::vec3, glm::vec3> Game::MouseRay()
 	glm::vec3 rayOrigin = camera.GetCameraPosition();
 
 	return std::make_pair(rayOrigin, rayWorld);
+}
+
+void Game::SetScreenSize(unsigned int width, unsigned int height)
+{
+	glm::vec2 sizeScale(static_cast<float>(width) / this->width, static_cast<float>(height) / this->height);
+
+	this->width = width;
+	this->height = height;
+
+	projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
+	HUDisplay->SetNewScreenSize(width, height);
+	statHUD->SetNewScreenSize(width, height);
+
+	for (size_t i = 0; i < buttonList.size(); i++)
+	{
+		buttonList[i]->SetNewScreenSize(width, height);
+		buttonList[i]->SetButtonSize(buttonList[i]->GetButtonSize() * sizeScale);
+		if (i < 3) buttonList[i]->SetButtonPosition(glm::vec2(width * 0.35f + 150.0f * sizeScale.x * i, this->height - this->height * 0.17f));
+		else if (i == 3) buttonList[i]->SetButtonPosition(glm::vec2(width - width * 0.09f, this->height - this->height * 0.17f));
+		else if (i == 4) buttonList[i]->SetButtonPosition(glm::vec2(width * 0.35f, this->height - this->height * 0.17f));
+	}
 }
 
 // Utility

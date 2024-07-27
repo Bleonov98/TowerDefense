@@ -101,6 +101,14 @@ void HUD::DrawHUD(glm::vec2 pos, glm::vec2 size, bool menu)
     glEnable(GL_DEPTH_TEST);
 }
 
+void HUD::SetNewScreenSize(unsigned int width, unsigned int height)
+{
+    this->width = width;
+    this->height = height;
+
+    projection = glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f);
+}
+
 void Button::DrawButton(bool menu)
 {
     DrawHUD(position, size, menu);

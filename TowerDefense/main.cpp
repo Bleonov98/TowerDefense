@@ -5,6 +5,8 @@
 
 // settings
 const unsigned int SCR_WIDTH = 1600, SCR_HEIGHT = 900;
+unsigned int newWidth = 0, newHeight = 0;
+bool screenSizesChanged = false;
 
 // timing
 float deltaTime = 0.0f;
@@ -68,6 +70,11 @@ int main() {
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
+
+	newWidth = width;
+	newHeight = height;
+
+	TD.SetScreenSize(newWidth, newHeight);
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
@@ -91,16 +98,16 @@ void mouse_callback(GLFWwindow* window, int button, int action, int mods)
 	if (button >= 0 && button < 8)
 	{
 		if (action == GLFW_PRESS) TD.mouseKeys[button] = true;
-		else if (action == GLFW_RELEASE) { 
+		else if (action == GLFW_RELEASE) {
 			TD.mouseKeys[button] = false;
 			TD.mKeysProcessed[button] = false;
 		}
-		
+
 		double xpos, ypos;
 
 		//getting cursor position
 		glfwGetCursorPos(window, &xpos, &ypos);
-		
+
 		TD.xMouse = xpos;
 		TD.yMouse = ypos;
 	}

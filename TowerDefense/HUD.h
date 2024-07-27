@@ -17,6 +17,8 @@ public:
 
 	void AddTexture(Texture2D texture) { this->texture = texture; }
 
+	void SetNewScreenSize(unsigned int width, unsigned int height);
+
 	~HUD() { glDeleteVertexArrays(1, &this->VAO); }
 
 protected:
@@ -27,7 +29,7 @@ protected:
 	Texture2D texture;
 
 	glm::mat4 projection;
-
+	glm::vec2 position;
 };
 
 enum ButtonID {
@@ -61,7 +63,7 @@ public:
 
 private:
 
-	glm::vec2 position, size;
+	glm::vec2 size;
 	ButtonID buttonID;
 
 };
