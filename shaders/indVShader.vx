@@ -5,15 +5,21 @@ layout(location = 1) in vec2 tex;
 layout(location = 2) in vec3 col;
 layout(location = 3) in mat4 model;
 
+uniform bool instanced;
+
 uniform mat4 projection;
 uniform mat4 view;
+uniform mat4 uModel;
 
 out vec2 TexCoords;
 out vec3 spriteColour;
 
 void main()
 {
-	gl_Position = projection * view * model * vec4(pos, 1.0);
+	mat4 modelMatrix = model;
+	if (!instanced) modelMatrix = uModel;
+
+	gl_Position = projection * view * modelMatrix * vec4(pos, 1.0);
 	TexCoords = tex;
 	spriteColour = col;
 }

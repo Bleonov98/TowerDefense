@@ -28,6 +28,8 @@ public:
 	void InitPath(const std::vector<std::vector<Grid*>> grid);
 
 	int GetHP() { return this->hp; }
+	bool FullHP() { return this->hp == maxHp; }
+
 	int GetSpeed() { return this->speed; }
 	int GetGold() { return this->gold; }
 

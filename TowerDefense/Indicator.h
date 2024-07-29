@@ -22,9 +22,10 @@ public:
 	std::pair<glm::vec2, glm::vec2> GetSize() { return make_pair(size, indSize); }
 
 	void RefreshData();
-	void DrawIndicator(const std::vector<glm::mat4>& indicatorMatrices, const std::vector<glm::mat4>& hpMatrices, const std::vector<glm::vec3>& indColours, glm::mat4 projection, glm::mat4 view, bool menu);
+	void DrawIndicator(const std::vector<glm::mat4>& indicatorMatrices, const std::vector<glm::mat4>& hpMatrices, const std::vector<glm::vec3>& indColours, const glm::mat4 projection, const glm::mat4 view, const bool menu);
 	void DrawIndicatorsTexture(const std::vector<glm::mat4>& indicatorMatrices);
 	void DrawIndicatorsHP(const std::vector<glm::mat4>& hpMatrices, const std::vector<glm::vec3>& indColours);
+	void DrawIndicatorsHP(const glm::mat4 projection, const glm::mat4 view, const bool menu);
 
 private:
 	glm::mat4 indMatrix, hpMatrix;

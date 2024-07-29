@@ -553,14 +553,29 @@ void Game::DrawHP()
 	std::vector<glm::mat4> indMatVec, hpMatVec;
 	std::vector<glm::vec3> colourVec;
 
+	vector<Indicator*> indVec;
+
 	for (auto enemy : enemyList)
 	{
 		indMatVec.push_back(enemy->GetIndicator().GetIndicatorMatrix());
-		hpMatVec.push_back(enemy->GetIndicator().GetHPMatrix());
-		colourVec.push_back(enemy->GetIndicator().GetColour());
+		if (enemy->FullHP()) {
+			hpMatVec.push_back(enemy->GetIndicator().GetHPMatrix());
+			colourVec.push_back(enemy->GetIndicator().GetColour());
+		}
+		else indVec.push_back(&enemy->GetIndicator());
+		
 	}
 
-	enemyList[0]->GetIndicator().DrawIndicator(indMatVec, hpMatVec, colourVec, projection, view, gameState == MENU);
+	auto instancedEnemy = find_if(enemyList.begin(), enemyList.end(), [](Enemy* enemy) {
+		return enemy->FullHP();
+	});
+
+	(*instancedEnemy)->GetIndicator().DrawIndicator(indMatVec, hpMatVec, colourVec, projection, view, gameState == MENU);
+
+	for (size_t i = 0; i < indVec.size(); i++)
+	{
+		indVec[i]->DrawIndicatorsHP(projection, view, gameState == MENU);
+	}
 }
 
 void Game::DrawGrid()

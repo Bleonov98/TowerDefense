@@ -88,13 +88,14 @@ void Indicator::RefreshData()
     indMatrix = glm::translate(indMatrix, position);
 }
 
-void Indicator::DrawIndicator(const std::vector<glm::mat4>& indicatorMatrices, const std::vector<glm::mat4>& hpMatrices, const std::vector<glm::vec3>& indColours, glm::mat4 projection, glm::mat4 view, bool menu)
+void Indicator::DrawIndicator(const std::vector<glm::mat4>& indicatorMatrices, const std::vector<glm::mat4>& hpMatrices, const std::vector<glm::vec3>& indColours, const glm::mat4 projection, const glm::mat4 view, const bool menu)
 {
     // setting shader
     ResourceManager::GetShader("indShader").Use();
     ResourceManager::GetShader("indShader").SetMatrix4("projection", projection);
     ResourceManager::GetShader("indShader").SetMatrix4("view", view);
     ResourceManager::GetShader("indShader").SetBool("menu", menu);
+    ResourceManager::GetShader("indShader").SetBool("instanced", true);
 
     DrawIndicatorsTexture(indicatorMatrices);
     DrawIndicatorsHP(hpMatrices, indColours);
@@ -176,5 +177,21 @@ void Indicator::DrawIndicatorsHP(const std::vector<glm::mat4>& hpMatrices, const
 
     // draw
     glDrawArraysInstanced(GL_TRIANGLES, 0, 6, hpMatrices.size());
+    glBindVertexArray(0);
+}
+
+void Indicator::DrawIndicatorsHP(const glm::mat4 projection, const glm::mat4 view, const bool menu)
+{
+    ResourceManager::GetShader("indShader").Use();
+    ResourceManager::GetShader("indShader").SetMatrix4("projection", projection);
+    ResourceManager::GetShader("indShader").SetMatrix4("view", view);
+    ResourceManager::GetShader("indShader").SetBool("menu", menu);
+
+    ResourceManager::GetShader("indShader").SetBool("isImage", false);
+    ResourceManager::GetShader("indShader").SetBool("instanced", false);
+    ResourceManager::GetShader("indShader").SetMatrix4("uModel", hpMatrix);
+
+    glBindVertexArray(iVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
 }
