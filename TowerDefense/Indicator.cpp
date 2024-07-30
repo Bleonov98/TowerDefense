@@ -65,6 +65,8 @@ void Indicator::RefreshData()
     hpMatrix = glm::mat4(1.0f);
     hpMatrix = glm::translate(hpMatrix, position + glm::vec3(displace / 2.0f, 0.0f, 0.01f));
 
+    glBindVertexArray(iVAO);
+
     float x, y;
     y = indSize.y / 2.0f;
     x = indSize.x / 2.0f;
@@ -82,6 +84,8 @@ void Indicator::RefreshData()
     // Set new hp vertices
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferSubData(GL_ARRAY_BUFFER, 6 * 5 * sizeof(float), sizeof(hpVertices), hpVertices);
+
+    glBindVertexArray(0);
 
     // texture matrix 
     indMatrix = glm::mat4(1.0f);
@@ -142,6 +146,24 @@ void Indicator::DrawIndicatorsHP(const std::vector<glm::mat4>& hpMatrices, const
     ResourceManager::GetShader("indShader").SetBool("isImage", false);
 
     glBindVertexArray(iVAO);
+
+    //float x, y;
+    //y = indSize.y / 2.0f;
+    //x = indSize.x / 2.0f;
+
+    //float hpVertices[] = {
+    //    -x,  y,  0,
+    //     x, -y,  0,
+    //    -x, -y,  0,
+
+    //    -x,  y,  0,
+    //     x,  y,  0,
+    //     x, -y,  0
+    //};
+
+    //// Set new hp vertices
+    //glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    //glBufferSubData(GL_ARRAY_BUFFER, 6 * 5 * sizeof(float), sizeof(hpVertices), hpVertices);
 
     // refresh colour buffer
     unsigned int colourVBO;

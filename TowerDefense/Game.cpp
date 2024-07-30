@@ -221,7 +221,6 @@ void Game::Update(float dt)
 			enemy->CheckPoint();
 			enemy->Move(dt);
 			if (enemy->Slipped()) player.hp -= 1;
-			enemy->SetHP();
 		}
 
 		for (auto tower : towerList)
@@ -557,6 +556,7 @@ void Game::DrawHP()
 
 	for (auto enemy : enemyList)
 	{
+		enemy->SetHP();
 		indMatVec.push_back(enemy->GetIndicator().GetIndicatorMatrix());
 		if (enemy->FullHP()) {
 			hpMatVec.push_back(enemy->GetIndicator().GetHPMatrix());
@@ -570,7 +570,9 @@ void Game::DrawHP()
 		return enemy->FullHP();
 	});
 
-	(*instancedEnemy)->GetIndicator().DrawIndicator(indMatVec, hpMatVec, colourVec, projection, view, gameState == MENU);
+	if (instancedEnemy != enemyList.end()) {
+		(*instancedEnemy)->GetIndicator().DrawIndicator(indMatVec, hpMatVec, colourVec, projection, view, gameState == MENU);
+	}
 
 	for (size_t i = 0; i < indVec.size(); i++)
 	{
