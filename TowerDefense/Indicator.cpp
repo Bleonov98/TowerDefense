@@ -65,28 +65,6 @@ void Indicator::RefreshData()
     hpMatrix = glm::mat4(1.0f);
     hpMatrix = glm::translate(hpMatrix, position + glm::vec3(displace / 2.0f, 0.0f, 0.01f));
 
-    glBindVertexArray(iVAO);
-
-    float x, y;
-    y = indSize.y / 2.0f;
-    x = indSize.x / 2.0f;
-
-    float hpVertices[] = {
-        -x,  y,  0,
-         x, -y,  0,
-        -x, -y,  0,
-
-        -x,  y,  0,
-         x,  y,  0,
-         x, -y,  0
-    };
-
-    // Set new hp vertices
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferSubData(GL_ARRAY_BUFFER, 6 * 5 * sizeof(float), sizeof(hpVertices), hpVertices);
-
-    glBindVertexArray(0);
-
     // texture matrix 
     indMatrix = glm::mat4(1.0f);
     indMatrix = glm::translate(indMatrix, position);
@@ -147,23 +125,23 @@ void Indicator::DrawIndicatorsHP(const std::vector<glm::mat4>& hpMatrices, const
 
     glBindVertexArray(iVAO);
 
-    //float x, y;
-    //y = indSize.y / 2.0f;
-    //x = indSize.x / 2.0f;
+    float x, y;
+    y = indSize.y / 2.0f;
+    x = indSize.x / 2.0f;
 
-    //float hpVertices[] = {
-    //    -x,  y,  0,
-    //     x, -y,  0,
-    //    -x, -y,  0,
+    float hpVertices[] = {
+        -x,  y,  0,
+         x, -y,  0,
+        -x, -y,  0,
 
-    //    -x,  y,  0,
-    //     x,  y,  0,
-    //     x, -y,  0
-    //};
+        -x,  y,  0,
+         x,  y,  0,
+         x, -y,  0
+    };
 
-    //// Set new hp vertices
-    //glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    //glBufferSubData(GL_ARRAY_BUFFER, 6 * 5 * sizeof(float), sizeof(hpVertices), hpVertices);
+    // Set new hp vertices
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferSubData(GL_ARRAY_BUFFER, 6 * 5 * sizeof(float), sizeof(hpVertices), hpVertices);
 
     // refresh colour buffer
     unsigned int colourVBO;
@@ -212,8 +190,28 @@ void Indicator::DrawIndicatorsHP(const glm::mat4 projection, const glm::mat4 vie
     ResourceManager::GetShader("indShader").SetBool("isImage", false);
     ResourceManager::GetShader("indShader").SetBool("instanced", false);
     ResourceManager::GetShader("indShader").SetMatrix4("uModel", hpMatrix);
+    ResourceManager::GetShader("indShader").SetVector3f("uColour", indColour);
 
     glBindVertexArray(iVAO);
+
+    float x, y;
+    y = indSize.y / 2.0f;
+    x = indSize.x / 2.0f;
+
+    float hpVertices[] = {
+        -x,  y,  0,
+         x, -y,  0,
+        -x, -y,  0,
+
+        -x,  y,  0,
+         x,  y,  0,
+         x, -y,  0
+    };
+
+    // Set new hp vertices
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferSubData(GL_ARRAY_BUFFER, 6 * 5 * sizeof(float), sizeof(hpVertices), hpVertices);
+
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
 }

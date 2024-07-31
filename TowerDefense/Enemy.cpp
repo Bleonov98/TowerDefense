@@ -60,7 +60,7 @@ void Enemy::SetHP()
 {
 	float percentHP = static_cast<float>(hp) / static_cast<float>(maxHp);
 	glm::vec3 indColour;
-	percentHP > 0.5f ? indColour = glm::vec3(0.0f, 1.0f, 0.0f) : (percentHP > 0.25f ? indColour = glm::vec3(0.85f, 0.85f, 0.0f) : indColour = glm::vec3(0.9f, 0.1f, 0.0f));
+	percentHP > 0.65f ? indColour = glm::vec3(0.0f, 1.0f, 0.0f) : (percentHP > 0.3f ? indColour = glm::vec3(0.85f, 0.85f, 0.0f) : indColour = glm::vec3(0.9f, 0.1f, 0.0f));
 	indicator.SetColour(indColour);
 	indicator.SetPosition(glm::vec3(position.x, position.y + GetSize().z, position.z));
 	indicator.SetSize(glm::vec2(indicator.GetSize().first.x * percentHP, indicator.GetSize().first.y));

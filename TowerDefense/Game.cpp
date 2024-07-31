@@ -562,8 +562,7 @@ void Game::DrawHP()
 			hpMatVec.push_back(enemy->GetIndicator().GetHPMatrix());
 			colourVec.push_back(enemy->GetIndicator().GetColour());
 		}
-		else indVec.push_back(&enemy->GetIndicator());
-		
+		else indVec.push_back(&enemy->GetIndicator());	
 	}
 
 	auto instancedEnemy = find_if(enemyList.begin(), enemyList.end(), [](Enemy* enemy) {
