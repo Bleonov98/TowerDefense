@@ -521,7 +521,7 @@ void Game::DrawObject(vector<T*> objectList, float dt)
 
 	for (size_t i = 0; i < objectList.size(); i++)
 	{
-		// obj->UpdateAnimation(dt);
+		objectList[i]->UpdateAnimation(shader, dt);
 		objectList[i]->RefreshMatrix();
 		objectMat.push_back(objectList[i]->GetMatrix());
 	}
@@ -537,7 +537,7 @@ void Game::DrawObject(GameObject* obj, float dt)
 
 	shader.SetFloat("transparency", obj->GetTransparency());
 
-	// obj->UpdateAnimation(dt);
+	obj->UpdateAnimation(shader, dt);
 	obj->RefreshMatrix();
 
 	shader.SetMatrix4("model", obj->GetMatrix());

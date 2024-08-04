@@ -41,11 +41,8 @@ public:
 	void SetAngle(glm::vec3 angle) { this->angle = angle; }
 	void SetTransparency(float transparency) { this->transparency = transparency; }
 
-	void SetModel(std::string modelName) { 
-		this->modelName = modelName;
-		this->size = ResourceManager::GetModel(modelName).GetSize() * scale;
-	}
-	void UpdateAnimation(float dt);
+	void SetModel(std::string modelName);
+	void UpdateAnimation(Shader& shader, float dt);
 
 	void SetIcon(std::string iconTexture) { this->iconTexture = iconTexture; }
 
@@ -55,7 +52,7 @@ public:
 
 	// - - - - - -
 
-	bool IsAnimated() { return ResourceManager::GetModel(modelName).IsAnimated(); }
+	bool IsAnimated() { return animated; }
 
 	bool IsDeleted() { return this->deleted; }
 	void DeleteObject() { this->deleted = true; }
@@ -71,7 +68,7 @@ protected:
 	std::string iconTexture = " ";
 	std::string modelName;
 
-	bool deleted = false;
+	bool deleted = false, animated = false;
 	float transparency = 0.0f;
 	glm::vec3 position, scale, size, angle, color = glm::vec3(1.0f);
 	glm::mat4 objMatrix;

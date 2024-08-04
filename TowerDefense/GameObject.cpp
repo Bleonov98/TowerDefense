@@ -2,10 +2,8 @@
 
 Sphere GameObject::GetHBox()
 {
-    glm::vec3 modelSize = scale * ResourceManager::GetModel(modelName).GetSize();
-
-    hbox.radius = std::min({ modelSize.x, modelSize.y, modelSize.z });
-    hbox.center = glm::vec3(position.x, position.y + modelSize.y / 2.0f, position.z);
+    hbox.radius = std::min({ size.x, size.y, size.z });
+    hbox.center = glm::vec3(position.x, position.y + size.y / 2.0f, position.z);
 
     return hbox;
 }
@@ -24,20 +22,32 @@ void GameObject::RefreshMatrix()
 	objMatrix = modelMatrix;
 }
 
-void GameObject::UpdateAnimation(float dt)
+void GameObject::SetModel(std::string modelName)
 {
-    if (!IsAnimated()) {
-        ResourceManager::GetShader("modelShader").SetBool("animated", false);
+    this->modelName = modelName;
+    this->size = ResourceManager::GetModel(modelName).GetSize() * scale;
+    this->animated = ResourceManager::GetModel(modelName).IsAnimated();
+
+    if (animated) {
+        Animator tempAnimator(&ResourceManager::GetAnimation(modelName));
+        animator = tempAnimator;
+    }
+}
+
+void GameObject::UpdateAnimation(Shader& shader, float dt)
+{
+    if (!animated) {
+        shader.SetBool("animated", false);
         return;
     }
 
-    ResourceManager::GetShader("modelShader").SetBool("animated", true);
+    shader.SetBool("animated", true);
     animator.UpdateAnimation(dt);
 
     auto transforms = animator.GetFinalBoneMatrices();
     int size = transforms.size();
     for (int i = 0; i < size; ++i)
-        ResourceManager::GetShader("modelShader").SetMatrix4("finalBonesMatrices[" + std::to_string(i) + "]", transforms[i]);
+        shader.SetMatrix4("finalBonesMatrices[" + std::to_string(i) + "]", transforms[i]);
 }
 
 std::string vec3ToString(const glm::vec3& vec) {

@@ -1,11 +1,5 @@
 #include "ResourceManager.h"
 
-std::map<std::string, Model> ResourceManager::models;
-std::map<std::string, Animation> ResourceManager::animations;
-
-std::map<std::string, Shader> ResourceManager::shaders;
-std::map<std::string, Texture2D> ResourceManager::textures;
-
 // Shaders
 Shader ResourceManager::LoadShader(const char* vShader, const char* fShader, std::string name)
 {
@@ -28,14 +22,14 @@ Model ResourceManager::LoadModel(const char* fileName, std::string name)
     return models[name];
 }
 
-Model ResourceManager::GetModel(std::string name)
+Model& ResourceManager::GetModel(std::string name)
 {
-    return models[name];
+    return models.at(name);
 }
 
-Animation ResourceManager::GetAnimation(std::string name)
+Animation& ResourceManager::GetAnimation(std::string name)
 {
-    return animations[name];
+    return animations.at(name);
 }
 
 // Texture2D
