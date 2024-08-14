@@ -209,8 +209,8 @@ void Game::ProcessInput(float dt)
 
 void Game::Update(float dt)
 {
-	if (dt > 0.015f) dt = 0.015f;
 	cout << dt << endl;
+	if (dt > 0.015f) dt = 0.015f;
 
 	if (gameState == ACTIVE) {
 
@@ -402,7 +402,7 @@ void Game::StartLevel()
 	lvlStarted = true;
 
 	if (player.wave < 7) {
-		for (size_t i = 0; i < 500; i++)
+		for (size_t i = 0; i < 200; i++)
 		{
 			SpawnEnemy(indicator);
 		}
