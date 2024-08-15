@@ -51,7 +51,6 @@ public:
 	virtual bool SphereCollision(GameObject* obj);
 
 	// - - - - - -
-
 	bool IsAnimated() { return animated; }
 
 	bool IsDeleted() { return this->deleted; }
