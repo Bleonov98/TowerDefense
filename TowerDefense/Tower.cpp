@@ -69,6 +69,7 @@ Projectile* FireTower::GetProjectile()
 {
 	Projectile* projectile = new Projectile(this->position, target, pType, this->damage);
 	projectile->SetModel("fireProjectileModel");
+	projectile->SetScale(glm::vec3(0.25f));
 
 	return projectile;
 }
@@ -87,6 +88,7 @@ Projectile* IceTower::GetProjectile()
 {
 	Projectile* projectile = new Projectile(this->position, target, pType, this->damage, this->slowRate);
 	projectile->SetModel("iceProjectileModel");
+	projectile->SetScale(glm::vec3(0.1f));
 
 	return projectile;
 }

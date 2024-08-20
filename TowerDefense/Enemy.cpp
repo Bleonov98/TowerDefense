@@ -32,16 +32,16 @@ void Enemy::CheckPoint()
 	switch (dir)
 	{
 	case MOVE_RIGHT:
-		angle = glm::vec3(-90.0f, 0.0f, 0.0f);
+		angle = glm::vec3(0.0f, 0.0f, 0.0f);
 		break;
 	case MOVE_LEFT:
-		angle = glm::vec3(-90.0f, 0.0f, 180.0f);
+		angle = glm::vec3(0.0f, 0.0f, 0.0f);
 		break;
 	case MOVE_UP:
-		angle = glm::vec3(-90.0f, 0.0f, 90.0f);
+		angle = glm::vec3(0.0f, 90.0f, 0.0f);
 		break;
 	case MOVE_DOWN:
-		angle = glm::vec3(-90.0f, 0.0f,  -90.0f);
+		angle = glm::vec3(0.0f, -90.0f, 0.0f);
 		break;
 	}
 }

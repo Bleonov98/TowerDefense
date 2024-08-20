@@ -122,13 +122,13 @@ void Game::LoadResources()
 	ResourceManager::LoadModel("map.obj", "mapModel");
 	ResourceManager::LoadModel("enemy/enemy.fbx", "enemyModel");
 
-	ResourceManager::LoadModel("arrow.obj", "arrowProjectileModel");
-	// ResourceManager::LoadModel("fire.obj", "fireProjectileModel");
-	// ResourceManager::LoadModel("ice.obj", "iceProjectileModel");
+	ResourceManager::LoadModel("projectiles/arrow.obj", "arrowProjectileModel");
+	ResourceManager::LoadModel("projectiles/fire.obj", "fireProjectileModel");
+	ResourceManager::LoadModel("projectiles/ice.obj", "iceProjectileModel");
 
 	ResourceManager::LoadModel("tower/tower.fbx", "arrowTowerModel");
-	// ResourceManager::LoadModel("firetower/firetower.fbx", "fireTowerModel");
-	ResourceManager::LoadModel("icetower/icetower.fbx", "iceTowerModel");
+	ResourceManager::LoadModel("firetower/firetower.obj", "fireTowerModel");
+	ResourceManager::LoadModel("icetower/icetower.obj", "iceTowerModel");
 
 	// - - - // Textures
 	ResourceManager::LoadTexture("HudFrame.png", true, "HUDTexture");
@@ -210,7 +210,6 @@ void Game::ProcessInput(float dt)
 void Game::Update(float dt)
 {
 	cout << dt << endl;
-	if (dt > 0.015f) dt = 0.015f;
 
 	if (gameState == ACTIVE) {
 
@@ -342,12 +341,13 @@ void Game::SetTower(Grid* cell, TowerType* tower)
 	}
 	else if (tower->GetType() == FIRE) {
 		tower->SetModel("fireTowerModel");
+		tower->SetScale(glm::vec3(0.5f));
 
 		fireTowerList.push_back(dynamic_cast<FireTower*>(tower));
 	}
 	else if (tower->GetType() == ICE) {
 		tower->SetModel("iceTowerModel");
-		tower->SetScale(glm::vec3(0.01f));
+		tower->SetScale(glm::vec3(0.5f));
 
 		iceTowerList.push_back(dynamic_cast<IceTower*>(tower));
 	}
@@ -357,7 +357,7 @@ void Game::SetTower(Grid* cell, TowerType* tower)
 	cell->SelectCell(false);
 	gridToggle = false;
 
-	tower->SetAngle(glm::vec3(-90.0f, 0.0f, 45.0f));
+	// tower->SetAngle(glm::vec3(-90.0f, 0.0f, 45.0f));
 
 	objList.push_back(tower);
 	towerList.push_back(tower);
@@ -378,7 +378,6 @@ void Game::SpawnEnemy(Indicator indicator)
 	enemy->SetModel("enemyModel");
 	enemy->SetIndicator(indicator);
 	enemy->SetScale(glm::vec3(0.015f));
-	enemy->SetAngle(glm::vec3(-90.0f, 0.0f, 0.0f));
 
 	objList.push_back(enemy);
 	enemyList.push_back(enemy);
@@ -402,7 +401,7 @@ void Game::StartLevel()
 	lvlStarted = true;
 
 	if (player.wave < 7) {
-		for (size_t i = 0; i < 12; i++)
+		for (size_t i = 0; i < 30; i++)
 		{
 			SpawnEnemy(indicator);
 		}
@@ -474,6 +473,11 @@ void Game::Render(float dt)
 	// Objects
 	DrawObject(gameMap, dt);
 	
+	// Projectiles
+	DrawObject(arrowProjectileList, dt);
+	DrawObject(iceProjectileList, dt);
+	DrawObject(fireProjectileList, dt);
+
 	// Towers
 	glDepthMask(GL_FALSE);
 	DrawObject(arrowTowerList, dt);
@@ -484,11 +488,6 @@ void Game::Render(float dt)
 	// Enemies
 	DrawObject(enemyList, dt);
 	DrawHP();
-
-	// Projectiles
-	DrawObject(arrowProjectileList, dt);
-	DrawObject(iceProjectileList, dt);
-	DrawObject(fireProjectileList, dt);
 
 	// Interface
 	HUDisplay->DrawHUD(gameState == MENU);
@@ -518,10 +517,10 @@ void Game::DrawObject(vector<T*> objectList, float dt)
 	float transparency = 0.0f;
 	if (gridToggle) transparency = 0.8f;
 	shader.SetFloat("transparency", transparency);
+	objectList.back()->UpdateAnimation(shader, dt);
 
 	for (size_t i = 0; i < objectList.size(); i++)
 	{
-		objectList[i]->UpdateAnimation(shader, dt);
 		objectList[i]->RefreshMatrix();
 		objectMat.push_back(objectList[i]->GetMatrix());
 	}
