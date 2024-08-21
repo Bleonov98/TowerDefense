@@ -122,7 +122,7 @@ void Game::LoadResources()
 	ResourceManager::LoadModel("map.obj", "mapModel");
 	ResourceManager::LoadModel("enemy/enemy.fbx", "enemyModel");
 
-	ResourceManager::LoadModel("projectiles/arrow.obj", "arrowProjectileModel");
+	ResourceManager::LoadModel("projectiles/arrow.fbx", "arrowProjectileModel");
 	ResourceManager::LoadModel("projectiles/fire.obj", "fireProjectileModel");
 	ResourceManager::LoadModel("projectiles/ice.obj", "iceProjectileModel");
 
@@ -401,7 +401,7 @@ void Game::StartLevel()
 	lvlStarted = true;
 
 	if (player.wave < 7) {
-		for (size_t i = 0; i < 30; i++)
+		for (size_t i = 0; i < 12; i++)
 		{
 			SpawnEnemy(indicator);
 		}
