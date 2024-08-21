@@ -24,6 +24,17 @@ Projectile* Tower::GetProjectile()
 {
 	Projectile* projectile = new Projectile(this->position, target, pType, this->damage);
 	projectile->SetModel("arrowProjectileModel");
+	projectile->SetScale(glm::vec3(0.05f));
+
+	// rotating arrows model considering their direction 
+	glm::vec3 direction = glm::normalize(target->GetPosition() - projectile->GetPosition());
+	glm::vec3 baseDir = glm::vec3(0.0f, 0.0f, -1.0f);
+	float dotProd = glm::dot(baseDir, direction);
+	float angle = acos(dotProd / (glm::length(direction) * glm::length(baseDir)));
+
+	float degAngle = glm::degrees(angle);
+	if (direction.x > 0.0f) degAngle = -degAngle;
+	projectile->SetAngle(glm::vec3(0.0f, degAngle, 0.0f));
 
 	return projectile;
 }
