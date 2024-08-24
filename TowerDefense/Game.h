@@ -31,7 +31,7 @@ enum GameState {
 };
 
 struct Player {
-	int gold = 60;
+	int gold = 75;
 	int hp = 5;
 	int wave = 0;
 };
@@ -99,6 +99,8 @@ public:
 	void DrawMenuTxt();
 
 	// Calculations
+	template <typename T>
+	void DepthSort(std::vector<T*>& vector);
 	glm::vec3 FindNearestCell(glm::vec3 position);
 	glm::vec3 ProcessClick();
 	std::pair<glm::vec3, glm::vec3> MouseRay();

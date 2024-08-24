@@ -32,6 +32,7 @@ public:
 
 	int GetSpeed() { return this->speed; }
 	int GetGold() { return this->gold; }
+	int GetDamage() { return this->damage; }
 
 	void Move(const float dt);
 	void CheckPoint();
@@ -49,10 +50,10 @@ public:
 protected:
 
 	inline static float maxSpeed = 1.0f;
-	inline static int maxHp = 100, gold = 10;
+	inline static int maxHp = 100;
 	
 	float slowRate = 0.0f, slowTick = 0.0f, slowDuration = 2.0f, speed;
-	int hp;
+	int hp, damage = 1, gold = 10;
 
 	Indicator indicator;
 	MoveDir dir = MOVE_RIGHT;
@@ -62,10 +63,11 @@ protected:
 struct Boss : public Enemy 
 {
 public:
-	Boss(glm::vec3 position, Model model, glm::vec3 scale = glm::vec3(1.0f), glm::vec3 angle = glm::vec3(0.0f)) : Enemy(position, scale, angle) {
+	Boss(glm::vec3 position, glm::vec3 scale = glm::vec3(1.0f), glm::vec3 angle = glm::vec3(0.0f)) : Enemy(position, scale, angle) {
 		this->speed = 2.5f;
-		this->hp = this->maxHp = 22000;
+		this->hp = this->maxHp = 20000;
 		this->slowDuration = 0.4f;
+		this->damage = 5;
 	}
 };
 

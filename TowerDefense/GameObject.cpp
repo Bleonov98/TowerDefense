@@ -75,9 +75,9 @@ bool GameObject::RayCollision(const glm::vec3& rayOrigin, const glm::vec3& rayDi
             unsigned int index1 = mesh.indices[j + 1];
             unsigned int index2 = mesh.indices[j + 2];
 
-            glm::vec3 v0 = glm::vec3(objMatrix * glm::vec4(mesh.vertices[index0].Position, 1.0f));
-            glm::vec3 v1 = glm::vec3(objMatrix * glm::vec4(mesh.vertices[index1].Position, 1.0f));
-            glm::vec3 v2 = glm::vec3(objMatrix * glm::vec4(mesh.vertices[index2].Position, 1.0f));
+            glm::vec3 v0 = glm::vec3(objMatrix * glm::vec4(CalculateAnimatedVertexPosition(mesh.vertices[index0]), 1.0f));
+            glm::vec3 v1 = glm::vec3(objMatrix * glm::vec4(CalculateAnimatedVertexPosition(mesh.vertices[index1]), 1.0f));
+            glm::vec3 v2 = glm::vec3(objMatrix * glm::vec4(CalculateAnimatedVertexPosition(mesh.vertices[index2]), 1.0f));
 
             // std::cout << "Triangle vertices: " << vec3ToString(v0) << ", " << vec3ToString(v1) << ", " << vec3ToString(v2) << std::endl;
 
@@ -94,6 +94,25 @@ bool GameObject::RayCollision(const glm::vec3& rayOrigin, const glm::vec3& rayDi
     }
 
     return hit;
+}
+
+glm::vec3 GameObject::CalculateAnimatedVertexPosition(const Vertex& vertex)
+{
+    if (!animated) return vertex.Position;
+
+    glm::vec4 animatedPos(0.0f);
+
+    for (int i = 0; i < 4; ++i)
+    {
+        if (vertex.m_Weights[i] > 0.0f)
+        {
+            int boneID = vertex.m_BoneIDs[i];
+            glm::mat4 boneMatrix = animator.GetFinalBoneMatrices()[boneID];
+            animatedPos += boneMatrix * glm::vec4(vertex.Position, 1.0f) * vertex.m_Weights[i];
+        }
+    }
+
+    return glm::vec3(animatedPos);
 }
 
 bool GameObject::RayIntersectsTriangle(const glm::vec3& rayOrigin, const glm::vec3& rayVector, const glm::vec3& vertex0, const glm::vec3& vertex1, const glm::vec3& vertex2, float& outIntersectionDistance)

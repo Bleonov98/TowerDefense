@@ -70,7 +70,6 @@ void Enemy::SetHP()
 
 void Enemy::UpgradeEnemy()
 {
-	maxHp += 175;
+	maxHp += 125;
 	if (maxSpeed < 2.5f) maxSpeed += 0.5f;
-	gold += 2;
 }

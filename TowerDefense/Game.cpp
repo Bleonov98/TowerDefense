@@ -24,9 +24,6 @@ void Game::Init()
 	srand(time(NULL));
 	LoadResources();
 
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 	// sounds
 	// music = sound->addSoundSourceFromFile("../sounds/music.mp3");
 	// music->setDefaultVolume(0.5f);
@@ -209,6 +206,7 @@ void Game::ProcessInput(float dt)
 
 void Game::Update(float dt)
 {
+	if (dt > 0.015f) dt = 0.015f;
 	cout << dt << endl;
 
 	if (gameState == ACTIVE) {
@@ -219,7 +217,9 @@ void Game::Update(float dt)
 		{
 			enemy->CheckPoint();
 			enemy->Move(dt);
-			if (enemy->Slipped()) player.hp -= 1;
+			if (enemy->Slipped()) {
+				player.hp -= enemy->GetDamage();
+			}
 		}
 
 		for (auto tower : towerList)
@@ -244,7 +244,7 @@ void Game::Update(float dt)
 		CheckCollisions();
 
 		if (player.hp <= 0) gameState = END_LOSS;
-		else if (enemyList.empty() && player.wave == 7) gameState = END_WIN;
+		else if (enemyList.empty() && player.wave >= 7) gameState = END_WIN;
 
 		if (enemyList.empty() && timer.SecondsFromLast() > 6) {
 			lvlStarted = false;
@@ -361,6 +361,8 @@ void Game::SetTower(Grid* cell, TowerType* tower)
 
 	objList.push_back(tower);
 	towerList.push_back(tower);
+
+	DepthSort(towerList);
 }
 
 void Game::UnselectTowers()
@@ -385,8 +387,9 @@ void Game::SpawnEnemy(Indicator indicator)
 
 void Game::SpawnBoss(Indicator indicator)
 {
-	Boss* boss = new Boss(grid[13][0]->GetPosition(), ResourceManager::GetModel("enemyModel"));
+	Boss* boss = new Boss(grid[13][0]->GetPosition());
 	boss->InitPath(grid);
+	boss->SetModel("enemyModel");
 	boss->SetIndicator(indicator);
 	boss->SetScale(glm::vec3(0.075f));
 
@@ -401,7 +404,7 @@ void Game::StartLevel()
 	lvlStarted = true;
 
 	if (player.wave < 7) {
-		for (size_t i = 0; i < 12; i++)
+		for (size_t i = 0; i < 13; i++)
 		{
 			SpawnEnemy(indicator);
 		}
@@ -479,11 +482,9 @@ void Game::Render(float dt)
 	DrawObject(fireProjectileList, dt);
 
 	// Towers
-	glDepthMask(GL_FALSE);
 	DrawObject(arrowTowerList, dt);
 	DrawObject(fireTowerList, dt);
 	DrawObject(iceTowerList, dt);
-	glDepthMask(GL_TRUE);
 
 	// Enemies
 	DrawObject(enemyList, dt);
@@ -495,10 +496,14 @@ void Game::Render(float dt)
 	DrawTowerStats();
 
 	// Menu, Helpers
-	if (gridToggle) DrawGrid();
+	if (gridToggle) {
+		glDisable(GL_DEPTH_TEST);
+		DrawGrid();
+		glEnable(GL_DEPTH_TEST);
+	}
 	else buttonList[buttonList.size() - 2]->DrawButton(gameState == MENU);
 
-	if (gameState == MENU) DrawMenuTxt();
+	if (gameState != ACTIVE) DrawMenuTxt();
 	DrawStats();
 }
 
@@ -515,7 +520,7 @@ void Game::DrawObject(vector<T*> objectList, float dt)
 	std::vector<glm::mat4> objectMat;
 	
 	float transparency = 0.0f;
-	if (gridToggle) transparency = 0.8f;
+	if (gridToggle) transparency = 0.5f;
 	shader.SetFloat("transparency", transparency);
 	objectList.back()->UpdateAnimation(shader, dt);
 
@@ -655,12 +660,17 @@ void Game::DrawTowerStats()
 
 void Game::DrawMenuTxt()
 {
-	text->RenderText("MENU", glm::vec2(this->width / 2.0f - 65.0f, this->height / 2.0f - 116.0f), 1.75f, glm::vec3(0.75f));
+	if (gameState == MENU) {
+		text->RenderText("MENU", glm::vec2(this->width / 2.0f - 65.0f, this->height / 2.0f - 116.0f), 1.75f, glm::vec3(0.75f));
+		text->RenderText("Start", glm::vec2(this->width / 2.0f - 20.0f, this->height / 2.0f));
+		text->RenderText("Exit", glm::vec2(this->width / 2.0f - 20.0f, this->height / 2.0f + 40.0f));
 
-	text->RenderText("Start", glm::vec2(this->width / 2.0f - 20.0f, this->height / 2.0f));
-	text->RenderText("Exit", glm::vec2(this->width / 2.0f - 20.0f, this->height / 2.0f + 40.0f));
-
-	text->RenderText("->", glm::vec2(cursorPos));
+		text->RenderText("->", glm::vec2(cursorPos));
+		return;
+	}
+	else if (gameState == END_WIN) text->RenderText("YOU WON", glm::vec2(this->width / 2.0f - 65.0f, this->height / 2.0f - 116.0f), 1.75f, glm::vec3(0.75f));
+	else if (gameState == END_LOSS) text->RenderText("YOU LOST", glm::vec2(this->width / 2.0f - 65.0f, this->height / 2.0f - 116.0f), 1.75f, glm::vec3(0.75f));
+	text->RenderText("Press any key to exit", glm::vec2(this->width / 2.0f - 65.0f, this->height / 2.0f), 1.0f, glm::vec3(0.75f));
 }
 
 // Calculations
@@ -788,6 +798,17 @@ void Game::DeleteObjects()
 	DeleteObjectFromVector(iceProjectileList, false);
 
 	DeleteObjectFromVector(objList, true);
+}
+
+template<typename T>
+void Game::DepthSort(std::vector<T*>& vector)
+{
+	std::sort(vector.begin(), vector.end(),
+		[&](T* a, T* b) {
+			float distA = glm::length(a->GetPosition() - camera.GetCameraPosition());
+			float distB = glm::length(b->GetPosition() - camera.GetCameraPosition());
+			return distA < distB;
+	});
 }
 
 template <typename T>
