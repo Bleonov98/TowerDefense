@@ -24,11 +24,7 @@ void Game::Init()
 	srand(time(NULL));
 	LoadResources();
 
-	// sounds
-	// music = sound->addSoundSourceFromFile("../sounds/music.mp3");
-	// music->setDefaultVolume(0.5f);
-
-	// sound->play2D(music, true);
+	sound->setSoundVolume(0.5f);
 
 	text = new TextRenderer(this->width, this->height);
 	text->Load("../fonts/Garamond.ttf", 24);
@@ -184,6 +180,7 @@ void Game::ProcessInput(float dt)
 
 		if (this->Keys[GLFW_KEY_ESCAPE] && !KeysProcessed[GLFW_KEY_ESCAPE]) {
 			gameState = MENU;
+			timer.StopTimer();
 			KeysProcessed[GLFW_KEY_ESCAPE] = true;
 		}
 	}
@@ -197,7 +194,10 @@ void Game::ProcessInput(float dt)
 			this->KeysProcessed[GLFW_KEY_DOWN] = true;
 		}
 		else if (this->Keys[GLFW_KEY_ENTER]) {
-			if (cursorPos.y == this->height / 2.0f) gameState = ACTIVE;
+			if (cursorPos.y == this->height / 2.0f) {
+				gameState = ACTIVE;
+				timer.StartTimer();
+			}
 			else if (cursorPos.y == this->height / 2.0f + 40.0f) close = true;
 		}
 	}
@@ -211,7 +211,10 @@ void Game::Update(float dt)
 
 	if (gameState == ACTIVE) {
 
-		if (!lvlStarted && timer.SecondsFromLast() >= 5) StartLevel();
+		if (!lvlStarted) {
+			text->RenderText(std::to_string(10 - timer.GetActualTime()), glm::vec2(this->width / 2.0f - 20.0f, 50.0f), 1.5f, glm::vec3(1.0f));
+			if (timer.GetActualTime() >= 10) StartLevel();
+		}	
 
 		for (auto enemy : enemyList)
 		{
@@ -246,14 +249,14 @@ void Game::Update(float dt)
 		if (player.hp <= 0) gameState = END_LOSS;
 		else if (enemyList.empty() && player.wave >= 7) gameState = END_WIN;
 
-		if (enemyList.empty() && timer.SecondsFromLast() > 6) {
+		if (enemyList.empty() && timer.GetActualTime() > 11) {
 			lvlStarted = false;
 
 			Enemy* enemy = new Enemy(glm::vec3(0.0f));
 			enemy->UpgradeEnemy();
 			delete enemy;
 
-			timer.ResetLastPoint();
+			timer.ResetTimer();
 		}
 
 		DeleteObjects();
@@ -267,7 +270,10 @@ void Game::CheckCollisions()
 		if (proj->ProjectileCollision()) {
 
 			int reward = proj->GetTarget()->GetGold();
-			if (proj->GetTarget()->IsDeleted()) player.gold += reward; // If a target is killed, we obtain gold
+			if (proj->GetTarget()->IsDeleted()) { // If a target is killed, we obtain gold
+				player.gold += reward;
+				sound->play2D("../sounds/death.mp3");
+			} 
 
 			if (proj->GetType() == FIREBALL_P) { // A fireball creates flame around the target after hitting it and burns nearest targets
 				ElementalEffect flame(proj->GetTarget()->GetHBox().center, proj->GetDamage());
@@ -399,6 +405,7 @@ void Game::SpawnBoss(Indicator indicator)
 
 void Game::StartLevel()
 {
+	sound->play2D("../sounds/start.mp3");
 	Indicator indicator(glm::vec2(0.5f, 0.05f));
 	player.wave++;
 	lvlStarted = true;
@@ -419,9 +426,18 @@ void Game::AddProjectile(Projectile* projectile)
 	projectileList.push_back(projectile);
 	objList.push_back(projectile);
 
-	if (projectile->GetModelName() == "arrowProjectileModel") arrowProjectileList.push_back(projectile);
-	else if (projectile->GetModelName() == "fireProjectileModel") fireProjectileList.push_back(projectile);
-	else if (projectile->GetModelName() == "iceProjectileModel") iceProjectileList.push_back(projectile);
+	if (projectile->GetModelName() == "arrowProjectileModel") {
+		arrowProjectileList.push_back(projectile);
+		sound->play2D("../sounds/shot.mp3");
+	}
+	else if (projectile->GetModelName() == "fireProjectileModel") {
+		fireProjectileList.push_back(projectile);
+		sound->play2D("../sounds/shot_magic.mp3");
+	} 
+	else if (projectile->GetModelName() == "iceProjectileModel") {
+		iceProjectileList.push_back(projectile);
+		sound->play2D("../sounds/shot_magic.mp3");
+	}
 }
 
 void Game::SetActiveCell(Grid* cell)

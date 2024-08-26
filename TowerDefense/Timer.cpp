@@ -24,3 +24,28 @@ int Timer::MinutesFromLast() const
 {
 	return std::chrono::duration_cast<std::chrono::minutes>(clockType::now() - last_point).count();
 }
+
+void Timer::StartTimer()
+{
+	ResetLastPoint();
+	active = true;
+}
+
+void Timer::StopTimer()
+{
+	lastSeconds += SecondsFromLast();
+	active = false;
+}
+
+void Timer::ResetTimer()
+{
+	activeSeconds = 0;
+	lastSeconds = 0;
+	ResetLastPoint();
+}
+
+int Timer::GetActualTime()
+{
+	if (active) activeSeconds = SecondsFromLast() + lastSeconds;
+	return activeSeconds;
+}

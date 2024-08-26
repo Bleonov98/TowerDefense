@@ -20,9 +20,16 @@ public:
 	int MinutesFromStart() const;
 	int MinutesFromLast() const;
 
+	void StartTimer();
+	void StopTimer();
+	void ResetTimer();
+	int GetActualTime();
+
 private:
 
 	std::chrono::time_point<clockType> start_point, last_point;
+	int activeSeconds = 0, lastSeconds = 0;
+	bool active = false;
 
 };
 
