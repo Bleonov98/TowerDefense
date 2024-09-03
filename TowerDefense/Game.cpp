@@ -201,13 +201,15 @@ void Game::ProcessInput(float dt)
 			else if (cursorPos.y == this->height / 2.0f + 40.0f) close = true;
 		}
 	}
-	else if (gameState == END_LOSS || gameState == END_WIN && this->Keys[GLFW_KEY_ENTER]) close = true;
+	else if (gameState == END_LOSS || gameState == END_WIN) {
+		if (this->Keys[GLFW_KEY_R]) Restart();
+		else if (this->Keys[GLFW_KEY_ESCAPE]) close = true;
+	}
 } 
 
 void Game::Update(float dt)
 {
 	if (dt > 0.015f) dt = 0.015f;
-	cout << dt << endl;
 
 	if (gameState == ACTIVE) {
 
@@ -640,7 +642,7 @@ void Game::DrawTowerMenu()
 			buttonList[i]->DrawButton(gameState == MENU);
 			buttonList[i]->GetID() == ARROWTOWER_BUTTON ? cost = "50" : (buttonList[i]->GetID() == FIRETOWER_BUTTON ? cost = "75" : cost = "60");
 
-			text->RenderText(cost, buttonList[i]->GetButtonPosition() + glm::vec2(-15.0f, 0.0f));
+			text->RenderText(cost, glm::vec2(540.0f + 150.0f * i, 750.0f));
 		}
 	}
 }
@@ -661,7 +663,7 @@ void Game::DrawTowerStats()
 	statHUD->AddTexture(ResourceManager::GetTexture("attackStat"));
 	statHUD->DrawHUD(glm::vec2(0.031f * width, 0.87f * height), glm::vec2(0.034f * height), gameState == MENU);
 	text->RenderText(std::to_string( (*result)->GetDamage() ), glm::vec2(100.0f, 785.0f));
-
+	
 	// attackspeed
 	statHUD->AddTexture(ResourceManager::GetTexture("speedStat"));
 	statHUD->DrawHUD(glm::vec2(0.031f * width, 0.92f * height), glm::vec2(0.034f * height), gameState == MENU);
@@ -670,7 +672,7 @@ void Game::DrawTowerStats()
 	// powerUp
 	if ((*result)->GetTowerLvl() <= 2) {
 		buttonList.back()->DrawButton(gameState == MENU);
-		text->RenderText(std::to_string((*result)->GetTowerCost()), buttonList.back()->GetButtonPosition() + glm::vec2(0.0f, 10.0f));
+		text->RenderText(std::to_string((*result)->GetTowerCost()), glm::vec2(550.0f, 750.0f));
 	}
 }
 
@@ -686,7 +688,8 @@ void Game::DrawMenuTxt()
 	}
 	else if (gameState == END_WIN) text->RenderText("YOU WON", glm::vec2(this->width / 2.0f - 65.0f, this->height / 2.0f - 116.0f), 1.75f, glm::vec3(0.75f));
 	else if (gameState == END_LOSS) text->RenderText("YOU LOST", glm::vec2(this->width / 2.0f - 65.0f, this->height / 2.0f - 116.0f), 1.75f, glm::vec3(0.75f));
-	text->RenderText("Press any key to exit", glm::vec2(this->width / 2.0f - 65.0f, this->height / 2.0f), 1.0f, glm::vec3(0.75f));
+	text->RenderText("Press ESC to exit", glm::vec2(this->width / 2.0f - 45.0f, this->height / 2.0f + 30.0f), 1.0f, glm::vec3(0.75f));
+	text->RenderText("Press R to restart", glm::vec2(this->width / 2.0f - 45.0f, this->height / 2.0f - 20.0f), 1.0f, glm::vec3(0.75f));
 }
 
 // Calculations
@@ -765,6 +768,57 @@ std::pair<glm::vec3, glm::vec3> Game::MouseRay()
 	glm::vec3 rayOrigin = camera.GetCameraPosition();
 
 	return std::make_pair(rayOrigin, rayWorld);
+}
+
+void Game::Restart()
+{
+	Enemy* enemy = new Enemy(glm::vec3(0.0f));
+	enemy->RefreshState();
+	delete enemy;
+
+	for (auto& i : objList)
+	{
+		delete i;
+		i = nullptr;
+	}
+	objList.clear();
+	enemyList.clear();
+
+	towerList.clear();
+	arrowTowerList.clear();
+	fireTowerList.clear();
+	iceTowerList.clear();
+
+	projectileList.clear();
+	arrowProjectileList.clear();
+	fireProjectileList.clear();
+	iceProjectileList.clear();
+
+	for (auto& row : grid) {
+		for (auto& cell : row) {
+			delete cell;
+			cell = nullptr;
+		}
+	}
+	grid.clear();
+
+	for (auto& button : buttonList)
+	{
+		delete button;
+		button = nullptr;
+	}
+	buttonList.clear();
+
+	// create new
+	InitGameObjects();
+
+	timer.ResetTimer();
+	player.gold = 75;
+	player.hp = 5;
+	player.wave = 0;
+
+	gameState = ACTIVE;
+	lvlStarted = false;
 }
 
 void Game::SetScreenSize(unsigned int width, unsigned int height)
@@ -873,8 +927,16 @@ Game::~Game()
 	}
 	objList.clear();
 	enemyList.clear();
+
 	towerList.clear();
+	arrowTowerList.clear();
+	fireTowerList.clear();
+	iceTowerList.clear();
+
 	projectileList.clear();
+	arrowProjectileList.clear();
+	fireProjectileList.clear();
+	iceProjectileList.clear();
 
 	for (auto& row : grid) {
 		for (auto& cell : row) {

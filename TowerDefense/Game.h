@@ -106,6 +106,7 @@ public:
 	std::pair<glm::vec3, glm::vec3> MouseRay();
 
 	// Utility
+	void Restart();
 	void SetScreenSize(unsigned int width, unsigned int height);
 	void CheckGLError(const std::string& context);
 	void DeleteObjects();

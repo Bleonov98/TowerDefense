@@ -73,3 +73,9 @@ void Enemy::UpgradeEnemy()
 	maxHp += 125;
 	if (maxSpeed < 2.5f) maxSpeed += 0.5f;
 }
+
+void Enemy::RefreshState()
+{
+	maxSpeed = 1.0f;
+	maxHp = 100;
+}

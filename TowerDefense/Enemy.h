@@ -44,6 +44,7 @@ public:
 	void SetHP();
 
 	void UpgradeEnemy();
+	void RefreshState();
 
 	virtual ~Enemy() {};
 
